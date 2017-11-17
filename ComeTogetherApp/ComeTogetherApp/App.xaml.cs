@@ -1,13 +1,17 @@
-﻿using ComeTogetherApp._1._Authentification;
+﻿using System;
+using ComeTogetherApp._1._Authentification;
 using Xamarin.Forms;
 
 namespace ComeTogetherApp
 {
     public partial class App : Application
     {
+        protected static App app;
         public App()
         {
             InitializeComponent();
+
+            app = this;
 
             MainPage = new LoginPage();
         }
@@ -15,6 +19,14 @@ namespace ComeTogetherApp
         protected override void OnStart()
         {
             // Handle when your app starts
+            System.Diagnostics.Debug.WriteLine("App OnStart");
+            if (!Application.Current.Properties.ContainsKey("IsUserLoggedIn"))
+            {
+                Application.Current.Properties["IsUserLoggedIn"] = false;
+                System.Diagnostics.Debug.WriteLine("First Appstart, initialize Current.Properties");
+            }
+
+            LogInSwitch();
         }
 
         protected override void OnSleep()
@@ -25,6 +37,116 @@ namespace ComeTogetherApp
         protected override void OnResume()
         {
             // Handle when your app resumes
+        }
+
+        public static void LogInSwitch()
+        {
+            System.Diagnostics.Debug.WriteLine("LogInSwitch");
+
+            //App.IsUserLoggedIn = true;
+            bool IsUserLoggedIn = Convert.ToBoolean(Application.Current.Properties["IsUserLoggedIn"]);
+            if (!IsUserLoggedIn)
+            {
+                //app.MainPage = new NavigationPage(new tbfApp.LoginPage());
+
+                //Navigation.PushModalAsync(new tbfApp.LoginPage());
+
+                //app.MainPage = new tbfApp.LoginPage();
+                app.MainPage = new NavigationPage(new LoginPage()
+                {
+                    Title = "Login",
+
+                })
+                {
+                    BarBackgroundColor = Color.FromHex(App.GetMenueColor()), //#009acd
+                    BarTextColor = Color.White,
+                };
+                //Navigation.PushModalAsync(new tbfApp.LoginPage());
+            }
+            else
+            {
+                //ToDo
+                //app.MainPage = new tbfApp.MainPage();
+            }
+        }
+
+        public static void NavigateToSignUp()
+        {
+            app.MainPage.Navigation.PushAsync(new SignUpPage()
+            {
+                Title = "Sign up"
+            });
+        }
+
+        public static String GetMenueColor()
+        {
+            if (!Application.Current.Properties.ContainsKey("menueColor"))
+            {
+                Application.Current.Properties["menueColor"] = "009acd";
+                System.Diagnostics.Debug.WriteLine("First menueColor set");
+            }
+            return Convert.ToString(Application.Current.Properties["menueColor"]);
+        }
+
+        public static bool SetMenueColor(String newColor)
+        {
+            Application.Current.Properties["menueColor"] = newColor;
+            return true;
+        }
+
+        public static String GetServerAdress()
+        {
+            if (!Application.Current.Properties.ContainsKey("serverAdress"))
+            {
+                Application.Current.Properties["serverAdress"] = "tbf.spdns.de";
+                System.Diagnostics.Debug.WriteLine("First serverAdress set");
+            }
+            return Convert.ToString(Application.Current.Properties["serverAdress"]);
+        }
+
+        public static bool SetServerAdress(String newServerAdress)
+        {
+            Application.Current.Properties["serverAdress"] = newServerAdress;
+            return true;
+        }
+
+        public static int GetUserID()
+        {
+            if (!Application.Current.Properties.ContainsKey("userID"))
+            {
+                Application.Current.Properties["userID"] = 0;
+                System.Diagnostics.Debug.WriteLine("First userID set");
+            }
+            return Convert.ToInt32(Application.Current.Properties["userID"]);
+        }
+
+        public static bool SetUserID(int newUserID)
+        {
+            try
+            {
+                Application.Current.Properties["userID"] = newUserID;
+            }
+            catch (Exception)
+            {
+                System.Diagnostics.Debug.WriteLine("USER ID IS NOT SET!!!!!!!!");
+                //throw;
+            }
+            return true;
+        }
+
+        public static String GetUsername()
+        {
+            if (!Application.Current.Properties.ContainsKey("username"))
+            {
+                Application.Current.Properties["username"] = "Benutzername";
+                System.Diagnostics.Debug.WriteLine("First username set");
+            }
+            return Convert.ToString(Application.Current.Properties["username"]);
+        }
+        public static bool SetUsername(String newUsername)
+        {
+            Application.Current.Properties["username"] = newUsername;
+            return true;
         }
     }
 }
