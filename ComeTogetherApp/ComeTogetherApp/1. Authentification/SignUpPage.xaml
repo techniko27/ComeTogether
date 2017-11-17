@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ComeTogetherApp._1._Authentification.SignUpPage">
+    <ContentPage.Content>
+        <ScrollView>
+            <RelativeLayout>
+                <StackLayout VerticalOptions="StartAndExpand" x:Name="stackLayout"
+                       RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent,
+                          Property=Height,Factor=0,Constant=0}"
+                      RelativeLayout.WidthConstraint="{ConstraintExpression
+                          Type=RelativeToParent,Property=Width,Factor=1,Constant=0}"
+                 >
+                    <Label Text="Benutzername" />
+                    <Entry x:Name="usernameEntry" Placeholder="Benutzername" />
+                    <Label Text="Vorname" />
+                    <Entry x:Name="forenameEntry" Placeholder="Vorname" />
+                    <Label Text="Nachname" />
+                    <Entry x:Name="secondnameEntry" Placeholder="Nachname" />
+                    <Label Text="Passwort" />
+                    <Entry x:Name="passwordEntry" IsPassword="true" Placeholder="***"/>
+                    <Label Text="Passwort wiederholen" />
+                    <Entry x:Name="passwordEntry2" IsPassword="true" Placeholder="***"/>
+                    <Label Text="Emailaddress" />
+                    <Entry x:Name="emailEntry" Placeholder="Email"/>
+                    <Button x:Name="buttonSignUp" Text="Sign Up" Clicked="OnSignUpButtonClicked" />
+                    <Label x:Name="messageLabel" TextColor="Red" FontSize="20" HorizontalOptions="CenterAndExpand"/>
+                </StackLayout>
+
+                <ActivityIndicator x:Name="activityIndicator" Color="Gray" IsRunning="false"
+                               RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent,
+                                  ElementName=stackLayout,Property=Y,Factor=1,Constant=250}"
+                              RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToParent,
+                                  ElementName=stackLayout,Property=X,Factor=1,Constant=160}"
+                              RelativeLayout.WidthConstraint="80"
+                              RelativeLayout.HeightConstraint="80"
+        />
+            </RelativeLayout>
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>

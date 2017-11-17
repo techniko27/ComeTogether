@@ -7,6 +7,7 @@ namespace ComeTogetherApp
         public ComeTogetherAppPage()
         {
             InitializeComponent();
+            
         }
     }
 }

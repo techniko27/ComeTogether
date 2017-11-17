@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms;
+﻿using ComeTogetherApp._1._Authentification;
+using Xamarin.Forms;
 
 namespace ComeTogetherApp
 {
@@ -8,7 +9,7 @@ namespace ComeTogetherApp
         {
             InitializeComponent();
 
-            MainPage = new ComeTogetherAppPage();
+            MainPage = new LoginPage();
         }
 
         protected override void OnStart()
