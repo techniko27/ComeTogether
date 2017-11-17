@@ -19,7 +19,6 @@ namespace ComeTogetherApp
         protected override void OnStart()
         {
             // Handle when your app starts
-            System.Diagnostics.Debug.WriteLine("App OnStart");
             if (!Application.Current.Properties.ContainsKey("IsUserLoggedIn"))
             {
                 Application.Current.Properties["IsUserLoggedIn"] = false;
@@ -98,7 +97,7 @@ namespace ComeTogetherApp
         {
             if (!Application.Current.Properties.ContainsKey("serverAdress"))
             {
-                Application.Current.Properties["serverAdress"] = "tbf.spdns.de";
+                Application.Current.Properties["serverAdress"] = "cometogether-15b4.firebaseapp.com";
                 System.Diagnostics.Debug.WriteLine("First serverAdress set");
             }
             return Convert.ToString(Application.Current.Properties["serverAdress"]);
@@ -146,6 +145,23 @@ namespace ComeTogetherApp
         public static bool SetUsername(String newUsername)
         {
             Application.Current.Properties["username"] = newUsername;
+            return true;
+        }
+        public static String GetFirebaseApiKey()
+        {
+            //Firebase Api Key = Cloud Messaging -> Serverschlüssel
+            //AAAAPcDUv78:APA91bEOSotN0eMtDs23FvMSmufB6htm11RsN-SCqewa31EIGvzhaFOilzVi3xrUcUGEluyVMCa2UvKv7vAvqt2q2qIh4WgrTtheXOEqkDEkbFiS27i5LZNORR1gHlnWqMdFsZCZCyEm
+            if (!Application.Current.Properties.ContainsKey("FirebaseApiKey"))
+            {
+                Application.Current.Properties["FirebaseApiKey"] = 
+                    "AIzaSyC5srcmE8bzhuaZLO04_BWUcSawJ9As9oA";
+                System.Diagnostics.Debug.WriteLine("First FirebaseApiKey set");
+            }
+            return Convert.ToString(Application.Current.Properties["FirebaseApiKey"]);
+        }
+        public static bool SetFirebaseApiKey(String FirebaseApiKey)
+        {
+            Application.Current.Properties["FirebaseApiKey"] = FirebaseApiKey;
             return true;
         }
     }

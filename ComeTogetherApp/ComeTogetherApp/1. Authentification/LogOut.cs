@@ -12,7 +12,7 @@ namespace ComeTogetherApp._1._Authentification
         public LogOut()
         {
             Application.Current.Properties["IsUserLoggedIn"] = false;
-            //App.LogInSwitch();
+            App.LogInSwitch();
             
         }
     }

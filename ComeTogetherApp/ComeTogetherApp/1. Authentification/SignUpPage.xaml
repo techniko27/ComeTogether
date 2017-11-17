@@ -9,20 +9,22 @@
                        RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent,
                           Property=Height,Factor=0,Constant=0}"
                       RelativeLayout.WidthConstraint="{ConstraintExpression
-                          Type=RelativeToParent,Property=Width,Factor=1,Constant=0}"
-                 >
+                          Type=RelativeToParent,Property=Width,Factor=1,Constant=0}">
+                    
                     <Label Text="Benutzername" />
-                    <Entry x:Name="usernameEntry" Placeholder="Benutzername" />
+                    <Entry x:Name="usernameEntry" Placeholder="MaxM" />
+                    <!--
                     <Label Text="Vorname" />
-                    <Entry x:Name="forenameEntry" Placeholder="Vorname" />
+                    <Entry x:Name="forenameEntry" Placeholder="Max" />
                     <Label Text="Nachname" />
-                    <Entry x:Name="secondnameEntry" Placeholder="Nachname" />
+                    <Entry x:Name="secondnameEntry" Placeholder="Mustermann" />
+                    -->
                     <Label Text="Passwort" />
-                    <Entry x:Name="passwordEntry" IsPassword="true" Placeholder="***"/>
+                    <Entry x:Name="passwordEntry" IsPassword="true" Placeholder="****"/>
                     <Label Text="Passwort wiederholen" />
-                    <Entry x:Name="passwordEntry2" IsPassword="true" Placeholder="***"/>
+                    <Entry x:Name="passwordEntry2" IsPassword="true" Placeholder="****"/>
                     <Label Text="Emailaddress" />
-                    <Entry x:Name="emailEntry" Placeholder="Email"/>
+                    <Entry x:Name="emailEntry" Placeholder="maxmustermann@mail.com"/>
                     <Button x:Name="buttonSignUp" Text="Sign Up" Clicked="OnSignUpButtonClicked" />
                     <Label x:Name="messageLabel" TextColor="Red" FontSize="20" HorizontalOptions="CenterAndExpand"/>
                 </StackLayout>
