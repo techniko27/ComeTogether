@@ -2,6 +2,7 @@
 Come Together App development
 
 **Develop Builds:**
+
 iOS App:
 [![Build status](https://build.appcenter.ms/v0.1/apps/4df0ccb1-1790-405f-8409-2d2aceb07afe/branches/Develop/badge)](https://appcenter.ms)
 
