@@ -164,5 +164,18 @@ namespace ComeTogetherApp
             Application.Current.Properties["FirebaseApiKey"] = FirebaseApiKey;
             return true;
         }
+        public static String GetAuthToken()
+        {
+            if (!Application.Current.Properties.ContainsKey("AuthToken"))
+            {
+                Application.Current.Properties["AuthToken"] = "";
+            }
+            return Convert.ToString(Application.Current.Properties["AuthToken"]);
+        }
+        public static bool SetAuthToken(String newAuthToken)
+        {
+            Application.Current.Properties["AuthToken"] = newAuthToken;
+            return true;
+        }
     }
 }

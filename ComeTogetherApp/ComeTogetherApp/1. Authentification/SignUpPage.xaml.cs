@@ -19,9 +19,6 @@ namespace ComeTogetherApp._1._Authentification
 
         async void OnSignUpButtonClicked(object sender, EventArgs e)
         {
-            //await DisplayAlert("Sign Up erfolgreich!", "Sie können sich jetzt einloggen", "OK");
-            //Navigation.PopToRootAsync();
-
             activityIndicator.IsRunning = true;
             buttonSignUp.IsEnabled = false;
 
@@ -35,12 +32,11 @@ namespace ComeTogetherApp._1._Authentification
             {
                 //await DisplayAlert("Eingabefehler", "Passwörter nicht identisch!", "OK");
                 messageLabel.Text = "Benutzername muss mindestens drei Zeichen enthalten!";
-                usernameEntry.Text = string.Empty;
             }
-            else if (passwordEntry.Text.Length < 3)
+            else if (passwordEntry.Text.Length < 6)
             {
                 //await DisplayAlert("Eingabefehler", "Passwörter nicht identisch!", "OK");
-                messageLabel.Text = "Passwort muss mindestens drei Zeichen enthalten!";
+                messageLabel.Text = "Passwort muss mindestens 6 Zeichen enthalten!";
                 passwordEntry.Text = string.Empty;
                 passwordEntry2.Text = string.Empty;
             }
@@ -55,70 +51,47 @@ namespace ComeTogetherApp._1._Authentification
             {
                 //await DisplayAlert("Eingabefehler", "Email Adresse ungültig!", "OK");
                 messageLabel.Text = "Email Adresse ungültig!";
-                emailEntry.Text = string.Empty;
             }
             else
             {
                 //SignUp Request
-                //App.endpointConnection.SetProtocolFunction(this.ServerAnswer);
-                //await App.Communicate("#104;" + usernameEntry.Text + ";" + secondnameEntry.Text + ";" + forenameEntry.Text + ";" + passwordEntry.Text + ";" + emailEntry.Text.ToLower() + ";0", this);
                 var authProvider = new FirebaseAuthProvider(new FirebaseConfig(App.GetFirebaseApiKey()));
-
+                
                 try
                 {
                     var auth = await authProvider.CreateUserWithEmailAndPasswordAsync(emailEntry.Text, passwordEntry.Text, usernameEntry.Text, true);
+
+                    await DisplayAlert("Sign Up erfolgreich!", "Sie können sich jetzt einloggen", "OK");
+                    Navigation.PopToRootAsync();
                 }
-                catch (Exception exception)
+                catch (FirebaseAuthException exception)
                 {
-                    await DisplayAlert("Fehler", exception.ToString(), "OK");
-                    throw;
+                    switch (exception.Reason)
+                    {
+                        case AuthErrorReason.WeakPassword:
+                            messageLabel.Text = "Passwort muss mindestens 6 Zeichen lang sein.";
+                            passwordEntry.Text = string.Empty;
+                            passwordEntry2.Text = string.Empty;
+                            break;
+                        case AuthErrorReason.EmailExists:
+                            messageLabel.Text = "Mit dieser Email Adresse wurde bereits ein Konto angelegt.";
+                            break;
+                        case AuthErrorReason.InvalidEmailAddress:
+                            messageLabel.Text = "Email Adresse ungültig.";
+                            break;
+                        case AuthErrorReason.InvalidProviderID:
+                            messageLabel.Text = "InvlidProviderID";
+                            break;
+                        default:
+                            //messageLabel.Text = "Kommunikationsproblem, Undefinierte Antwort vom Server!";
+                            DisplayAlert("Serverfehler", exception.ToString(), "OK");
+                            break;
+                    }
                 }
             }
 
             buttonSignUp.IsEnabled = true;
             activityIndicator.IsRunning = false;
-        }
-
-        async void ServerAnswer(string protocol)
-        {
-            //await DisplayAlert("Servermessage", protocol, "OK");                      //Output of the Server Answer
-
-            List<string> list = new List<string>();
-            //string [] test  = protocol.Split(';');
-            list = protocol.Split(';').ToList();
-
-            //App.endpointConnection.closeConnection();
-
-            if (list.ElementAt(0).Equals("#105"))
-            {
-                if (list.ElementAt(1).Equals("1"))
-                {
-                    await DisplayAlert("Sign Up erfolgreich!", "Sie können sich jetzt einloggen", "OK");
-                    Navigation.PopToRootAsync();
-
-                }
-                else if (list.ElementAt(1).Equals("2"))
-                {
-                    messageLabel.Text = "Sign Up fehlgeschlagen, Benutzername wird bereits verwendet!";
-                    usernameEntry.Text = string.Empty;
-                }
-                else if (list.ElementAt(1).Equals("3"))
-                {
-                    messageLabel.Text = "Sign Up fehlgeschlagen, Emailadresse wird bereits verwendet!";
-                }
-                else if (list.ElementAt(1).Equals("4"))
-                {
-                    messageLabel.Text = "Sign Up fehlgeschlagen, Serverproblem!";
-                }
-                else
-                {
-                    messageLabel.Text = "Kommunikationsproblem, Undefinierte Antwort vom Server 1!";
-                }
-            }
-            else
-            {
-                messageLabel.Text = "Kommunikationsproblem, Undefinierte Antwort vom Server 2!";
-            }
         }
     }
 }

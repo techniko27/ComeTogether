@@ -25,45 +25,66 @@ namespace ComeTogetherApp._1._Authentification
 
             if (emailEntry.Text == null)
             {
-                await DisplayAlert("Eingabefehler", "Emailadresse eingeben!", "OK");
+                //await DisplayAlert("Eingabefehler", "Emailadresse eingeben!", "OK");
+                messageLabel.Text = "Emailadresse eingeben!";
             }
             else if (passwordEntry.Text == null)
             {
-                await DisplayAlert("Eingabefehler", "Passwort eingeben!", "OK");
+                //await DisplayAlert("Eingabefehler", "Passwort eingeben!", "OK");
+                messageLabel.Text = "Passwort eingeben!";
             }
             else if (!emailEntry.Text.Contains("@") || !emailEntry.Text.Contains(".") || emailEntry.Text.Length < 6)
             {
-                await DisplayAlert("Eingabefehler", "Email Adresse ungültig!", "OK");
-                //messageLabel.Text = "Email Adresse ungültig!";
-                emailEntry.Text = string.Empty;
+                //await DisplayAlert("Eingabefehler", "Email Adresse ungültig!", "OK");
+                messageLabel.Text = "Email Adresse ungültig!";
             }
             else
             {
                 //Login Request
                 var authProvider = new FirebaseAuthProvider(new FirebaseConfig(App.GetFirebaseApiKey()));
 
-                /* Facebook Auth
-                var facebookAccessToken = "<login with facebook and get oauth access token>";
-                var auth = await authProvider.SignInWithOAuthAsync(FirebaseAuthType.Facebook, facebookAccessToken);
-                */
+                FirebaseClient firebase = null;
 
                 try
                 {
-                    var auth = await authProvider.SignInWithEmailAndPasswordAsync(emailEntry.Text, passwordEntry.Text);
+                    var auth = await authProvider.SignInWithEmailAndPasswordAsync(emailEntry.Text.Replace(" ",String.Empty), passwordEntry.Text);
 
-                    var firebase = new FirebaseClient(App.GetServerAdress(), new FirebaseOptions
+                    firebase = new FirebaseClient(App.GetServerAdress(), new FirebaseOptions
                     {
                         AuthTokenAsyncFactory = () => Task.FromResult(auth.FirebaseToken)
                     });
 
                     await DisplayAlert("Token", auth.FirebaseToken, "OK");
                 }
-                catch (Exception)
+                catch (FirebaseAuthException exception)
                 {
-                    await DisplayAlert("Anmeldefehler", "Sie konnten nicht angemeldet werden!", "OK");
-                    throw;
+                    switch (exception.Reason)
+                    {
+                        case AuthErrorReason.WrongPassword:
+                            messageLabel.Text = "Passwort ist falsch.";
+                            passwordEntry.Text = string.Empty;
+                            break;
+                        case AuthErrorReason.UserDisabled:
+                            messageLabel.Text = "Benutzer deaktiviert.";
+                            break;
+                        case AuthErrorReason.UnknownEmailAddress:
+                            messageLabel.Text = "Email Adresse unbekannt.";
+                            break;
+                        case AuthErrorReason.InvalidProviderID:
+                            messageLabel.Text = "InvalidProviderID";
+                            break;
+                        default:
+                            //messageLabel.Text = "Kommunikationsproblem, Undefinierte Antwort vom Server!";
+                            DisplayAlert("Serverfehler", exception.ToString(), "OK");
+                            //await DisplayAlert("Anmeldefehler", "Sie konnten nicht angemeldet werden!", "OK");
+                            break;
+                    }
                 }
 
+                /* Facebook Auth
+                var facebookAccessToken = "<login with facebook and get oauth access token>";
+                var auth = await authProvider.SignInWithOAuthAsync(FirebaseAuthType.Facebook, facebookAccessToken);
+                */
 
                 /*
                 var dinos = await firebase.Child("dinosaurs").OnceAsync<Dinosaur>();
