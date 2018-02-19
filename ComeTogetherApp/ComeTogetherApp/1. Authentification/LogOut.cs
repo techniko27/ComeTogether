@@ -5,15 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
-namespace ComeTogetherApp._1._Authentification
+namespace ComeTogetherApp
 {
-    class LogOut
+    class LogOut : ContentPage
     {
         public LogOut()
         {
             Application.Current.Properties["IsUserLoggedIn"] = false;
-            App.LogInSwitch();
-            
+            Device.BeginInvokeOnMainThread(() => App.LogInSwitch());
         }
     }
 }

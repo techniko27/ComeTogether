@@ -1,5 +1,4 @@
 ﻿using System;
-using ComeTogetherApp._1._Authentification;
 using Xamarin.Forms;
 
 namespace ComeTogetherApp
@@ -64,8 +63,7 @@ namespace ComeTogetherApp
             }
             else
             {
-                //ToDo
-                //app.MainPage = new tbfApp.MainPage();
+                app.MainPage = new ComeTogetherApp.MainPage();
             }
         }
 
@@ -97,7 +95,8 @@ namespace ComeTogetherApp
         {
             if (!Application.Current.Properties.ContainsKey("serverAdress"))
             {
-                Application.Current.Properties["serverAdress"] = "cometogether-15b4.firebaseapp.com";
+                //Application.Current.Properties["serverAdress"] = "https://cometogether-15b4.firebaseapp.com";
+                Application.Current.Properties["serverAdress"] = "https://cometogether-15b4.firebaseio.com/";
                 System.Diagnostics.Debug.WriteLine("First serverAdress set");
             }
             return Convert.ToString(Application.Current.Properties["serverAdress"]);

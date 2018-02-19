@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="ComeTogetherApp._1._Authentification.SignUpPage">
+             x:Class="ComeTogetherApp.SignUpPage">
     <ContentPage.Content>
         <ScrollView>
             <RelativeLayout>
@@ -9,7 +9,9 @@
                        RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent,
                           Property=Height,Factor=0,Constant=0}"
                       RelativeLayout.WidthConstraint="{ConstraintExpression
-                          Type=RelativeToParent,Property=Width,Factor=1,Constant=0}">
+                          Type=RelativeToParent,Property=Width,Factor=1,Constant=0}"
+                             Margin="10"
+                             >
                     
                     <Label Text="Benutzername" />
                     <Entry x:Name="usernameEntry" Placeholder="MaxM" />

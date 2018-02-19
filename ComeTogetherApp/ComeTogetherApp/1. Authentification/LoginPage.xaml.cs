@@ -8,7 +8,7 @@ using Firebase.Database;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace ComeTogetherApp._1._Authentification
+namespace ComeTogetherApp
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class LoginPage : ContentPage
@@ -22,6 +22,7 @@ namespace ComeTogetherApp._1._Authentification
         {
             activityIndicator.IsRunning = true;
             buttonLoginin.IsEnabled = false;
+            string firebaseToken = null;
 
             if (emailEntry.Text == null)
             {
@@ -54,7 +55,8 @@ namespace ComeTogetherApp._1._Authentification
                         AuthTokenAsyncFactory = () => Task.FromResult(auth.FirebaseToken)
                     });
 
-                    await DisplayAlert("Token", auth.FirebaseToken, "OK");
+                    //await DisplayAlert("Token", auth.FirebaseToken, "OK");
+                    firebaseToken = auth.FirebaseToken;
                 }
                 catch (FirebaseAuthException exception)
                 {
@@ -98,8 +100,11 @@ namespace ComeTogetherApp._1._Authentification
 
             }
 
-            Application.Current.Properties["IsUserLoggedIn"] = true;
-            App.LogInSwitch();
+            if (firebaseToken != null)
+            {
+                Application.Current.Properties["IsUserLoggedIn"] = true;
+                App.LogInSwitch();
+            }
 
             buttonLoginin.IsEnabled = true;
             activityIndicator.IsRunning = false;
@@ -119,6 +124,7 @@ namespace ComeTogetherApp._1._Authentification
             activityIndicator.IsRunning = false;
         }
 
+        /*
         private void ServerAnswer(string protocol)
         {
             //DisplayAlert("Servermessage", protocol, "OK");                    //Output of the Server Answer
@@ -161,5 +167,6 @@ namespace ComeTogetherApp._1._Authentification
             }
             //App.endpointConnection.closeConnection();
         }
+        */
     }
 }

@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Firebase.Auth;
+using Firebase.Database;
+using Firebase.Database.Query;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace ComeTogetherApp._1._Authentification
+namespace ComeTogetherApp
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class SignUpPage : ContentPage
@@ -56,13 +58,24 @@ namespace ComeTogetherApp._1._Authentification
             {
                 //SignUp Request
                 var authProvider = new FirebaseAuthProvider(new FirebaseConfig(App.GetFirebaseApiKey()));
-                
+
                 try
                 {
                     var auth = await authProvider.CreateUserWithEmailAndPasswordAsync(emailEntry.Text, passwordEntry.Text, usernameEntry.Text, true);
 
-                    await DisplayAlert("Sign Up erfolgreich!", "Sie können sich jetzt einloggen", "OK");
-                    Navigation.PopToRootAsync();
+                        string userID = auth.User.LocalId;
+
+                        auth = await authProvider.SignInWithEmailAndPasswordAsync(emailEntry.Text.Replace(" ", String.Empty), passwordEntry.Text);
+
+                        FirebaseClient firebase = firebase = new FirebaseClient(App.GetServerAdress(), new FirebaseOptions
+                        {
+                            AuthTokenAsyncFactory = () => Task.FromResult(auth.FirebaseToken)
+                        });
+
+                        await firebase.Child("users").Child(userID).PutAsync(new User(usernameEntry.Text, emailEntry.Text));
+
+                        await DisplayAlert("Sign Up erfolgreich!", "Sie können sich jetzt einloggen", "OK");
+                        Navigation.PopToRootAsync();
                 }
                 catch (FirebaseAuthException exception)
                 {

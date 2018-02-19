@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="ComeTogetherApp._1._Authentification.LoginPage">
+             x:Class="ComeTogetherApp.LoginPage">
     <ContentPage.Content>
         <ScrollView>
             <RelativeLayout>
@@ -10,6 +10,7 @@
                           Property=Height,Factor=0,Constant=0}"
                       RelativeLayout.WidthConstraint="{ConstraintExpression
                           Type=RelativeToParent,Property=Width,Factor=1,Constant=0}"
+                             Margin="10"
           >
                     <Image Source="tbf_180x180.png" WidthRequest="180" HeightRequest="180" HorizontalOptions="CenterAndExpand"/>
                     <Label Text="Emailaddress" />
