@@ -45,6 +45,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Beans\Event.cs" />
     <Compile Include="Beans\User.cs" />
     <Compile Include="ComeTogetherAppPage.xaml.cs">
       <DependentUpon>ComeTogetherAppPage.xaml</DependentUpon>

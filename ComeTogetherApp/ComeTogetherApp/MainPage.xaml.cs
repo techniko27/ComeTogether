@@ -51,7 +51,6 @@ namespace ComeTogetherApp
                 if (item.Title == "LogOff")
                 {
                     Application.Current.Properties["IsUserLoggedIn"] = false;
-                    //App.LogInSwitch();
                     Device.BeginInvokeOnMainThread(() => App.LogInSwitch());
                 }
 

@@ -63,19 +63,19 @@ namespace ComeTogetherApp
                 {
                     var auth = await authProvider.CreateUserWithEmailAndPasswordAsync(emailEntry.Text, passwordEntry.Text, usernameEntry.Text, true);
 
-                        string userID = auth.User.LocalId;
+                    string userID = auth.User.LocalId;
 
-                        auth = await authProvider.SignInWithEmailAndPasswordAsync(emailEntry.Text.Replace(" ", String.Empty), passwordEntry.Text);
+                    auth = await authProvider.SignInWithEmailAndPasswordAsync(emailEntry.Text.Replace(" ", String.Empty), passwordEntry.Text);
 
-                        FirebaseClient firebase = firebase = new FirebaseClient(App.GetServerAdress(), new FirebaseOptions
-                        {
-                            AuthTokenAsyncFactory = () => Task.FromResult(auth.FirebaseToken)
-                        });
+                    FirebaseClient firebase = new FirebaseClient(App.GetServerAdress(), new FirebaseOptions
+                    {
+                        AuthTokenAsyncFactory = () => Task.FromResult(auth.FirebaseToken)
+                    });
 
-                        await firebase.Child("users").Child(userID).PutAsync(new User(usernameEntry.Text, emailEntry.Text));
+                    await firebase.Child("users").Child(userID).PutAsync(new User(usernameEntry.Text, emailEntry.Text));
 
-                        await DisplayAlert("Sign Up erfolgreich!", "Sie können sich jetzt einloggen", "OK");
-                        Navigation.PopToRootAsync();
+                    await DisplayAlert("Sign Up erfolgreich!", "Sie können sich jetzt einloggen", "OK");
+                    Navigation.PopToRootAsync();
                 }
                 catch (FirebaseAuthException exception)
                 {
