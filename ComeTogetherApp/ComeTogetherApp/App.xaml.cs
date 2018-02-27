@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Threading.Tasks;
+using Firebase.Auth;
+using Firebase.Database;
 using Xamarin.Forms;
 
 namespace ComeTogetherApp
@@ -6,16 +9,20 @@ namespace ComeTogetherApp
     public partial class App : Application
     {
         protected static App app;
+        public static FirebaseClient firebase;
+        public static Page activePage;
+
         public App()
         {
             InitializeComponent();
 
             app = this;
 
-            MainPage = new LoginPage();
+            activePage = new AppStartPage();
+            MainPage = activePage;
         }
 
-        protected override void OnStart()
+        protected override async void OnStart()
         {
             // Handle when your app starts
             if (!Application.Current.Properties.ContainsKey("IsUserLoggedIn"))
@@ -24,7 +31,7 @@ namespace ComeTogetherApp
                 System.Diagnostics.Debug.WriteLine("First Appstart, initialize Current.Properties");
             }
 
-            LogInSwitch();
+            await LogInSwitch();
         }
 
         protected override void OnSleep()
@@ -32,12 +39,35 @@ namespace ComeTogetherApp
             // Handle when your app sleeps
         }
 
-        protected override void OnResume()
+        protected override async void OnResume()
         {
             // Handle when your app resumes
+            if (GetEmail().Length > 2)
+            {
+                await firebaseClientRefresh();
+            }
         }
 
-        public static void LogInSwitch()
+        public static async Task<bool> firebaseClientRefresh()
+        {
+            try
+            {
+                var authProvider = new FirebaseAuthProvider(new FirebaseConfig(App.GetFirebaseApiKey()));
+                var auth = await authProvider.SignInWithEmailAndPasswordAsync(GetEmail(), GetPassword());
+
+                firebase = new FirebaseClient(App.GetServerAdress(), new FirebaseOptions
+                {
+                    AuthTokenAsyncFactory = () => Task.FromResult(auth.FirebaseToken)
+                });
+            }
+            catch (Exception)
+            {
+                await activePage.DisplayAlert("Server connection failure", "Communication problems occured while authentication", "OK");
+            }
+            return true;
+        }
+
+        public static async Task<bool> LogInSwitch()
         {
             System.Diagnostics.Debug.WriteLine("LogInSwitch");
 
@@ -45,12 +75,12 @@ namespace ComeTogetherApp
             bool IsUserLoggedIn = Convert.ToBoolean(Application.Current.Properties["IsUserLoggedIn"]);
             if (!IsUserLoggedIn)
             {
-                //app.MainPage = new NavigationPage(new tbfApp.LoginPage());
+                Application.Current.Properties["Email"] = "";
+                Application.Current.Properties["Password"] = "";
 
                 //Navigation.PushModalAsync(new tbfApp.LoginPage());
 
-                //app.MainPage = new tbfApp.LoginPage();
-                app.MainPage = new NavigationPage(new LoginPage()
+                activePage = new NavigationPage(new LoginPage()
                 {
                     Title = "Login",
 
@@ -59,12 +89,16 @@ namespace ComeTogetherApp
                     BarBackgroundColor = Color.FromHex(App.GetMenueColor()), //#009acd
                     BarTextColor = Color.White,
                 };
-                //Navigation.PushModalAsync(new tbfApp.LoginPage());
+                app.MainPage = activePage;
             }
             else
             {
-                app.MainPage = new ComeTogetherApp.MainPage();
+                await firebaseClientRefresh();
+
+                activePage = new MainPage();
+                app.MainPage = activePage;
             }
+            return true;
         }
 
         public static void NavigateToSignUp()
@@ -79,7 +113,7 @@ namespace ComeTogetherApp
         {
             if (!Application.Current.Properties.ContainsKey("menueColor"))
             {
-                Application.Current.Properties["menueColor"] = "009acd";
+                Application.Current.Properties["menueColor"] = "41BAC1";
                 System.Diagnostics.Debug.WriteLine("First menueColor set");
             }
             return Convert.ToString(Application.Current.Properties["menueColor"]);
@@ -163,6 +197,7 @@ namespace ComeTogetherApp
             Application.Current.Properties["FirebaseApiKey"] = FirebaseApiKey;
             return true;
         }
+        /*Macht aktuell keinen Sinn das Token zu speichern, läuft innerhalb von einem Tag ab. Anstelle Email und Password speichern.
         public static String GetAuthToken()
         {
             if (!Application.Current.Properties.ContainsKey("AuthToken"))
@@ -174,6 +209,33 @@ namespace ComeTogetherApp
         public static bool SetAuthToken(String newAuthToken)
         {
             Application.Current.Properties["AuthToken"] = newAuthToken;
+            return true;
+        }
+        */
+        public static String GetEmail()
+        {
+            if (!Application.Current.Properties.ContainsKey("Email"))
+            {
+                Application.Current.Properties["Email"] = "";
+            }
+            return Convert.ToString(Application.Current.Properties["Email"]);
+        }
+        public static bool SetEmail(String newEmail)
+        {
+            Application.Current.Properties["Email"] = newEmail;
+            return true;
+        }
+        public static String GetPassword()
+        {
+            if (!Application.Current.Properties.ContainsKey("Password"))
+            {
+                Application.Current.Properties["Password"] = "";
+            }
+            return Convert.ToString(Application.Current.Properties["Password"]);
+        }
+        public static bool SetPassword(String newPassword)
+        {
+            Application.Current.Properties["Password"] = newPassword;
             return true;
         }
     }

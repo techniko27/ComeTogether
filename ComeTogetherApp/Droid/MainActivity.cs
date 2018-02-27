@@ -23,6 +23,15 @@ namespace ComeTogetherApp.Droid
             global::Xamarin.Forms.Forms.Init(this, bundle);
 
             LoadApplication(new App());
+
+            try
+            {
+                Window.SetStatusBarColor(Android.Graphics.Color.Rgb(65, 186, 193));        //change Status Bar Color to turquoise
+            }
+            catch (Exception exception)
+            {
+                //throw exception;
+            }
         }
     }
 }

@@ -97,7 +97,7 @@ namespace ComeTogetherApp
                             break;
                         default:
                             //messageLabel.Text = "Kommunikationsproblem, Undefinierte Antwort vom Server!";
-                            DisplayAlert("Serverfehler", exception.ToString(), "OK");
+                            DisplayAlert("Server connection failure", "Communication problems occured while registration", "OK");
                             break;
                     }
                 }

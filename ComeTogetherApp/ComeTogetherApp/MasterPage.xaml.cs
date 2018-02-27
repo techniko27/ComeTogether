@@ -28,12 +28,6 @@ namespace ComeTogetherApp
                 IconSource = "rooms.png",
                 TargetType = typeof(EventsPage)
             });
-            masterPageItems.Add(new MasterPageItem
-            {
-                Title = "Settings",
-                IconSource = "todo.png",
-                TargetType = typeof(EventsPage)
-            });
             /*
             masterPageItems.Add(new MasterPageItem
             {
@@ -47,6 +41,12 @@ namespace ComeTogetherApp
                 //Title = App.GetUsername(),
                 Title = "Account",
                 IconSource = "contacts.png",
+                TargetType = typeof(EventsPage)
+            });
+            masterPageItems.Add(new MasterPageItem
+            {
+                Title = "Settings",
+                IconSource = "todo.png",
                 TargetType = typeof(EventsPage)
             });
             masterPageItems.Add(new MasterPageItem

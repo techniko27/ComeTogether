@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Firebase.Auth;
+using Firebase.Database;
+using Firebase.Database.Query;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -18,6 +20,7 @@ namespace ComeTogetherApp
         private ScrollView scroll;
         private StackLayout stack;
         private ActivityIndicator activityIndicator;
+
         public EventsPage()
         {
             InitializeComponent();
@@ -32,10 +35,11 @@ namespace ComeTogetherApp
             searchBar = new SearchBar
             {
                 Placeholder = "Enter event to search",
-                SearchCommand = new Command(() => { resultsLabel.Text = "Result: " + searchBar.Text + " is what you asked for."; })
+                SearchCommand =
+                    new Command(() => { resultsLabel.Text = "Result: " + searchBar.Text + " is what you asked for."; })
             };
 
-            scroll= new ScrollView();
+            scroll = new ScrollView();
 
             stack = new StackLayout
             {
@@ -56,7 +60,30 @@ namespace ComeTogetherApp
                 HorizontalOptions = LayoutOptions.CenterAndExpand,
             };
             Content = scroll;
+
+            ServerGetEvents();
         }
+
+        private async void ServerGetEvents()
+        {
+            try
+            {
+                var events = await App.firebase.Child("Veranstaltungen").OrderByKey().StartAt("1").OnceAsync<Event>();
+                //await firebase.Child("Veranstaltungen").Child("6").PutAsync(new Event("lala", "lolo", "lili", "lsls"));
+                
+                foreach (var e in events)
+                {
+                    System.Diagnostics.Debug.WriteLine($"{e.Key} is {e.Object.Name}");
+                    resultsLabel.Text = e.Key;
+                }
+            }
+            catch (Exception e)
+            {
+                await DisplayAlert("Server connection failure", "Communication problems occured while querying", "OK");
+                System.Diagnostics.Debug.WriteLine(e);
+            }
+        }
+
         private void activityIndicatorSwitch()
         {
             if (activityIndicator.IsRunning)

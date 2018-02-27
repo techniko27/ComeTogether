@@ -49,12 +49,12 @@ namespace ComeTogetherApp
                 try
                 {
                     var auth = await authProvider.SignInWithEmailAndPasswordAsync(emailEntry.Text.Replace(" ",String.Empty), passwordEntry.Text);
-
+                    
                     firebase = new FirebaseClient(App.GetServerAdress(), new FirebaseOptions
                     {
                         AuthTokenAsyncFactory = () => Task.FromResult(auth.FirebaseToken)
                     });
-
+                    
                     //await DisplayAlert("Token", auth.FirebaseToken, "OK");
                     firebaseToken = auth.FirebaseToken;
                 }
@@ -77,7 +77,7 @@ namespace ComeTogetherApp
                             break;
                         default:
                             //messageLabel.Text = "Kommunikationsproblem, Undefinierte Antwort vom Server!";
-                            DisplayAlert("Serverfehler", exception.ToString(), "OK");
+                            DisplayAlert("Server connection failure", "Communication problems occured while login", "OK");
                             //await DisplayAlert("Anmeldefehler", "Sie konnten nicht angemeldet werden!", "OK");
                             break;
                     }
@@ -103,6 +103,8 @@ namespace ComeTogetherApp
             if (firebaseToken != null)
             {
                 Application.Current.Properties["IsUserLoggedIn"] = true;
+                App.SetEmail(emailEntry.Text.Replace(" ", String.Empty));
+                App.SetPassword(passwordEntry.Text);
                 App.LogInSwitch();
             }
 
