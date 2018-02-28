@@ -39,8 +39,20 @@
     <Compile Include="1. Authentification\SignUpPage.xaml.cs">
       <DependentUpon>SignUpPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="2. Events\EventDetailsGeneralPage.xaml.cs">
+      <DependentUpon>EventDetailsGeneralPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="2. Events\EventDetailsMembersPage.xaml.cs">
+      <DependentUpon>EventDetailsMembersPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="2. Events\EventDetailsToDosPage.xaml.cs">
+      <DependentUpon>EventDetailsToDosPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="2. Events\EventsPage.xaml.cs">
       <DependentUpon>EventsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="2. Events\SingleEventPage.xaml.cs">
+      <DependentUpon>SingleEventPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
@@ -148,6 +160,24 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="AppStartPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="2. Events\EventDetailsGeneralPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="2. Events\EventDetailsMembersPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="2. Events\EventDetailsToDosPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="2. Events\SingleEventPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
       <SubType>Designer</SubType>
     </EmbeddedResource>
