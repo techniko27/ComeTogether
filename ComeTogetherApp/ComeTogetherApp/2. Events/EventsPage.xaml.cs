@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +16,6 @@ namespace ComeTogetherApp
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class EventsPage : ContentPage
     {
-        Label resultsLabel;
         SearchBar searchBar;
 
         private ScrollView scroll;
@@ -22,24 +23,23 @@ namespace ComeTogetherApp
         private StackLayout stackButton;
         private Grid grid;
         private ActivityIndicator activityIndicator;
+        private List<Event> eventList;
 
         public EventsPage()
         {
             InitializeComponent();
 
-            resultsLabel = new Label
-            {
-                Text = "Result will appear here.",
-                VerticalOptions = LayoutOptions.FillAndExpand,
-                FontSize = 25
-            };
+            eventList = new List<Event>();
+            eventList.Add(new Event("","","Add new Event","", "kreis_plus_schwarz.png"));
 
             searchBar = new SearchBar
             {
                 Placeholder = "Enter event to search",
-                SearchCommand =
-                    new Command(() => { resultsLabel.Text = "Result: " + searchBar.Text + " is what you asked for."; })
+                //SearchCommand = new Command(() => createSearchList(searchBar.Text)),
+                
             };
+            searchBar.TextChanged += SearchBar_TextChanged;
+
 
             scroll = new ScrollView();
 
@@ -50,78 +50,8 @@ namespace ComeTogetherApp
                 Padding = new Thickness(2, 2, 2, 2)
             };
             stack.Children.Add(searchBar);
-            stack.Children.Add(resultsLabel);
 
             scroll.Content = stack;
-
-            grid = new Grid()
-            {
-                HorizontalOptions = LayoutOptions.CenterAndExpand,
-                ColumnSpacing = 6,
-                RowSpacing = 6
-            };
-            stack.Children.Add(grid);
-
-            /*
-            grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(250, GridUnitType.Star) });
-            grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(250, GridUnitType.Star) });
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(150, GridUnitType.Star) });
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(150, GridUnitType.Star) });
-
-            var topLeft = new Button() { Text = "Top Left" };
-            var topRight = new Button() { Text = "Top Right" };
-            var bottomLeft = new Button() { Text = "Bottom Left" };
-            var bottomRight = new Button() { Text = "Bottom Right" };
-
-            grid.Children.Add(topLeft, 0, 0);
-            grid.Children.Add(topRight, 0, 1);
-            grid.Children.Add(bottomLeft, 1, 0);
-            grid.Children.Add(bottomRight, 1, 1);
-            */
-            
-            for (int i = 0; i < 4; i++)
-            {
-                //grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(150, GridUnitType.Star) });
-                grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(230, GridUnitType.Star) });
-
-                for (int j = 0; j < 2; j++)
-                {
-                    var eventImage = new Image { Aspect = Aspect.AspectFit };
-                    eventImage.Source = "256x256_in_app.png";
-                    Label eventNameLabel = new Label
-                    {
-                        Text = "Eventname",
-                        VerticalOptions = LayoutOptions.FillAndExpand,
-                        FontSize = 15
-                    };
-                    Label eventMembercountLabel = new Label
-                    {
-                        Text = "EventMemberCount",
-                        VerticalOptions = LayoutOptions.FillAndExpand,
-                        FontSize = 15
-                    };
-                    var tapGestureRecognizer = new TapGestureRecognizer();
-                    tapGestureRecognizer.Tapped += (object sender, EventArgs e) =>
-                    {
-                        // handle the tap
-                        OnEventClicked(sender, e);
-                    };
-                    stackButton = new StackLayout
-                    {
-                        VerticalOptions = LayoutOptions.FillAndExpand,
-                        HorizontalOptions = LayoutOptions.FillAndExpand,
-                        Padding = new Thickness(2, 2, 2, 2),
-                        BackgroundColor = Color.FromHex("41BAC1")
-                        
-                    };
-                    stackButton.GestureRecognizers.Add(tapGestureRecognizer);
-                    stackButton.Children.Add(eventImage);
-                    stackButton.Children.Add(eventNameLabel);
-                    stackButton.Children.Add(eventMembercountLabel);
-
-                    grid.Children.Add(stackButton, j, i);
-                }
-            }
 
             activityIndicator = new ActivityIndicator()
             {
@@ -144,12 +74,13 @@ namespace ComeTogetherApp
                 var events = await App.firebase.Child("Veranstaltungen").OrderByKey().StartAt("1").OnceAsync<Event>();
                 //await firebase.Child("Veranstaltungen").Child("6").PutAsync(new Event("lala", "lolo", "lili", "lsls"));
                 
-                foreach (var e in events)
+                foreach (FirebaseObject<Event> e in events)
                 {
                     System.Diagnostics.Debug.WriteLine($"{e.Key} is {e.Object.Name}");
-                    resultsLabel.Text = e.Key;
+                    eventList.Add(e.Object);
                 }
-
+                eventList = eventList.OrderBy(o => o.Datum).ToList();       //Order List by Date
+                buildGrid(eventList);                                       //build Grid on Eventpage with data from Server List
             }
             catch (Exception e)
             {
@@ -160,9 +91,119 @@ namespace ComeTogetherApp
             activityIndicatorSwitch();
         }
 
+        private void buildGrid(List<Event> gridList)
+        {
+            grid = new Grid()
+            {
+                HorizontalOptions = LayoutOptions.CenterAndExpand,
+                ColumnSpacing = 6,
+                RowSpacing = 6
+            };
+            stack.Children.Add(grid);                                                       //add new grid
+
+            /*
+            grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(250, GridUnitType.Star) });
+            grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(250, GridUnitType.Star) });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(150, GridUnitType.Star) });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(150, GridUnitType.Star) });
+
+            var topLeft = new Button() { Text = "Top Left" };
+            var topRight = new Button() { Text = "Top Right" };
+            var bottomLeft = new Button() { Text = "Bottom Left" };
+            var bottomRight = new Button() { Text = "Bottom Right" };
+
+            grid.Children.Add(topLeft, 0, 0);
+            grid.Children.Add(topRight, 0, 1);
+            grid.Children.Add(bottomLeft, 1, 0);
+            grid.Children.Add(bottomRight, 1, 1);
+            */
+
+            int c = 0;                                  //List Counter
+            int r = gridList.Count % 2;                 //List is odd (ungerade)
+            for (int i = 0; i < (gridList.Count/2+r); i++)
+            {
+                grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(260, GridUnitType.Absolute) });
+
+                for (int j = 0; j < 2; j++)
+                {
+                    //grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(170, GridUnitType.Absolute) });      //Width of the Colums not implemented because of scree rotation issues
+
+                    if (gridList.Count <= c)
+                    {
+                        return;
+                    }
+
+                    var eventImage = new Image { Aspect = Aspect.AspectFit };
+                    if (gridList[c].Bild.Length < 3)
+                    {
+                        eventImage.Source = "in_app_Logo_256x256.png";
+                    }
+                    else
+                    {
+                        eventImage.Source = gridList[c].Bild;
+                    }
+                    Label eventNameLabel = new Label
+                    {
+                        Text = gridList[c].Name,
+                        VerticalOptions = LayoutOptions.Start,
+                        FontSize = 20
+                    };
+                    Label eventMembercountLabel = new Label
+                    {
+                        Text = "EventMemberCount",
+                        VerticalOptions = LayoutOptions.Start,
+                        FontSize = 15
+                    };
+                    Label eventDateLabel = new Label
+                    {
+                        Text = gridList[c].Datum,
+                        VerticalOptions = LayoutOptions.Start,
+                        FontSize = 15
+                    };
+                    var tapGestureRecognizer = new TapGestureRecognizer();
+                    tapGestureRecognizer.Tapped += (object sender, EventArgs e) =>
+                    {
+                        // handle the tap
+                        OnEventClicked(sender, e);
+                    };
+                    stackButton = new StackLayout
+                    {
+                        VerticalOptions = LayoutOptions.Fill,
+                        HorizontalOptions = LayoutOptions.Fill,
+                        Padding = new Thickness(2, 2, 2, 2),
+                        BackgroundColor = Color.FromHex("41BAC1"),
+
+                    };
+                    stackButton.GestureRecognizers.Add(tapGestureRecognizer);
+                    stackButton.Children.Add(eventImage);
+                    stackButton.Children.Add(eventNameLabel);
+                    stackButton.Children.Add(eventMembercountLabel);
+                    stackButton.Children.Add(eventDateLabel);
+
+                    grid.Children.Add(stackButton, j, i);
+                    c++;
+                }
+            }
+        }
+
         void OnEventClicked(object sender, EventArgs e)
         {
             DisplayAlert("Event", "Klicked", "OK");
+        }
+
+        private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            List<Event> searchList = new List<Event>();
+
+            foreach (Event oneEvent in eventList)
+            {
+                if (oneEvent.Name.ToLower().Contains(searchBar.Text))
+                {
+                    searchList.Add(oneEvent);
+                }
+            }
+            stack.Children.RemoveAt(stack.Children.IndexOf(stack.Children.Last()));         //Remove the last Grid
+            buildGrid(searchList);                                                          //build new Grid
         }
 
         private void activityIndicatorSwitch()
