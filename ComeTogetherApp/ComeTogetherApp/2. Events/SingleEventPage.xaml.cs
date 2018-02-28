@@ -12,7 +12,7 @@ namespace ComeTogetherApp
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class SingleEventPage : TabbedPage
     {
-        public SingleEventPage()
+        public SingleEventPage(String eventID)
         {
             InitializeComponent();
 
