@@ -87,7 +87,7 @@ namespace ComeTogetherApp
                 for (int j = 0; j < 2; j++)
                 {
                     var eventImage = new Image { Aspect = Aspect.AspectFit };
-                    eventImage.Source = "info.png";
+                    eventImage.Source = "256x256_in_app.png";
                     Label eventNameLabel = new Label
                     {
                         Text = "Eventname",

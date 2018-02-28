@@ -25,7 +25,7 @@ namespace ComeTogetherApp
             masterPageItems.Add(new MasterPageItem
             {
                 Title = "Events",
-                IconSource = "rooms.png",
+                IconSource = "events_icon_130x130.png",
                 TargetType = typeof(EventsPage)
             });
             /*
