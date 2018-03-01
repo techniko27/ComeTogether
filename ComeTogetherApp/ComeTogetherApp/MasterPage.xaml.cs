@@ -41,7 +41,7 @@ namespace ComeTogetherApp
                 //Title = App.GetUsername(),
                 Title = "Account",
                 IconSource = "contacts.png",
-                TargetType = typeof(EventsPage)
+                TargetType = typeof(UserSettingPage)
             });
             masterPageItems.Add(new MasterPageItem
             {

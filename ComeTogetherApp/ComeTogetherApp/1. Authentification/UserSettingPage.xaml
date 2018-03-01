@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="ComeTogetherApp.UserSettingPage">
+	<ContentPage.Content>
+          <ScrollView>
+            <RelativeLayout>
+                <StackLayout VerticalOptions="StartAndExpand" x:Name="stackLayout"
+                       RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent,
+                          Property=Height,Factor=0,Constant=0}"
+                      RelativeLayout.WidthConstraint="{ConstraintExpression
+                          Type=RelativeToParent,Property=Width,Factor=1,Constant=0}"
+                             Margin="10"
+                             >
+                         <Label Text="Benutzername" VerticalOptions="Center"/>
+                         <Entry x:Name="usernameEntry" Placeholder="MaxM" VerticalOptions="Center"/>
+                         <Button x:Name="resetPasswort" Text="Reset Passwort" VerticalOptions="Center"></Button>
+                         <Button x:Name="buttonSaveChanges" Text="Save changes" VerticalOptions="Center"/>
+                    </StackLayout>
+            </RelativeLayout>
+        </ScrollView>
+	</ContentPage.Content>
+</ContentPage>
