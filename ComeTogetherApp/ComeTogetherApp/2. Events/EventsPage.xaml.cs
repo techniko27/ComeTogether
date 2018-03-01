@@ -126,7 +126,10 @@ namespace ComeTogetherApp
 
                 for (int j = 0; j < 2; j++)
                 {
-                    //grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(170, GridUnitType.Absolute) });      //Width of the Colums not implemented because of scree rotation issues
+                    if (gridList.Count == 1)
+                    {
+                        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(170, GridUnitType.Absolute) });      //Width of the Colums not implemented because of scree rotation issues
+                    }
 
                     if (gridList.Count <= c)
                     {
@@ -197,7 +200,7 @@ namespace ComeTogetherApp
 
             foreach (Event oneEvent in eventList)
             {
-                if (oneEvent.Name.ToLower().Contains(searchBar.Text))
+                if (oneEvent.Name.ToLower().Contains(searchBar.Text.ToLower()))
                 {
                     searchList.Add(oneEvent);
                 }
