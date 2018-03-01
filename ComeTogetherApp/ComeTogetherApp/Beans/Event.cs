@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ComeTogetherApp
 {
-    class Event
+    public class Event
     {
         public string Beschreibung { get; set; }
         public string Datum { get; set; }

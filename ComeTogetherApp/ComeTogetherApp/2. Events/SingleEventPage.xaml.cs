@@ -12,13 +12,13 @@ namespace ComeTogetherApp
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class SingleEventPage : TabbedPage
     {
-        public SingleEventPage(String eventID)
+        public SingleEventPage(Event ev)
         {
             InitializeComponent();
 
             initProperties();
 
-            Title = "Single Event Page";
+            Title = "Edit Event";
             Children.Add(new EventDetailsToDosPage());
             Children.Add(new EventDetailsMembersPage());
             Children.Add(new EventDetailsGeneralPage());

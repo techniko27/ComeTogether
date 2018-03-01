@@ -58,7 +58,7 @@ namespace ComeTogetherApp
         }
         public void OnEventClicked(object sender, EventArgs e, Event ev)
         {
-            Navigation.PushAsync(new SingleEventPage(ev.ID)
+            Navigation.PushAsync(new SingleEventPage(ev)
             {
                 Title = "Edit Event"
             });
