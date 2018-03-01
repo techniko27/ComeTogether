@@ -12,15 +12,18 @@ namespace ComeTogetherApp
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class EventDetailsGeneralPage : ContentPage
     {
-        private ScrollView scrollView;
 
         public EventDetailsGeneralPage(Event ev)
         {
             InitializeComponent();
 
             initProperties();
+            initLayout(ev);
+        }
 
-            scrollView = new ScrollView();
+        private void initLayout(Event ev)
+        {
+            ScrollView scrollView = new ScrollView();
             StackLayout stackLayout = createStackLayout();
             scrollView.Content = stackLayout;
 
@@ -45,42 +48,61 @@ namespace ComeTogetherApp
             StackLayout buttonOptionsLayout = createButtonOptionsLayout();
 
             stackLayout.Children.Add(overviewInfoLayout);
+            stackLayout.Children.Add(createSeparator());
             stackLayout.Children.Add(buttonOptionsLayout);
 
             return stackLayout;
         }
 
-
         private StackLayout createOverviewInfoLayout()
         {
             StackLayout overviewInfoLayout = new StackLayout
             {
-                Orientation = StackOrientation.Horizontal,
+                VerticalOptions = LayoutOptions.Start,
                 Padding = new Thickness(10, Device.OnPlatform(20, 0, 0), 10, 5)
             };
+
+            Label eventDetailsLabel = new Label
+            {
+                Text = "Event Details",
+                FontSize = 20
+            };
+
+            overviewInfoLayout.Children.Add(eventDetailsLabel);
 
             return overviewInfoLayout;
         }
 
+        private static BoxView createSeparator()
+        {
+            return new BoxView()
+            {
+                Color = Color.Black,
+                WidthRequest = 1000,
+                HeightRequest = 2,
+                HorizontalOptions = LayoutOptions.Center
+            };
+        }
 
         private StackLayout createButtonOptionsLayout()
         {
             StackLayout buttonOptionsLayout = new StackLayout
             {
                 VerticalOptions = LayoutOptions.Start,
-                Padding = new Thickness(10, Device.OnPlatform(20, 0, 0), 10, 5)
+                Padding = new Thickness(10, Device.OnPlatform(20, 0, 0), 10, 5),
+                Margin = 5
             };
 
             Button inviteFriendsButton = new Button
             {
-                Text = "Freunde einladen",
+                Text = "Invite Friends",
                 BackgroundColor = Color.White,
                 TextColor = Color.FromHex(App.GetMenueColor()),
                 FontAttributes = FontAttributes.Bold
             };
             Button leaveEventButton = new Button
             {
-                Text = "Veranstaltung verlassen",
+                Text = "Leave Event",
                 BackgroundColor = Color.White,
                 TextColor = Color.FromHex(App.GetMenueColor()),
                 FontAttributes = FontAttributes.Bold

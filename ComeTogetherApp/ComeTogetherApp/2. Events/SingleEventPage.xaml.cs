@@ -17,10 +17,20 @@ namespace ComeTogetherApp
             InitializeComponent();
 
             initProperties();
+            initLayout(ev);
+        }
 
-            Children.Add(new EventDetailsToDosPage(ev));
-            Children.Add(new EventDetailsMembersPage(ev));
-            Children.Add(new EventDetailsGeneralPage(ev));
+        private void initLayout(Event ev)
+        {
+            EventDetailsToDosPage toDosPage = new EventDetailsToDosPage(ev);
+            EventDetailsMembersPage membersPage = new EventDetailsMembersPage(ev);
+            EventDetailsGeneralPage generalPage = new EventDetailsGeneralPage(ev);
+
+            Children.Add(toDosPage);
+            Children.Add(membersPage);
+            Children.Add(generalPage);
+
+            CurrentPage = generalPage;
         }
 
         private void initProperties()
