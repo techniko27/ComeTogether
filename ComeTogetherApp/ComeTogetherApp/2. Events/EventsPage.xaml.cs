@@ -20,7 +20,6 @@ namespace ComeTogetherApp
 
         private ScrollView scroll;
         private StackLayout stack;
-        private StackLayout stackButton;
         private Grid grid;
         private ActivityIndicator activityIndicator;
         private List<Event> eventList;
@@ -30,7 +29,7 @@ namespace ComeTogetherApp
             InitializeComponent();
 
             eventList = new List<Event>();
-            eventList.Add(new Event("","","Add new Event","", "kreis_plus_schwarz.png"));
+            eventList.Add(new Event("","","Add new Event","", "kreis_plus_schwarz.png", "0"));
 
             searchBar = new SearchBar
             {
@@ -77,6 +76,7 @@ namespace ComeTogetherApp
                 foreach (FirebaseObject<Event> e in events)
                 {
                     System.Diagnostics.Debug.WriteLine($"{e.Key} is {e.Object.Name}");
+                    e.Object.ID = e.Key;
                     eventList.Add(e.Object);
                 }
                 eventList = eventList.OrderBy(o => o.Datum).ToList();       //Order List by Date
@@ -136,62 +136,12 @@ namespace ComeTogetherApp
                         return;
                     }
 
-                    var eventImage = new Image { Aspect = Aspect.AspectFit };
-                    if (gridList[c].Bild.Length < 3)
-                    {
-                        eventImage.Source = "in_app_Logo_256x256.png";
-                    }
-                    else
-                    {
-                        eventImage.Source = gridList[c].Bild;
-                    }
-                    Label eventNameLabel = new Label
-                    {
-                        Text = gridList[c].Name,
-                        VerticalOptions = LayoutOptions.Start,
-                        FontSize = 20
-                    };
-                    Label eventMembercountLabel = new Label
-                    {
-                        Text = "EventMemberCount",
-                        VerticalOptions = LayoutOptions.Start,
-                        FontSize = 15
-                    };
-                    Label eventDateLabel = new Label
-                    {
-                        Text = gridList[c].Datum,
-                        VerticalOptions = LayoutOptions.Start,
-                        FontSize = 15
-                    };
-                    var tapGestureRecognizer = new TapGestureRecognizer();
-                    tapGestureRecognizer.Tapped += (object sender, EventArgs e) =>
-                    {
-                        // handle the tap
-                        OnEventClicked(sender, e);
-                    };
-                    stackButton = new StackLayout
-                    {
-                        VerticalOptions = LayoutOptions.Fill,
-                        HorizontalOptions = LayoutOptions.Fill,
-                        Padding = new Thickness(2, 2, 2, 2),
-                        BackgroundColor = Color.FromHex("41BAC1"),
+                    EventButton eventButton = new EventButton(gridList[c], this);
 
-                    };
-                    stackButton.GestureRecognizers.Add(tapGestureRecognizer);
-                    stackButton.Children.Add(eventImage);
-                    stackButton.Children.Add(eventNameLabel);
-                    stackButton.Children.Add(eventMembercountLabel);
-                    stackButton.Children.Add(eventDateLabel);
-
-                    grid.Children.Add(stackButton, j, i);
+                    grid.Children.Add(eventButton, j, i);
                     c++;
                 }
             }
-        }
-
-        void OnEventClicked(object sender, EventArgs e)
-        {
-            DisplayAlert("Event", "Klicked", "OK");
         }
 
         private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)

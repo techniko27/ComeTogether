@@ -43,6 +43,7 @@
     <Compile Include="1. Authentification\SignUpPage.xaml.cs">
       <DependentUpon>SignUpPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="2. Events\EventButton.cs" />
     <Compile Include="2. Events\EventDetailsGeneralPage.xaml.cs">
       <DependentUpon>EventDetailsGeneralPage.xaml</DependentUpon>
     </Compile>
