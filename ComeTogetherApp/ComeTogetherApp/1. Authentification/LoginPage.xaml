@@ -1,9 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ComeTogetherApp.LoginPage">
     <ContentPage.Content>
-        <ScrollView>
+        <ScrollView BackgroundColor="#41BAC1">
             <RelativeLayout>
                 <StackLayout VerticalOptions="StartAndExpand" x:Name="stackLayout"
                        RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent,
@@ -11,13 +11,15 @@
                       RelativeLayout.WidthConstraint="{ConstraintExpression
                           Type=RelativeToParent,Property=Width,Factor=1,Constant=0}"
                              Margin="10"
+                    
           >
-                    <Image Source="tbf_180x180.png" WidthRequest="180" HeightRequest="180" HorizontalOptions="CenterAndExpand"/>
-                    <Label Text="Emailaddress" />
+                    <Image Source="in_app_Logo_256x256.png" WidthRequest="180" HeightRequest="180" HorizontalOptions="CenterAndExpand"/>
+                    <Label Text="E-Mail-Adresse" />
                     <Entry x:Name="emailEntry" Placeholder="maxmustermann@mail.com" />
                     <Label Text="Passwort" />
                     <Entry x:Name="passwordEntry" IsPassword="true" Placeholder="****"/>
                     <Button x:Name="buttonLoginin" Text="Login" Clicked="OnLoginButtonClicked" />
+                    <Button x:Name="resetPassword" Text="Forget Password" Clicked="OnResetPasswordButtonClicked"/>
                     <Label x:Name="messageLabel" TextColor="Red" FontSize="20" HorizontalOptions="CenterAndExpand"/>
                     <Label Text="Sign up if you have no account!" HorizontalOptions="Center"/>
                     <Button x:Name="buttonSignUp" Text="Sign up" Clicked="OnSignUpButtonClicked"/>

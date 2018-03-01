@@ -48,13 +48,13 @@ namespace ComeTogetherApp
 
                 try
                 {
-                    var auth = await authProvider.SignInWithEmailAndPasswordAsync(emailEntry.Text.Replace(" ",String.Empty), passwordEntry.Text);
-                    
+                    var auth = await authProvider.SignInWithEmailAndPasswordAsync(emailEntry.Text.Replace(" ", String.Empty), passwordEntry.Text);
+
                     firebase = new FirebaseClient(App.GetServerAdress(), new FirebaseOptions
                     {
                         AuthTokenAsyncFactory = () => Task.FromResult(auth.FirebaseToken)
                     });
-                    
+
                     //await DisplayAlert("Token", auth.FirebaseToken, "OK");
                     firebaseToken = auth.FirebaseToken;
                 }
@@ -124,6 +124,10 @@ namespace ComeTogetherApp
 
             buttonSignUp.IsEnabled = true;
             activityIndicator.IsRunning = false;
+        }
+
+        void OnResetPasswordButtonClicked(object sender, EventArgs e){
+            DisplayAlert("Clicked Action","You have clicked Forget Password", "OK");
         }
 
         /*
