@@ -18,14 +18,15 @@ namespace ComeTogetherApp
 
             initProperties();
 
-            Title = "Edit Event";
-            Children.Add(new EventDetailsToDosPage());
-            Children.Add(new EventDetailsMembersPage());
-            Children.Add(new EventDetailsGeneralPage());
+            Children.Add(new EventDetailsToDosPage(ev));
+            Children.Add(new EventDetailsMembersPage(ev));
+            Children.Add(new EventDetailsGeneralPage(ev));
         }
 
         private void initProperties()
         {
+            Title = "Edit Event";
+
             Color menuColor = Color.FromHex(App.GetMenueColor());
             BackgroundColor = menuColor;
             BarBackgroundColor = menuColor;

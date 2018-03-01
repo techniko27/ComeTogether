@@ -12,14 +12,17 @@ namespace ComeTogetherApp
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class EventDetailsToDosPage : ContentPage
     {
-        public EventDetailsToDosPage()
+        public EventDetailsToDosPage(Event ev)
         {
             InitializeComponent();
 
+            initProperties();
+        }
+
+        private void initProperties()
+        {
             Title = "ToDos";
-
             BackgroundColor = Color.FromHex(App.GetMenueColor());
-
         }
     }
 }

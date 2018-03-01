@@ -14,18 +14,22 @@ namespace ComeTogetherApp
     {
         private ScrollView scrollView;
 
-        public EventDetailsGeneralPage()
+        public EventDetailsGeneralPage(Event ev)
         {
             InitializeComponent();
 
-            Title = "Allgemein";
+            initProperties();
 
             scrollView = new ScrollView();
             StackLayout stackLayout = createStackLayout();
-
             scrollView.Content = stackLayout;
 
             Content = scrollView;
+        }
+
+        private void initProperties()
+        {
+            Title = "General";
             BackgroundColor = Color.FromHex(App.GetMenueColor());
         }
 
@@ -80,7 +84,6 @@ namespace ComeTogetherApp
                 BackgroundColor = Color.White,
                 TextColor = Color.FromHex(App.GetMenueColor()),
                 FontAttributes = FontAttributes.Bold
-
             };
 
             buttonOptionsLayout.Children.Add(inviteFriendsButton);
