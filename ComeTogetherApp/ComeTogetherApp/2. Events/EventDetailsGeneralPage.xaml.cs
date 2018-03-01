@@ -26,6 +26,7 @@ namespace ComeTogetherApp
             scrollView.Content = stackLayout;
 
             Content = scrollView;
+            BackgroundColor = Color.FromHex(App.GetMenueColor());
         }
 
         private StackLayout createStackLayout()
@@ -68,11 +69,17 @@ namespace ComeTogetherApp
 
             Button inviteFriendsButton = new Button
             {
-                Text = "Freunde einladen"
+                Text = "Freunde einladen",
+                BackgroundColor = Color.White,
+                TextColor = Color.FromHex(App.GetMenueColor()),
+
             };
             Button leaveEventButton = new Button
             {
-                Text = "Veranstaltung verlassen"
+                Text = "Veranstaltung verlassen",
+                BackgroundColor = Color.White,
+                TextColor = Color.FromHex(App.GetMenueColor()),
+
             };
 
             buttonOptionsLayout.Children.Add(inviteFriendsButton);

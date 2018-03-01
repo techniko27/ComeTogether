@@ -17,6 +17,9 @@ namespace ComeTogetherApp
             InitializeComponent();
 
             Title = "ToDos";
+
+            BackgroundColor = Color.FromHex(App.GetMenueColor());
+
         }
     }
 }

@@ -17,6 +17,8 @@ namespace ComeTogetherApp
             InitializeComponent();
 
             Title = "Mitglieder";
+
+            BackgroundColor = Color.FromHex(App.GetMenueColor());
         }
     }
 }
