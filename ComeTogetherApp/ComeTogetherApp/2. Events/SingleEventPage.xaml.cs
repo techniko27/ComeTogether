@@ -16,10 +16,20 @@ namespace ComeTogetherApp
         {
             InitializeComponent();
 
+            initProperties();
+
             Title = "Single Event Page";
             Children.Add(new EventDetailsToDosPage());
             Children.Add(new EventDetailsMembersPage());
             Children.Add(new EventDetailsGeneralPage());
+        }
+
+        private void initProperties()
+        {
+            Color menuColor = Color.FromHex(App.GetMenueColor());
+            BackgroundColor = menuColor;
+            BarBackgroundColor = menuColor;
+            BarTextColor = Color.White;
         }
     }
 }
