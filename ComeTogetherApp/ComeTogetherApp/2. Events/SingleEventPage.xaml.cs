@@ -38,7 +38,7 @@ namespace ComeTogetherApp
             Title = "Edit Event";
 
             Color menuColor = Color.FromHex(App.GetMenueColor());
-            BackgroundColor = menuColor;
+            BackgroundColor = Color.Gray;
             BarBackgroundColor = menuColor;
             BarTextColor = Color.White;
         }

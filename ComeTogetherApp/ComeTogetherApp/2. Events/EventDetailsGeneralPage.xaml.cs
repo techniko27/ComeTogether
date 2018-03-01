@@ -24,7 +24,7 @@ namespace ComeTogetherApp
         private void initLayout(Event ev)
         {
             ScrollView scrollView = new ScrollView();
-            StackLayout stackLayout = createStackLayout();
+            StackLayout stackLayout = createStackLayout(ev);
             scrollView.Content = stackLayout;
 
             Content = scrollView;
@@ -33,10 +33,10 @@ namespace ComeTogetherApp
         private void initProperties()
         {
             Title = "General";
-            BackgroundColor = Color.FromHex(App.GetMenueColor());
+            BackgroundColor = Color.LightGray;
         }
 
-        private StackLayout createStackLayout()
+        private StackLayout createStackLayout(Event ev)
         {
             StackLayout stackLayout = new StackLayout
             {
@@ -44,42 +44,76 @@ namespace ComeTogetherApp
                 Padding = new Thickness(10, Device.OnPlatform(20, 0, 0), 10, 5)
             };
 
-            StackLayout overviewInfoLayout = createOverviewInfoLayout();
+            StackLayout overviewInfoLayout = createOverviewInfoLayout(ev);
             StackLayout buttonOptionsLayout = createButtonOptionsLayout();
 
             stackLayout.Children.Add(overviewInfoLayout);
-            stackLayout.Children.Add(createSeparator());
+            stackLayout.Children.Add(createSeparator(3));
             stackLayout.Children.Add(buttonOptionsLayout);
 
             return stackLayout;
         }
 
-        private StackLayout createOverviewInfoLayout()
+        private StackLayout createOverviewInfoLayout(Event ev)
         {
             StackLayout overviewInfoLayout = new StackLayout
+            {
+                Orientation = StackOrientation.Horizontal,
+                HorizontalOptions = LayoutOptions.Start,
+                Padding = new Thickness(10, Device.OnPlatform(20, 10, 0), 10, 5)
+            };
+
+            Image eventImage = new Image { Aspect = Aspect.AspectFit, VerticalOptions = LayoutOptions.Start };
+            eventImage.Source = "icon.png";
+
+            StackLayout infoLayout = new StackLayout
             {
                 VerticalOptions = LayoutOptions.Start,
                 Padding = new Thickness(10, Device.OnPlatform(20, 0, 0), 10, 5)
             };
 
-            Label eventDetailsLabel = new Label
+            Label eventNameLabel = new Label
             {
-                Text = "Event Details",
-                FontSize = 20
+                Text = ev.Name,
+                FontSize = 20,
+                TextColor = Color.Black
             };
 
-            overviewInfoLayout.Children.Add(eventDetailsLabel);
+            Label eventDescriptionLabel = new Label
+            {
+                Text = ev.Beschreibung + Environment.NewLine
+            };
+
+            Label eventPlaceLabel = new Label
+            {
+                Text = "Place: " + ev.Ort,
+            };
+
+            Label eventDateLabel = new Label
+            {
+                Text = "Date: " + ev.Datum,
+            };
+
+            infoLayout.Children.Add(eventNameLabel);
+            infoLayout.Children.Add(createSeparator(2));
+            infoLayout.Children.Add(eventDescriptionLabel);
+            infoLayout.Children.Add(createSeparator(1));
+            infoLayout.Children.Add(eventPlaceLabel);
+            infoLayout.Children.Add(eventDateLabel);
+
+            overviewInfoLayout.Children.Add(eventImage);
+            overviewInfoLayout.Children.Add(infoLayout);
 
             return overviewInfoLayout;
         }
 
-        private static BoxView createSeparator()
+        private static BoxView createSeparator(int height)
         {
             return new BoxView()
             {
                 Color = Color.Black,
                 WidthRequest = 1000,
-                HeightRequest = 2,
+                HeightRequest = height,
                 HorizontalOptions = LayoutOptions.Center
             };
         }
