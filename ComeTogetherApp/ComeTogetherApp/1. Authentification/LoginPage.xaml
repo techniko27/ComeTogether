@@ -3,9 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ComeTogetherApp.LoginPage">
     <ContentPage.Content>
-        <ScrollView BackgroundColor="#41BAC1">
+        <ScrollView x:Name="scrollView">
             <RelativeLayout>
-                <StackLayout VerticalOptions="StartAndExpand" x:Name="stackLayout"
+                <StackLayout VerticalOptions="Start" x:Name="stackLayout"
                        RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent,
                           Property=Height,Factor=0,Constant=0}"
                       RelativeLayout.WidthConstraint="{ConstraintExpression
@@ -13,16 +13,16 @@
                              Margin="10"
                     
           >
-                    <Image Source="in_app_Logo_256x256.png" WidthRequest="180" HeightRequest="180" HorizontalOptions="CenterAndExpand"/>
+                    <Image Source="in_app_Logo_256x256.png" WidthRequest="256" HeightRequest="256" HorizontalOptions="CenterAndExpand"/>
                     <Label Text="E-Mail-Adresse" />
-                    <Entry x:Name="emailEntry" Placeholder="maxmustermann@mail.com" />
+                    <Entry x:Name="emailEntry" Placeholder="maxmustermann@mail.com" HeightRequest="50"/>
                     <Label Text="Passwort" />
-                    <Entry x:Name="passwordEntry" IsPassword="true" Placeholder="****"/>
-                    <Button x:Name="buttonLoginin" Text="Login" Clicked="OnLoginButtonClicked" />
-                    <Button x:Name="resetPassword" Text="Forget Password" Clicked="OnResetPasswordButtonClicked"/>
+                    <Entry x:Name="passwordEntry" IsPassword="true" Placeholder="****" HeightRequest="50"/>
+                    <Button x:Name="buttonLoginin" Text="Login" BackgroundColor="White" Clicked="OnLoginButtonClicked" FontAttributes="Bold" />
+                    <Button x:Name="buttonResetPassword" Text="Forget Password" BackgroundColor="White" Clicked="OnResetPasswordButtonClicked" FontAttributes="Bold" />
                     <Label x:Name="messageLabel" TextColor="Red" FontSize="20" HorizontalOptions="CenterAndExpand"/>
                     <Label Text="Sign up if you have no account!" HorizontalOptions="Center"/>
-                    <Button x:Name="buttonSignUp" Text="Sign up" Clicked="OnSignUpButtonClicked"/>
+                    <Button x:Name="buttonSignUp" Text="Sign up" BackgroundColor="White" Clicked="OnSignUpButtonClicked" FontAttributes="Bold"/>
                 </StackLayout>
 
                 <ActivityIndicator x:Name="activityIndicator" Color="Gray" IsRunning="false"

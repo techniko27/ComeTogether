@@ -16,6 +16,12 @@ namespace ComeTogetherApp
         public LoginPage()
         {
             InitializeComponent();
+
+            scrollView.BackgroundColor = Color.FromHex(App.GetMenueColor());
+            buttonLoginin.TextColor = Color.FromHex(App.GetMenueColor());
+            buttonSignUp.TextColor = Color.FromHex(App.GetMenueColor());
+            buttonResetPassword.TextColor = Color.FromHex(App.GetMenueColor());
+
         }
 
         async void OnLoginButtonClicked(object sender, EventArgs e)

@@ -72,13 +72,14 @@ namespace ComeTogetherApp
                 Text = "Freunde einladen",
                 BackgroundColor = Color.White,
                 TextColor = Color.FromHex(App.GetMenueColor()),
-
+                FontAttributes = FontAttributes.Bold
             };
             Button leaveEventButton = new Button
             {
                 Text = "Veranstaltung verlassen",
                 BackgroundColor = Color.White,
                 TextColor = Color.FromHex(App.GetMenueColor()),
+                FontAttributes = FontAttributes.Bold
 
             };
 
