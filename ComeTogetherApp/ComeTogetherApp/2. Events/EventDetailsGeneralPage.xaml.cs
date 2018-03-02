@@ -21,6 +21,12 @@ namespace ComeTogetherApp
             initLayout(ev);
         }
 
+        private void initProperties()
+        {
+            Title = "General";
+            BackgroundColor = Color.White;
+        }
+
         private void initLayout(Event ev)
         {
             ScrollView scrollView = new ScrollView();
@@ -30,26 +36,33 @@ namespace ComeTogetherApp
             Content = scrollView;
         }
 
-        private void initProperties()
-        {
-            Title = "General";
-            BackgroundColor = Color.LightGray;
-        }
-
         private StackLayout createStackLayout(Event ev)
         {
             StackLayout stackLayout = new StackLayout
             {
                 VerticalOptions = LayoutOptions.Start,
-                Padding = new Thickness(10, Device.OnPlatform(20, 0, 0), 10, 5)
+                Padding = new Thickness(10, 10, 10, 5)
             };
 
             StackLayout overviewInfoLayout = createOverviewInfoLayout(ev);
             StackLayout buttonOptionsLayout = createButtonOptionsLayout();
 
-            stackLayout.Children.Add(overviewInfoLayout);
-            stackLayout.Children.Add(createSeparator(3));
-            stackLayout.Children.Add(buttonOptionsLayout);
+            Frame overviewInfoFrame = new Frame
+            {
+                Content = overviewInfoLayout,
+                BackgroundColor = Color.FromHex(App.GetMenueColor()),
+                CornerRadius = 5
+            };
+
+            Frame buttonOptionsFrame = new Frame
+            {
+                Content = buttonOptionsLayout,
+                BackgroundColor = Color.FromHex(App.GetMenueColor()),
+                CornerRadius = 5
+            };
+
+            stackLayout.Children.Add(overviewInfoFrame);
+            stackLayout.Children.Add(buttonOptionsFrame);
 
             return stackLayout;
         }
@@ -60,7 +73,6 @@ namespace ComeTogetherApp
             {
                 Orientation = StackOrientation.Horizontal,
                 HorizontalOptions = LayoutOptions.Start,
-                Padding = new Thickness(10, Device.OnPlatform(20, 10, 0), 10, 5)
             };
 
             Image eventImage = new Image { Aspect = Aspect.AspectFit, VerticalOptions = LayoutOptions.Start };
@@ -69,7 +81,7 @@ namespace ComeTogetherApp
             StackLayout infoLayout = new StackLayout
             {
                 VerticalOptions = LayoutOptions.Start,
-                Padding = new Thickness(10, Device.OnPlatform(20, 0, 0), 10, 5)
+                Padding = new Thickness(10, 0, 10, 5)
             };
 
             Label eventNameLabel = new Label
@@ -123,8 +135,15 @@ namespace ComeTogetherApp
             StackLayout buttonOptionsLayout = new StackLayout
             {
                 VerticalOptions = LayoutOptions.Start,
-                Padding = new Thickness(10, Device.OnPlatform(20, 0, 0), 10, 5),
+                Padding = new Thickness(10, 0, 10, 5),
                 Margin = 5
+            };
+
+            Button startEventButton = new Button
+            {
+                Text = "Start Event",
+                BackgroundColor = Color.LightGreen,
+                FontAttributes = FontAttributes.Bold
             };
 
             Button inviteFriendsButton = new Button
@@ -134,15 +153,25 @@ namespace ComeTogetherApp
                 TextColor = Color.FromHex(App.GetMenueColor()),
                 FontAttributes = FontAttributes.Bold
             };
-            Button leaveEventButton = new Button
+
+            Button editEventButton = new Button
             {
-                Text = "Leave Event",
+                Text = "Edit Event",
                 BackgroundColor = Color.White,
                 TextColor = Color.FromHex(App.GetMenueColor()),
                 FontAttributes = FontAttributes.Bold
             };
 
+            Button leaveEventButton = new Button
+            {
+                Text = "Leave Event",
+                BackgroundColor = Color.OrangeRed,
+                FontAttributes = FontAttributes.Bold
+            };
+
+            buttonOptionsLayout.Children.Add(startEventButton);
             buttonOptionsLayout.Children.Add(inviteFriendsButton);
+            buttonOptionsLayout.Children.Add(editEventButton);
             buttonOptionsLayout.Children.Add(leaveEventButton);
 
             return buttonOptionsLayout;
