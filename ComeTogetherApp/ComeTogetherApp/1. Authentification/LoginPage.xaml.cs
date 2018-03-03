@@ -19,8 +19,11 @@ namespace ComeTogetherApp
 
             scrollView.BackgroundColor = Color.FromHex(App.GetMenueColor());
             buttonLoginin.TextColor = Color.FromHex(App.GetMenueColor());
+            buttonLoginin.Margin = 8;
             buttonSignUp.TextColor = Color.FromHex(App.GetMenueColor());
+            buttonSignUp.Margin = 8;
             buttonResetPassword.TextColor = Color.FromHex(App.GetMenueColor());
+            buttonResetPassword.Margin = 8;
 
         }
 
