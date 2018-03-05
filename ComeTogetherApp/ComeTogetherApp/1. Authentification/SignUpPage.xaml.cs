@@ -17,6 +17,9 @@ namespace ComeTogetherApp
         public SignUpPage()
         {
             InitializeComponent();
+            buttonSignUp.BackgroundColor = Color.White;
+            buttonSignUp.TextColor = Color.FromHex(App.GetMenueColor());
+            buttonSignUp.Margin = new Thickness(50, 20, 50, 0);
         }
 
         async void OnSignUpButtonClicked(object sender, EventArgs e)

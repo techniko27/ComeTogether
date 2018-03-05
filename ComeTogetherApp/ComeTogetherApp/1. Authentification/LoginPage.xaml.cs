@@ -19,12 +19,12 @@ namespace ComeTogetherApp
 
             scrollView.BackgroundColor = Color.FromHex(App.GetMenueColor());
             buttonLoginin.TextColor = Color.FromHex(App.GetMenueColor());
-            buttonLoginin.Margin = 8;
+            buttonLoginin.Margin = new Thickness(50, 20, 50, 0);
             buttonSignUp.TextColor = Color.FromHex(App.GetMenueColor());
-            buttonSignUp.Margin = 8;
-            buttonResetPassword.TextColor = Color.FromHex(App.GetMenueColor());
-            buttonResetPassword.Margin = 8;
+            buttonSignUp.Margin = new Thickness(50, 0, 50, 0);
 
+            buttonResetPassword.TextColor = Color.FromHex(App.GetMenueColor());
+            buttonResetPassword.Margin = new Thickness(50, 0 , 50, 0);
         }
 
         async void OnLoginButtonClicked(object sender, EventArgs e)
@@ -66,6 +66,15 @@ namespace ComeTogetherApp
 
                     //await DisplayAlert("Token", auth.FirebaseToken, "OK");
                     firebaseToken = auth.FirebaseToken;
+
+                    if (firebaseToken != null)
+                    {
+                        Application.Current.Properties["IsUserLoggedIn"] = true;
+                        App.SetEmail(emailEntry.Text.Replace(" ", String.Empty));
+                        App.SetPassword(passwordEntry.Text);
+                        App.SetUserID(auth.User.LocalId);
+                        App.LogInSwitch();
+                    }
                 }
                 catch (FirebaseAuthException exception)
                 {
@@ -91,30 +100,6 @@ namespace ComeTogetherApp
                             break;
                     }
                 }
-
-                /* Facebook Auth
-                var facebookAccessToken = "<login with facebook and get oauth access token>";
-                var auth = await authProvider.SignInWithOAuthAsync(FirebaseAuthType.Facebook, facebookAccessToken);
-                */
-
-                /*
-                var dinos = await firebase.Child("dinosaurs").OnceAsync<Dinosaur>();
-
-                foreach (var dino in dinos)
-                {
-                    System.Diagnostics.Debug.WriteLine($"{dino.Key} is {dino.Object.Height}m high.");
-                }
-                */
-
-
-            }
-
-            if (firebaseToken != null)
-            {
-                Application.Current.Properties["IsUserLoggedIn"] = true;
-                App.SetEmail(emailEntry.Text.Replace(" ", String.Empty));
-                App.SetPassword(passwordEntry.Text);
-                App.LogInSwitch();
             }
 
             buttonLoginin.IsEnabled = true;
@@ -126,62 +111,15 @@ namespace ComeTogetherApp
             activityIndicator.IsRunning = true;
             buttonSignUp.IsEnabled = false;
 
-            //Greatings from Server
-            //await App.Communicate("#001;~", this);
-
             App.NavigateToSignUp();
 
             buttonSignUp.IsEnabled = true;
             activityIndicator.IsRunning = false;
         }
 
-        void OnResetPasswordButtonClicked(object sender, EventArgs e){
+        void OnResetPasswordButtonClicked(object sender, EventArgs e)
+        {
             DisplayAlert("Clicked Action","You have clicked Forget Password", "OK");
         }
-
-        /*
-        private void ServerAnswer(string protocol)
-        {
-            //DisplayAlert("Servermessage", protocol, "OK");                    //Output of the Server Answer
-
-            List<string> list = new List<string>();
-            list = protocol.Split(new char[] { ';' }).ToList();
-
-            if (list.ElementAt(0).Equals("#103"))
-            {
-                switch (list.ElementAt(1))
-                {
-                    case "1":
-                        int iD;
-                        int.TryParse(list.ElementAt(2), out iD);
-                        //App.SetUserID(iD);
-                        //App.SetUsername(usernameEntry.Text);
-                        //Application.Current.Properties["IsUserLoggedIn"] = true;
-                        //App.LogInSwitch();
-                        DisplayAlert("Login Erfolgreich!", "Hallo " + emailEntry.Text + "!", "OK");
-                        break;
-                    case "2":
-                        //messageLabel.Text = "Login fehlgeschlagen, falsches Passwort oder falscher Benutzername!";
-                        DisplayAlert("Login Fehlgeschlagen", "falsches Passwort oder falscher Benutzername!", "OK");
-                        passwordEntry.Text = string.Empty;
-                        emailEntry.Text = string.Empty;
-                        break;
-                    case "3":
-                        //messageLabel.Text = "Login fehlgeschlagen, Serverproblem!";
-                        DisplayAlert("Login Fehlgeschlagen", "Serverproblem!", "OK");
-                        break;
-                    default:
-                        //messageLabel.Text = "Kommunikationsproblem, Undefinierte Antwort vom Server 1!";
-                        DisplayAlert("Login Fehlgeschlagen", "Kommunikationsproblem, Undefinierte Antwort vom Server 1!", "OK");
-                        break;
-                }
-            }
-            else
-            {
-                messageLabel.Text = "Kommunikationsproblem, Undefinierte Antwort vom Server 2!";
-            }
-            //App.endpointConnection.closeConnection();
-        }
-        */
     }
 }

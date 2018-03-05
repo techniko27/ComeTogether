@@ -14,7 +14,7 @@
                              >
                     
                     <Label Text="Benutzername" />
-                    <Entry x:Name="usernameEntry" Placeholder="MaxM" />
+                    <Entry x:Name="usernameEntry" Placeholder="MaxM" HeightRequest="50"/>
                     <!--
                     <Label Text="Vorname" />
                     <Entry x:Name="forenameEntry" Placeholder="Max" />
@@ -22,13 +22,13 @@
                     <Entry x:Name="secondnameEntry" Placeholder="Mustermann" />
                     -->
                     <Label Text="Passwort" />
-                    <Entry x:Name="passwordEntry" IsPassword="true" Placeholder="****"/>
+                    <Entry x:Name="passwordEntry" IsPassword="true" Placeholder="****" HeightRequest="50"/>
                     <Label Text="Passwort wiederholen" />
-                    <Entry x:Name="passwordEntry2" IsPassword="true" Placeholder="****"/>
+                    <Entry x:Name="passwordEntry2" IsPassword="true" Placeholder="****" HeightRequest="50"/>
                     <Label Text="Emailaddress" />
-                    <Entry x:Name="emailEntry" Placeholder="maxmustermann@mail.com"/>
-                    <Button x:Name="buttonSignUp" Text="Sign Up" Clicked="OnSignUpButtonClicked" />
-                    <Label x:Name="messageLabel" TextColor="Red" FontSize="20" HorizontalOptions="CenterAndExpand"/>
+                    <Entry x:Name="emailEntry" Placeholder="maxmustermann@mail.com" HeightRequest="50"/>
+                    <Button x:Name="buttonSignUp" Text="Sign Up" Clicked="OnSignUpButtonClicked" HeightRequest="50"/>
+                    <Label x:Name="messageLabel" TextColor="Red" FontSize="20" HorizontalOptions="CenterAndExpand" />
                 </StackLayout>
 
                 <ActivityIndicator x:Name="activityIndicator" Color="Gray" IsRunning="false"

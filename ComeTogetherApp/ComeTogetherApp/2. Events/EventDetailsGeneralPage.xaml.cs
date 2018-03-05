@@ -142,6 +142,7 @@ namespace ComeTogetherApp
             Button startEventButton = new Button
             {
                 Text = "Start Event",
+                TextColor = Color.White,
                 BackgroundColor = Color.LightGreen,
                 FontAttributes = FontAttributes.Bold
             };
@@ -165,6 +166,7 @@ namespace ComeTogetherApp
             Button leaveEventButton = new Button
             {
                 Text = "Leave Event",
+                TextColor = Color.White,
                 BackgroundColor = Color.OrangeRed,
                 FontAttributes = FontAttributes.Bold
             };

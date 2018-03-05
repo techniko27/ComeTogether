@@ -142,17 +142,17 @@ namespace ComeTogetherApp
             return true;
         }
 
-        public static int GetUserID()
+        public static string GetUserID()
         {
             if (!Application.Current.Properties.ContainsKey("userID"))
             {
                 Application.Current.Properties["userID"] = 0;
                 System.Diagnostics.Debug.WriteLine("First userID set");
             }
-            return Convert.ToInt32(Application.Current.Properties["userID"]);
+            return Convert.ToString(Application.Current.Properties["userID"]);
         }
 
-        public static bool SetUserID(int newUserID)
+        public static bool SetUserID(string newUserID)
         {
             try
             {
