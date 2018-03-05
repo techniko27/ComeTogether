@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
@@ -9,8 +11,11 @@ namespace ComeTogetherApp
 {
     class EventButton : StackLayout
     {
+        private EventsPage page;
         public EventButton(Event ev, EventsPage page)
         {
+            this.page = page;
+
             var eventImage = new Image { Aspect = Aspect.AspectFit };
             if (ev.Bild.Length < 3)
             {
@@ -56,12 +61,35 @@ namespace ComeTogetherApp
             this.Children.Add(eventMembercountLabel);
             this.Children.Add(eventDateLabel);
         }
-        public void OnEventClicked(object sender, EventArgs e, Event ev)
+        public async void OnEventClicked(object sender, EventArgs e, Event ev)
         {
-            Navigation.PushAsync(new SingleEventPage(ev)
+            if (ev.ID == "0")
             {
-                //Title = "Edit Event"
-            });
+                string action = await page.DisplayActionSheet("", "Cancel", null, "Add new Event", "Enter joincode", "Scan joincode");
+                Debug.WriteLine("Action: " + action);
+                switch (action)
+                {
+                    case "Add new Event":
+                        Navigation.PushAsync(new AddNewEventPage());
+                        break;
+                    case "Enter joincode":
+                        
+                        break;
+                    case "Scan joincode":
+                        
+                        break;
+                    default:
+
+                        break;
+                }
+            }
+            else
+            {
+                Navigation.PushAsync(new SingleEventPage(ev)
+                {
+                    //Title = "Edit Event"
+                });
+            }
         }
     }
 }

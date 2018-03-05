@@ -43,6 +43,9 @@
     <Compile Include="1. Authentification\SignUpPage.xaml.cs">
       <DependentUpon>SignUpPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="2. Events\AddNewEventPage.xaml.cs">
+      <DependentUpon>AddNewEventPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="2. Events\EventButton.cs" />
     <Compile Include="2. Events\EventDetailsGeneralPage.xaml.cs">
       <DependentUpon>EventDetailsGeneralPage.xaml</DependentUpon>
@@ -186,6 +189,12 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="2. Events\SingleEventPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="2. Events\AddNewEventPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
       <SubType>Designer</SubType>
     </EmbeddedResource>
