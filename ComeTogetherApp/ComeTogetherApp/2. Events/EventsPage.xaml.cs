@@ -19,10 +19,10 @@ namespace ComeTogetherApp
         SearchBar searchBar;
 
         private ScrollView scroll;
-        private StackLayout stack;
+        public StackLayout stack;
         private Grid grid;
         private ActivityIndicator activityIndicator;
-        private List<Event> eventList;
+        public List<Event> eventList;
 
         public EventsPage()
         {
@@ -91,7 +91,7 @@ namespace ComeTogetherApp
             activityIndicatorSwitch();
         }
 
-        private void buildGrid(List<Event> gridList)
+        public void buildGrid(List<Event> gridList)
         {
             grid = new Grid()
             {

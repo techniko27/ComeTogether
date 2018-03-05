@@ -11,10 +11,10 @@ namespace ComeTogetherApp
 {
     class EventButton : StackLayout
     {
-        private EventsPage page;
-        public EventButton(Event ev, EventsPage page)
+        private EventsPage eventsPage;
+        public EventButton(Event ev, EventsPage eventsPage)
         {
-            this.page = page;
+            this.eventsPage = eventsPage;
 
             var eventImage = new Image { Aspect = Aspect.AspectFit };
             if (ev.Bild.Length < 3)
@@ -65,12 +65,12 @@ namespace ComeTogetherApp
         {
             if (ev.ID == "0")
             {
-                string action = await page.DisplayActionSheet("", "Cancel", null, "Add new Event", "Enter joincode", "Scan joincode");
+                string action = await eventsPage.DisplayActionSheet("", "Cancel", null, "Add new Event", "Enter joincode", "Scan joincode");
                 Debug.WriteLine("Action: " + action);
                 switch (action)
                 {
                     case "Add new Event":
-                        Navigation.PushAsync(new AddNewEventPage());
+                        Navigation.PushAsync(new AddNewEventPage(eventsPage));
                         break;
                     case "Enter joincode":
                         
