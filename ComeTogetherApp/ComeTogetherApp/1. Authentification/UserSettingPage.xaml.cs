@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Firebase.Auth;
 using Firebase.Database;
 using Firebase.Database.Query;
-using Firebase.Auth;
-using Firebase.Storage;
 using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
 
 namespace ComeTogetherApp
 {
@@ -27,10 +30,15 @@ namespace ComeTogetherApp
         //usernameEntry.Placeholder = await App.firebase.Child("Veranstaltungen").OrderByKey().StartAt("1").OnceAsync<Event>();
         private async void ServerGetUser() 
         {
-            var users = await App.firebase.Child("users").OnceAsync<User>();
-            Func<FirebaseObject<User>, bool> predicateUserID = (FirebaseObject<User> userObject) => { return userObject.Key.Equals(App.GetUserID()); };
-            User user = users.Where(predicateUserID).ElementAt(0).Object;
-            //System.Diagnostics.Debug.WriteLine($"Name of {userID} is {user.userName}");
+            try
+            {
+                IReadOnlyCollection<FirebaseObject<User>> users = await App.firebase.Child("users").OnceAsync<User>();
+                Func<FirebaseObject<User>, bool> predicateUserID = (FirebaseObject<User> userObject) => { return userObject.Key.Equals(App.GetUserID()); };
+                User user = users.Where(predicateUserID).ElementAt(0).Object;
+            } catch (Exception e)
+            {
+
+            }
         }
 
         private async void ServerSetUser(){
