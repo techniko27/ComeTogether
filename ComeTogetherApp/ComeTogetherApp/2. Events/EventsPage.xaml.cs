@@ -101,23 +101,6 @@ namespace ComeTogetherApp
             };
             stack.Children.Add(grid);                                                       //add new grid
 
-            /*
-            grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(250, GridUnitType.Star) });
-            grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(250, GridUnitType.Star) });
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(150, GridUnitType.Star) });
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(150, GridUnitType.Star) });
-
-            var topLeft = new Button() { Text = "Top Left" };
-            var topRight = new Button() { Text = "Top Right" };
-            var bottomLeft = new Button() { Text = "Bottom Left" };
-            var bottomRight = new Button() { Text = "Bottom Right" };
-
-            grid.Children.Add(topLeft, 0, 0);
-            grid.Children.Add(topRight, 0, 1);
-            grid.Children.Add(bottomLeft, 1, 0);
-            grid.Children.Add(bottomRight, 1, 1);
-            */
-
             int c = 0;                                  //List Counter
             int r = gridList.Count % 2;                 //List is odd (ungerade)
             for (int i = 0; i < (gridList.Count/2+r); i++)

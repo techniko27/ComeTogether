@@ -60,7 +60,7 @@ namespace ComeTogetherApp
         {
             Navigation.PushAsync(new SingleEventPage(ev)
             {
-                Title = "Edit Event"
+                //Title = "Edit Event"
             });
         }
     }
