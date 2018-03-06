@@ -6,6 +6,8 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
+using ZXing.Mobile;
+using ZXing.Net.Mobile.Forms;
 
 namespace ComeTogetherApp
 {
@@ -76,7 +78,7 @@ namespace ComeTogetherApp
                         
                         break;
                     case "Scan joincode":
-                        
+                        useScanPage();
                         break;
                     default:
 
@@ -90,6 +92,42 @@ namespace ComeTogetherApp
                     //Title = "Edit Event"
                 });
             }
+        }
+
+        public async void useScanPage()
+        {
+            var options = new MobileBarcodeScanningOptions
+            {
+                AutoRotate = false,
+                UseFrontCameraIfAvailable = false,
+                TryHarder = true,
+                PossibleFormats = new List<ZXing.BarcodeFormat>
+                            {
+                               ZXing.BarcodeFormat.EAN_8, ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.QR_CODE
+                            }
+            };
+            var scanPage = new ZXingScannerPage(options)
+            {
+                DefaultOverlayTopText = "Scan the join code",
+                DefaultOverlayBottomText = "lala",
+                DefaultOverlayShowFlashButton = true
+            };
+            // Navigate to our scanner page
+            await Navigation.PushAsync(scanPage);
+            scanPage.OnScanResult += (result) =>
+            {
+                // Stop scanning
+                scanPage.IsScanning = false;
+
+                //TODO add user to event
+
+                // Pop the page and show the result
+                Device.BeginInvokeOnMainThread(async () =>
+                {
+                    await Navigation.PopAsync();
+                    await eventsPage.DisplayAlert("Scanned Barcode", result.Text, "OK");
+                });
+            };
         }
     }
 }

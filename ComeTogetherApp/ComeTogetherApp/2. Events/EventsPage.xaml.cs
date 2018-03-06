@@ -39,7 +39,6 @@ namespace ComeTogetherApp
             };
             searchBar.TextChanged += SearchBar_TextChanged;
 
-
             scroll = new ScrollView();
 
             stack = new StackLayout
