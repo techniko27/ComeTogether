@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="ComeTogetherApp.UserSettingPage">
-	<ContentPage.Content>
+	<!--<ContentPage.Content>
+        
           <ScrollView x:Name="scrollView">
             <RelativeLayout>
                 <StackLayout VerticalOptions="StartAndExpand" x:Name="stackLayout"
@@ -13,9 +14,10 @@
                          <Label Text="Benutzername" VerticalOptions="Center"/>
                          <Entry x:Name="usernameEntry" VerticalOptions="Center" HeightRequest="50"/>
                          <Button x:Name="buttonresetPasswort" Text="Reset Passwort" VerticalOptions="Center" HeightRequest="50" FontAttributes="Bold"></Button>
-                         <Button x:Name="buttonSaveChanges" Text="Save changes" VerticalOptions="Center" HeightRequest="50" FontAttributes="Bold"/>
+                         <Button x:Name="buttonSaveChanges" Text="Save changes" Clicked="saveChanges" VerticalOptions="Center" HeightRequest="50" FontAttributes="Bold"/>
                     </StackLayout>
             </RelativeLayout>
         </ScrollView>
-	</ContentPage.Content>
+
+	</ContentPage.Content>-->
 </ContentPage>
