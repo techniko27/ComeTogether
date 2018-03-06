@@ -12,10 +12,12 @@ namespace ComeTogetherApp
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class EventDetailsGeneralPage : ContentPage
     {
-
+        private Event ev;
         public EventDetailsGeneralPage(Event ev)
         {
             InitializeComponent();
+
+            this.ev = ev;
 
             initProperties();
             initLayout(ev);
@@ -154,6 +156,7 @@ namespace ComeTogetherApp
                 TextColor = Color.FromHex(App.GetMenueColor()),
                 FontAttributes = FontAttributes.Bold
             };
+            inviteFriendsButton.Clicked += OninviteFriendsButtonClicked;
 
             Button editEventButton = new Button
             {
@@ -177,6 +180,11 @@ namespace ComeTogetherApp
             buttonOptionsLayout.Children.Add(leaveEventButton);
 
             return buttonOptionsLayout;
+        }
+
+        async void OninviteFriendsButtonClicked(object sender, EventArgs e)
+        {
+            Navigation.PushAsync(new InviteToEventPage(ev));
         }
     }
 }

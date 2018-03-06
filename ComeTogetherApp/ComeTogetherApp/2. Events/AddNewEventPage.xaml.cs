@@ -39,7 +39,7 @@ namespace ComeTogetherApp
             {
                 VerticalOptions = LayoutOptions.FillAndExpand,
                 HorizontalOptions = LayoutOptions.FillAndExpand,
-                Padding = new Thickness(40, 0, 40, 0),
+                Padding = new Thickness(30, 0, 30, 0),
                 Margin = new Thickness(10, 10, 10, 10)
             };
             Image eventImage = new Image {Aspect = Aspect.AspectFit, VerticalOptions = LayoutOptions.Start};

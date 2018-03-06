@@ -75,7 +75,7 @@ namespace ComeTogetherApp
                         Navigation.PushAsync(new AddNewEventPage(eventsPage));
                         break;
                     case "Enter joincode":
-                        
+                        //TODO 
                         break;
                     case "Scan joincode":
                         useScanPage();
