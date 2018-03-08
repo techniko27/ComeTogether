@@ -18,7 +18,9 @@ namespace ComeTogetherApp
 
         private ObservableCollection<User> eventMemberList;
         private ActivityIndicator activityIndicator;
+        private SearchBar memberSearchBar;
         private Frame listFrame;
+        private StackLayout stackLayout;
         private ListView memberList;
 
         public EventDetailsMembersPage(Event ev)
@@ -33,8 +35,6 @@ namespace ComeTogetherApp
 
         private async void retrieveMemberListFromServer(Event ev)
         {
-            eventMemberList = new ObservableCollection<User>();
-
             String eventID = ev.ID;
 
             try
@@ -49,6 +49,7 @@ namespace ComeTogetherApp
                     eventMemberList.Add(user);
                     System.Diagnostics.Debug.WriteLine($"Name of {userID} is {user.userName}");
                 }
+                activityIndicatorSwitch();
             }
             catch (Exception e)
             {
@@ -76,7 +77,7 @@ namespace ComeTogetherApp
                 HorizontalOptions = LayoutOptions.CenterAndExpand,
             };
 
-            StackLayout stackLayout = createStackLayout();
+            stackLayout = createStackLayout();
             scrollView.Content = stackLayout;
 
             Content = scrollView;
@@ -90,10 +91,12 @@ namespace ComeTogetherApp
                 Padding = new Thickness(10, 10, 10, 5)
             };
 
-            SearchBar memberSearchBar = new SearchBar
+            memberSearchBar = new SearchBar
             {
                 Placeholder = "Search members..."
             };
+
+            memberSearchBar.TextChanged += searchBarTextChanged;
 
             Frame searchbarFrame = new Frame
             {
@@ -115,13 +118,14 @@ namespace ComeTogetherApp
             };
 
             stackLayout.Children.Add(searchbarFrame);
-            stackLayout.Children.Add(listFrame);
+            stackLayout.Children.Add(activityIndicator);
 
             return stackLayout;
         }
 
         private ListView createMemberList()
         {
+            eventMemberList = new ObservableCollection<User>();
             ListView memberList = new ListView
             {
                 ItemsSource = eventMemberList,
@@ -141,13 +145,30 @@ namespace ComeTogetherApp
             if (activityIndicator.IsRunning)
             {
                 activityIndicator.IsRunning = false;
-                listFrame.Content = memberList;
+                stackLayout.Children.Remove(activityIndicator);
+                stackLayout.Children.Add(listFrame);
             }
             else
             {
                 activityIndicator.IsRunning = true;
-                listFrame.Content = activityIndicator;
+                stackLayout.Children.Remove(listFrame);
+                stackLayout.Children.Add(activityIndicator);
             }
+        }
+
+        private void searchBarTextChanged(object sender, TextChangedEventArgs e)
+        {
+            ObservableCollection<User> searchList = new ObservableCollection<User>();
+
+            foreach (User user in eventMemberList)
+            {
+                if (user.userName.ToLower().Contains(memberSearchBar.Text.ToLower()))
+                {
+                    searchList.Add(user);
+                }
+            }
+
+            memberList.ItemsSource = searchList;
         }
     }
 }
