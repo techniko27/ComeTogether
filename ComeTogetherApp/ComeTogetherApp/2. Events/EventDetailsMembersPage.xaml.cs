@@ -87,7 +87,7 @@ namespace ComeTogetherApp
         {
             StackLayout stackLayout = new StackLayout
             {
-                VerticalOptions = LayoutOptions.Start,
+                VerticalOptions = LayoutOptions.StartAndExpand,
                 Padding = new Thickness(10, 10, 10, 5)
             };
 

@@ -11,24 +11,33 @@ namespace ComeTogetherApp
     {
         public MemberListCell()
         {
-            Image image = new Image { Aspect = Aspect.AspectFit, VerticalOptions = LayoutOptions.Start };
-            image.Source = "benutzer_28x28.png";
-            StackLayout cellWrapper = new StackLayout();
             StackLayout horizontalLayout = new StackLayout();
-            Label usernameLabel = new Label();
 
+            Image userIcon = new Image { Aspect = Aspect.AspectFit, VerticalOptions = LayoutOptions.Start };
+            userIcon.Source = "benutzer.png";
+            userIcon.AnchorX = 0;
+            userIcon.AnchorY = 0;
+            userIcon.Scale = 0.7;
+
+            Label usernameLabel = new Label();
             usernameLabel.SetBinding(Label.TextProperty, "userName");
+            usernameLabel.TextColor = Color.Black;
+            usernameLabel.FontSize = 18;
+
+            Image threeDots = new Image { Aspect = Aspect.AspectFit, VerticalOptions = LayoutOptions.Center, HorizontalOptions = LayoutOptions.EndAndExpand };
+            threeDots.Source = "drei_punkte_schwarz.png";
+            threeDots.AnchorX = 0;
+            threeDots.AnchorY = 0;
+            threeDots.Scale = 0.7;
 
             horizontalLayout.Orientation = StackOrientation.Horizontal;
             horizontalLayout.VerticalOptions = LayoutOptions.CenterAndExpand;
             horizontalLayout.Padding = new Thickness(5, 10, 0, 0);
-            usernameLabel.TextColor = Color.Black;
-            usernameLabel.FontSize = 15;
 
-            horizontalLayout.Children.Add(image);
+            horizontalLayout.Children.Add(userIcon);
             horizontalLayout.Children.Add(usernameLabel);
-            cellWrapper.Children.Add(horizontalLayout);
-            View = cellWrapper;
+            horizontalLayout.Children.Add(threeDots);
+            View = horizontalLayout;
             View.BackgroundColor = Color.FromHex(App.GetMenueColor());
         }
     }
