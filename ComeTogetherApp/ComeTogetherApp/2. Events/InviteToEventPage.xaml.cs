@@ -9,9 +9,9 @@ using Plugin.Share.Abstractions;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using ZXing;
-using ZXing.Common;
-using ZXing.QrCode;
+using ZXing.Net.Mobile.Forms;
 using ZXing.Rendering;
+
 
 namespace ComeTogetherApp
 {
@@ -35,83 +35,47 @@ namespace ComeTogetherApp
 
             StackLayout stack = new StackLayout
             {
-                VerticalOptions = LayoutOptions.FillAndExpand,
-                HorizontalOptions = LayoutOptions.FillAndExpand,
-                Padding = new Thickness(30, 0, 30, 0),
-                Margin = new Thickness(10, 10, 10, 10)
+                //VerticalOptions = LayoutOptions.StartAndExpand,
+                //HorizontalOptions = LayoutOptions.StartAndExpand,
+                //Padding = new Thickness(30, 0, 30, 0),
+                Margin = new Thickness(20, 20, 20, 20)
             };
             Label joynCodeLabel = new Label
             {
                 Text = "Joyn-Code: "+ev.ID,
-                FontSize = 15,
-                TextColor = Color.Black
+                FontSize = 18,
+                TextColor = Color.Black,
+                FontAttributes = FontAttributes.Bold,
             };
             Button shareEventButton = new Button()
             {
                 Text = "Invite via Message",
                 BackgroundColor = Color.White,
                 TextColor = Color.FromHex(App.GetMenueColor()),
-                FontAttributes = FontAttributes.Bold
+                FontAttributes = FontAttributes.Bold,
+                Margin = new Thickness(0,25,0,-20)
             };
             shareEventButton.Clicked += OnshareEventButtonClicked;
-            image = new Image();
+            ZXingBarcodeImageView barcodeImageView = new ZXingBarcodeImageView()
+            {
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+                VerticalOptions = LayoutOptions.FillAndExpand,
+                BarcodeFormat = ZXing.BarcodeFormat.QR_CODE,
+                BarcodeValue = ev.ID,
+                BarcodeOptions = new ZXing.Common.EncodingOptions
+                {
+                    Width = 300,
+                    Height = 300,
+                    Margin = 0,
+                }
+            };
 
             stack.Children.Add(joynCodeLabel);
             stack.Children.Add(shareEventButton);
-            stack.Children.Add(image);
+            stack.Children.Add(barcodeImageView);
 
             scroll.Content = stack;
             Content = scroll;
-        }
-        public void CreateBarcode()
-        {
-            /*
-            var barcodeWriter = new BarcodeWriterGeneric()
-            {
-                Format = ZXing.BarcodeFormat.QR_CODE,
-                Options = new ZXing.Common.EncodingOptions
-                {
-                    Width = 300,
-                    Height = 50,
-                    Margin = 30
-                }
-            };
-            
-            //barcodeWriter.Renderer = new PixelDataRenderer();
-            var bitmap = barcodeWriter.Encode("sfheu");
-            
-            var stream = new MemoryStream(bitmapBytes);
-            
-            bitmap.Compress(Bitmap.CompressFormat.Png, 100, stream);  // this is the diff between iOS and Android
-            stream.Position = 0;
-            
-            ImageSource imageSource = ImageSource.FromStream(() => {
-                MemoryStream ms = new MemoryStream(bitmapBytes);
-                ms.Position = 0;
-                return ms;
-            });
-            
-            image.Source = imageSource;
-            */
-            /*
-            image.Source = ImageSource.FromStream(() =>
-            {
-                var writer = new BarcodeWriter
-                {
-                    Format = BarcodeFormat.QR_CODE,
-                    Options = new EncodingOptions
-                    {
-                        Height = 200,
-                        Width = 600
-                    }
-                };
-
-                var bitmapBytes = writer.Write("Encode this to QRCode");
-                MemoryStream ms = new MemoryStream(bitmapBytes);
-                ms.Position = 0;
-                return ms;
-            });
-            */
         }
 
         async void OnshareEventButtonClicked(object sender, EventArgs e)
