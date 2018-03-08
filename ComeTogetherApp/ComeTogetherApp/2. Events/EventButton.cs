@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Rg.Plugins.Popup.Extensions;
 using Xamarin.Forms;
 using ZXing.Mobile;
 using ZXing.Net.Mobile.Forms;
@@ -75,7 +76,7 @@ namespace ComeTogetherApp
                         Navigation.PushAsync(new AddNewEventPage(eventsPage));
                         break;
                     case "Enter joincode":
-                        //TODO 
+                        await Navigation.PushPopupAsync(new EnterJoinCodePopupPage());
                         break;
                     case "Scan joincode":
                         useScanPage();

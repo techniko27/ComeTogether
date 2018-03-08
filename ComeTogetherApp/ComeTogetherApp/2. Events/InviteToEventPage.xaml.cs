@@ -40,9 +40,9 @@ namespace ComeTogetherApp
                 //Padding = new Thickness(30, 0, 30, 0),
                 Margin = new Thickness(20, 20, 20, 20)
             };
-            Label joynCodeLabel = new Label
+            Label joinCodeLabel = new Label
             {
-                Text = "Joyn-Code: "+ev.ID,
+                Text = "Join-Code: "+ev.ID,
                 FontSize = 18,
                 TextColor = Color.Black,
                 FontAttributes = FontAttributes.Bold,
@@ -70,7 +70,7 @@ namespace ComeTogetherApp
                 }
             };
 
-            stack.Children.Add(joynCodeLabel);
+            stack.Children.Add(joinCodeLabel);
             stack.Children.Add(shareEventButton);
             stack.Children.Add(barcodeImageView);
 
@@ -90,7 +90,7 @@ namespace ComeTogetherApp
             
             CrossShare.Current.Share(new ShareMessage
             {
-                Title = "ComeTogether Joyn-Code",
+                Title = "ComeTogether Join-Code",
                 Text = "Checkout ComeTogether App and enter this code to participate in your friend eventplan:",
                 Url = ev.ID
             },
