@@ -113,7 +113,7 @@ namespace ComeTogetherApp
                 Content = memberList,
                 BackgroundColor = Color.FromHex(App.GetMenueColor()),
                 CornerRadius = 5,
-                Padding = new Thickness(5, 10, 5, 0),
+                Padding = new Thickness(5, 0, 5, 10),
                 VerticalOptions = LayoutOptions.StartAndExpand
             };
 
@@ -129,13 +129,10 @@ namespace ComeTogetherApp
             ListView memberList = new ListView
             {
                 ItemsSource = eventMemberList,
-                ItemTemplate = new DataTemplate(() => {
-
-                    TextCell cell = new TextCell();
-                    cell.SetBinding(TextCell.TextProperty, "userName");
-                    return cell;
-                }),
-                Margin = new Thickness(0, 0, 0, 10)
+                ItemTemplate = new DataTemplate(typeof(MemberListCell)),
+                Margin = new Thickness(0, 0, 0, 10),
+                BackgroundColor = Color.FromHex(App.GetMenueColor()),
+                SeparatorColor = Color.LightSlateGray
             };
             return memberList;
         }
