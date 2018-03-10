@@ -65,6 +65,7 @@
     <Compile Include="2. Events\InviteToEventPage.xaml.cs">
       <DependentUpon>InviteToEventPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="2. Events\MemberListCell.cs" />
     <Compile Include="2. Events\SingleEventPage.xaml.cs">
       <DependentUpon>SingleEventPage.xaml</DependentUpon>
     </Compile>
