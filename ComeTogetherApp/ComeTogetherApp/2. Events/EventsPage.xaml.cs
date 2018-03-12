@@ -29,7 +29,7 @@ namespace ComeTogetherApp
             InitializeComponent();
 
             eventList = new List<Event>();
-            eventList.Add(new Event("","","Add new Event","", "kreis_plus_schwarz.png", "0"));
+            eventList.Add(new Event("","","Add new Event","", "kreis_plus_schwarz.png", "0", "null"));
 
             searchBar = new SearchBar
             {
@@ -69,6 +69,15 @@ namespace ComeTogetherApp
         {
             try
             {
+                var benutzer_Events = await App.firebase.Child("Benutzer_Veranstaltung").Child(App.GetUserID).OnceAsync<string>();
+
+                foreach (var eventID in benutzer_Events)
+                {
+                    var ev = await App.firebase.Child("Veranstaltungen").OrderByKey().StartAt(eventID.Key).LimitToFirst(1).OnceAsync<Event>();
+                    eventList.Add(ev.ElementAt(0).Object);
+                }
+
+                /*
                 var events = await App.firebase.Child("Veranstaltungen").OrderByKey().StartAt("1").OnceAsync<Event>();
                 //await firebase.Child("Veranstaltungen").Child("6").PutAsync(new Event("lala", "lolo", "lili", "lsls"));
                 
@@ -78,6 +87,8 @@ namespace ComeTogetherApp
                     e.Object.ID = e.Key;
                     eventList.Add(e.Object);
                 }
+                */
+
                 eventList = eventList.OrderBy(o => o.Datum).ToList();       //Order List by Date
                 buildGrid(eventList);                                       //build Grid on Eventpage with data from Server List
             }

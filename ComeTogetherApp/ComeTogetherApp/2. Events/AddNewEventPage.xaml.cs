@@ -32,7 +32,7 @@ namespace ComeTogetherApp
             BackgroundColor = Color.FromHex(App.GetMenueColor());
 
             isDatePicked = false;
-
+            
             ScrollView scroll = new ScrollView();
 
             stack = new StackLayout
@@ -147,11 +147,13 @@ namespace ComeTogetherApp
                 DateTime dt = datePicker.Date;
                 string eventDate = String.Format("{0:yyyy-MM-dd}", dt);
 
-                Event ev = new Event(descriptionEntry.Text, eventDate, nameEntry.Text, locationEntry.Text, "1", eventID);       //TODO Picture
+                Event ev = new Event(descriptionEntry.Text, eventDate, nameEntry.Text, locationEntry.Text, "1", eventID, App.GetUserID());       //TODO Picture
 
                 try
                 {
                     await App.firebase.Child("Veranstaltungen").Child(eventID).PutAsync(ev);
+                    await App.firebase.Child("Veranstaltung_Benutzer").Child(eventID).Child(App.GetUserID()).PutAsync<string>(App.GetUsername());
+                    await App.firebase.Child("Benutzer_Veranstaltung").Child(App.GetUserID()).Child(eventID).PutAsync<string>(nameEntry.Text);
 
                     DisplayAlert("Success", "Event is successful created", "OK");
 

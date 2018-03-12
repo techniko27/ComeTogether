@@ -14,7 +14,8 @@ namespace ComeTogetherApp
         public string Ort { get; set; }
         public string Bild { get; set; }
         public string ID { get; set; }
-        public Event(string Beschreibung, string Datum, string Name, string Ort, string Bild, string ID)
+        public string adminID { get; set; }
+        public Event(string Beschreibung, string Datum, string Name, string Ort, string Bild, string ID, string adminID)
         {
             this.Beschreibung = Beschreibung;
             this.Datum = Datum;
@@ -22,6 +23,7 @@ namespace ComeTogetherApp
             this.Ort = Ort;
             this.Bild = Bild;
             this.ID = ID;
+            this.adminID = adminID;
         }
     }
 }
