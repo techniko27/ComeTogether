@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Firebase.Auth;
 using Firebase.Database;
+using Firebase.Database.Query;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -73,6 +74,8 @@ namespace ComeTogetherApp
                         App.SetEmail(emailEntry.Text.Replace(" ", String.Empty));
                         App.SetPassword(passwordEntry.Text);
                         App.SetUserID(auth.User.LocalId);
+                        var user = await firebase.Child("users").OrderByKey().StartAt(auth.User.LocalId).LimitToFirst(1).OnceAsync<User>();
+                        App.SetUsername(user.ElementAt(0).Object.userName);
                         App.LogInSwitch();
                     }
                 }
