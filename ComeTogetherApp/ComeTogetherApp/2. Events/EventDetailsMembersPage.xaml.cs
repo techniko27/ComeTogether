@@ -39,11 +39,11 @@ namespace ComeTogetherApp
 
             try
             {
-                var usersInEvent = await App.firebase.Child("Benutzer_Veranstaltung").Child(eventID).OnceAsync<string>();
+                var usersInEvent = await App.firebase.Child("Veranstaltung_Benutzer").Child(eventID).OnceAsync<string>();
 
                 foreach (FirebaseObject<string> e in usersInEvent)
                 {
-                    string userID = e.Object;
+                    string userID = e.Key;
                     var userQuery = await App.firebase.Child("users").OrderByKey().StartAt(userID).LimitToFirst(1).OnceAsync<User>();
                     User user = userQuery.ElementAt(0).Object;
                     eventMemberList.Add(user);
