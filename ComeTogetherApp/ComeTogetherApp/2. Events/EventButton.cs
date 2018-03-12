@@ -76,7 +76,7 @@ namespace ComeTogetherApp
                         Navigation.PushAsync(new AddNewEventPage(eventsPage));
                         break;
                     case "Enter joincode":
-                        await Navigation.PushPopupAsync(new EnterJoinCodePopupPage());
+                        await Navigation.PushPopupAsync(new EnterJoinCodePopupPage(eventsPage));
                         break;
                     case "Scan joincode":
                         useScanPage();
