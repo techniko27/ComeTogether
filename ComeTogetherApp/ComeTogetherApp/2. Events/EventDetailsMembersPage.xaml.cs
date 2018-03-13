@@ -28,7 +28,7 @@ namespace ComeTogetherApp
             InitializeComponent();
 
             initProperties();
-            initLayout();
+            initLayout(ev);
 
             retrieveMemberListFromServer(ev);
         }
@@ -46,6 +46,7 @@ namespace ComeTogetherApp
                     string userID = e.Key;
                     var userQuery = await App.firebase.Child("users").OrderByKey().StartAt(userID).LimitToFirst(1).OnceAsync<User>();
                     User user = userQuery.ElementAt(0).Object;
+                    user.ID = userID;
                     eventMemberList.Add(user);
                     System.Diagnostics.Debug.WriteLine($"Name of {userID} is {user.userName}");
                 }
@@ -63,7 +64,7 @@ namespace ComeTogetherApp
             Title = "Members";
         }
 
-        private void initLayout()
+        private void initLayout(Event ev)
         {
             ScrollView scrollView = new ScrollView();
 
@@ -77,13 +78,13 @@ namespace ComeTogetherApp
                 HorizontalOptions = LayoutOptions.CenterAndExpand,
             };
 
-            stackLayout = createStackLayout();
+            stackLayout = createStackLayout(ev);
             scrollView.Content = stackLayout;
 
             Content = scrollView;
         }
 
-        private StackLayout createStackLayout()
+        private StackLayout createStackLayout(Event ev)
         {
             StackLayout stackLayout = new StackLayout
             {
@@ -106,7 +107,7 @@ namespace ComeTogetherApp
                 Padding = new Thickness(5, 0, 5, 10)
             };
 
-            memberList = createMemberList();
+            memberList = createMemberList(ev);
 
             listFrame = new Frame
             {
@@ -123,13 +124,16 @@ namespace ComeTogetherApp
             return stackLayout;
         }
 
-        private ListView createMemberList()
+        private ListView createMemberList(Event ev)
         {
             eventMemberList = new ObservableCollection<User>();
             ListView memberList = new ListView
             {
                 ItemsSource = eventMemberList,
-                ItemTemplate = new DataTemplate(typeof(MemberListCell)),
+                ItemTemplate = new DataTemplate(() =>
+                {
+                    return new MemberListCell(ev, this);
+                }),
                 Margin = new Thickness(0, 0, 0, 10),
                 BackgroundColor = Color.FromHex(App.GetMenueColor()),
                 SeparatorColor = Color.LightSlateGray

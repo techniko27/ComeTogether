@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace ComeTogetherApp
 {
-    class User
+    public class User
     {
         public string userName { get; set; }
         public string email { get; set; }
+        public string ID { get; set; }
         public User(string userName, string email)
         {
             this.userName = userName;
