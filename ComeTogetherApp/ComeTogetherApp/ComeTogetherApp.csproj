@@ -94,7 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Firebase, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\FirebaseDatabase.net.3.3.2\lib\netstandard1.1\Firebase.dll</HintPath>
+      <HintPath>..\packages\FirebaseDatabase.net.3.3.3\lib\netstandard1.1\Firebase.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Firebase.Auth, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">

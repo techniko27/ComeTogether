@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Firebase.Database.Query;
+using Rg.Plugins.Popup.Animations.Base;
 using Rg.Plugins.Popup.Extensions;
 using Rg.Plugins.Popup.Pages;
 using Xamarin.Forms;
@@ -87,7 +88,8 @@ namespace ComeTogetherApp
             }
             catch (Exception)
             {
-                DisplayAlert("Incorrect Joincode", "Event could not be found", "OK");
+                await DisplayAlert("Incorrect Joincode", "Event could not be found", "OK");
+                await Navigation.PopPopupAsync();
                 return;
             }
             try
