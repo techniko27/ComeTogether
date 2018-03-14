@@ -18,6 +18,8 @@ namespace ComeTogetherApp.Droid
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
 
+            ZXing.Net.Mobile.Forms.Android.Platform.Init();
+
             base.OnCreate(bundle);
             
             global::Xamarin.Forms.Forms.Init(this, bundle);

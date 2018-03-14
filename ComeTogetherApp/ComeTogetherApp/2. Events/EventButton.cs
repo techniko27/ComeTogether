@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Firebase.Database.Query;
 using Rg.Plugins.Popup.Extensions;
 using Xamarin.Forms;
 using ZXing.Mobile;
@@ -73,7 +74,7 @@ namespace ComeTogetherApp
                 switch (action)
                 {
                     case "Add new Event":
-                        Navigation.PushAsync(new AddNewEventPage(eventsPage));
+                        await Navigation.PushAsync(new AddNewEventPage(eventsPage));
                         break;
                     case "Enter joincode":
                         await Navigation.PushPopupAsync(new EnterJoinCodePopupPage(eventsPage));
@@ -120,15 +121,57 @@ namespace ComeTogetherApp
                 // Stop scanning
                 scanPage.IsScanning = false;
 
-                //TODO add user to event
-
                 // Pop the page and show the result
                 Device.BeginInvokeOnMainThread(async () =>
                 {
+                    //Add user to event in Database
+                    addUsertoEvent(result.Text);
+
                     await Navigation.PopAsync();
-                    await eventsPage.DisplayAlert("Scanned Barcode", result.Text, "OK");
                 });
             };
+        }
+
+        public async void addUsertoEvent(string eventID)
+        {
+            foreach (var eventPageEvent in eventsPage.eventList)
+            {
+                //Check if event allready exist for this user
+                if (eventPageEvent.ID == eventID)
+                {
+                    await eventsPage.DisplayAlert("Note", "You are already member of this event named " + eventPageEvent.Name, "OK");
+                    return;
+                }
+            }
+
+            IReadOnlyCollection<Firebase.Database.FirebaseObject<Event>> ev = null;
+            try
+            {
+                ev = await App.firebase.Child("Veranstaltungen").OrderByKey().StartAt(eventID).LimitToFirst(1).OnceAsync<Event>();
+
+                if (ev.ElementAt(0).Object.ID != eventID)                //Check if right joincode exist in database.
+                    throw null;
+            }
+            catch (Exception)
+            {
+                await eventsPage.DisplayAlert("Incorrect Joincode", "Event could not be found, with ID " + eventID, "OK");
+                return;
+            }
+            try
+            {
+                await App.firebase.Child("Veranstaltung_Benutzer").Child(eventID).Child(App.GetUserID()).PutAsync<string>(App.GetUsername());
+                await App.firebase.Child("Benutzer_Veranstaltung").Child(App.GetUserID()).Child(eventID).PutAsync<string>(ev.ElementAt(0).Object.Name);
+
+                eventsPage.eventList.Add(ev.ElementAt(0).Object);
+                eventsPage.stack.Children.RemoveAt(eventsPage.stack.Children.IndexOf(eventsPage.stack.Children.Last()));         //Remove the last Grid from EventsPage
+                eventsPage.buildGrid(eventsPage.eventList);
+
+                await eventsPage.DisplayAlert("Success", "Event "+ ev.ElementAt(0).Object.Name +" added", "OK");
+            }
+            catch (Exception)
+            {
+                await eventsPage.DisplayAlert("Server connection failure", "Communication problems occured while adding event", "OK");
+            }
         }
     }
 }

@@ -107,7 +107,7 @@ namespace ComeTogetherApp
             }
             catch (Exception)
             {
-                DisplayAlert("Server connection failure", "Communication problems occured while adding event", "OK");
+                await DisplayAlert("Server connection failure", "Communication problems occured while adding event", "OK");
             }
         }
         async void OnJoinCodeEntryClicked(object sender, EventArgs e)
