@@ -16,7 +16,7 @@ namespace ComeTogetherApp
     public partial class EventDetailsMembersPage : ContentPage
     {
 
-        private ObservableCollection<User> eventMemberList;
+        public ObservableCollection<User> eventMemberList;
         private ActivityIndicator activityIndicator;
         private SearchBar memberSearchBar;
         private Frame listFrame;
