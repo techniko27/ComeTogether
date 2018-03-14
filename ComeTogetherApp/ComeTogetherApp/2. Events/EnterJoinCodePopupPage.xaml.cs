@@ -38,6 +38,7 @@ namespace ComeTogetherApp
                 Text = "Enter Join-Code here",
                 FontSize = 15,
                 TextColor = Color.White,
+                BackgroundColor = Color.FromHex(App.GetMenueColor()),
             };
             joinCodeEntry.Focused += OnJoinCodeEntryClicked;
             Button enterJoinCodeButton = new Button()
@@ -58,6 +59,7 @@ namespace ComeTogetherApp
             //Versuch um BackgrondClick zu bekommen
             CloseWhenBackgroundIsClicked = true;
             HasSystemPadding = true;
+            BackgroundClicked += OnBackgroundClicked;
 
             Padding = 30;
         }
@@ -109,6 +111,11 @@ namespace ComeTogetherApp
         async void OnJoinCodeEntryClicked(object sender, EventArgs e)
         {
             joinCodeEntry.Text = "";
+        }
+
+        async void OnBackgroundClicked(object sender, EventArgs e)
+        {
+            await Navigation.PopPopupAsync();
         }
 
         // ### Overrided methods which can prevent closing a popup page ###
