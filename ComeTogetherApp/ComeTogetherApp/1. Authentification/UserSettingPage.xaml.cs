@@ -16,6 +16,7 @@ namespace ComeTogetherApp
         private ActivityIndicator activityIndicator;
         private ScrollView scroll;
         private StackLayout stack;
+        private Label messageLabel;
         Entry usernameEntry;
 
         public UserSettingPage()
@@ -26,7 +27,6 @@ namespace ComeTogetherApp
             // buttonSaveChanges.BackgroundColor = Color.White;
             // buttonSaveChanges.Margin = new Thickness(50, 0, 50, 0);
 
-
             scroll = new ScrollView
             {
                 BackgroundColor = Color.FromHex(App.GetMenueColor())
@@ -34,8 +34,12 @@ namespace ComeTogetherApp
 
             stack = new StackLayout
             {
-                VerticalOptions = LayoutOptions.Fill,
-                HorizontalOptions = LayoutOptions.Fill,
+                VerticalOptions = LayoutOptions.FillAndExpand,
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+                Padding = new Thickness(30, 0, 30, 0),
+                Margin = new Thickness(10, 10, 10, 10)
+                //VerticalOptions = LayoutOptions.Fill,
+                //HorizontalOptions = LayoutOptions.Fill,
                 //Padding = new Thickness(2, 2, 2, 2)
             };
             scroll.Content = stack;
@@ -54,44 +58,49 @@ namespace ComeTogetherApp
 
             Label usernameLabel = new Label()
             {
-                Text ="Benutzername",
-                VerticalOptions = LayoutOptions.StartAndExpand
+                Text = "Benutzername"
             };
 
             usernameEntry = new Entry()
             {
-                HeightRequest = 50,
-                VerticalOptions = LayoutOptions.StartAndExpand
+                //HeightRequest = 50,
+                Margin = new Thickness(0, 0, 0, 20)
             };
 
             Button buttonResetPassword = new Button()
             {
                 Text = "Reset Password",
                 TextColor = Color.FromHex(App.GetMenueColor()),
-                VerticalOptions = LayoutOptions.StartAndExpand,
                 BackgroundColor = Color.White,
-                //Margin = new Thickness(50, 20, 50, 0)
+                Margin = new Thickness(0, 0, 0, 0)
+            };
+
+            messageLabel = new Label
+            {
+                FontSize = 20,
+                TextColor = Color.Red
             };
 
             Button buttonSaveChanges = new Button()
             {
                 Text = "Save Changes",
                 TextColor = Color.FromHex(App.GetMenueColor()),
-                VerticalOptions = LayoutOptions.StartAndExpand,
                 BackgroundColor = Color.White,
-                //Margin = new Thickness(50, 20, 50, 0)
+                Margin = new Thickness(0, 0, 0, 0),
+
             };
+            buttonSaveChanges.Clicked += OnButtonSaveChangesClicked;
 
             stack.Children.Add(usernameLabel);
             stack.Children.Add(usernameEntry);
+            stack.Children.Add(messageLabel);
             stack.Children.Add(buttonResetPassword);
             stack.Children.Add(buttonSaveChanges);
 
             ServerGetUser();
         }
 
-        //usernameEntry.Placeholder = await App.firebase.Child("Veranstaltungen").OrderByKey().StartAt("1").OnceAsync<Event>();
-        private async void ServerGetUser() 
+        private async void ServerGetUser()
         {
             var users = await App.firebase.Child("users").OrderByKey().StartAt(App.GetUserID()).LimitToFirst(1).OnceAsync<User>();
             User user = users.ElementAt(0).Object;
@@ -100,7 +109,34 @@ namespace ComeTogetherApp
             activityIndicatorSwitch();
         }
 
-        void saveChanges(object sender, System.EventArgs e)
+        async void OnButtonSaveChangesClicked(object sender, EventArgs e)
+        {
+            if (usernameEntry.Text == "")
+            {
+                messageLabel.Text = "Please enter a name for your username!";
+            } 
+            else 
+            {
+                try
+                { 
+                    //await firebase.Child("users").Child(userID).PutAsync(new User(usernameEntry.Text, emailEntry.Text));
+                    //firebase.database().ref().update(updates);
+   
+                    string userID = App.GetUserID();
+
+                    DisplayAlert("Success", "All changes save!", "OK");
+                }
+                catch (Exception)
+                {
+                    DisplayAlert("Server connection failure", "Communication problems occured while adding event", "OK");
+                }
+                
+   
+            }
+
+        }
+
+        private void update()
         {
             throw new NotImplementedException();
         }

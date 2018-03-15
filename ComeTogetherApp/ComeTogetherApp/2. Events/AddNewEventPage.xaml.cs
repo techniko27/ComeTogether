@@ -126,19 +126,19 @@ namespace ComeTogetherApp
         {
             if (nameEntry.Text == null)
             {
-                messageLabel.Text = "Pleas enter a name for the Event!";
+                messageLabel.Text = "Please enter a name for the Event!";
             }
             else if (descriptionEntry.Text == null)
             {
-                messageLabel.Text = "Pleas enter a descripion for the Event!";
+                messageLabel.Text = "Please enter a descripion for the Event!";
             }
             else if (locationEntry.Text == null)
             {
-                messageLabel.Text = "Pleas enter a location for the Event!";
+                messageLabel.Text = "Please enter a location for the Event!";
             }
             else if (!isDatePicked)
             {
-                messageLabel.Text = "Pleas enter a date for the Event!";
+                messageLabel.Text = "Please enter a date for the Event!";
             }
             else
             {
