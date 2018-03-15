@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using Firebase.Database.Query;
+using System.Diagnostics.Contracts;
 
 namespace ComeTogetherApp
 {
@@ -81,10 +82,11 @@ namespace ComeTogetherApp
 
         private Image createThreeDotsButton()
         {
+            Contract.Ensures(Contract.Result<Image>() != null);
             Image threeDots = new Image { Aspect = Aspect.AspectFit, VerticalOptions = LayoutOptions.Center, HorizontalOptions = LayoutOptions.EndAndExpand };
             threeDots.Source = "drei_punkte_schwarz.png";
-            threeDots.AnchorX = 0;
-            threeDots.AnchorY = 0;
+            threeDots.AnchorX = 0; //bei iOS 0.5
+            threeDots.AnchorY = 0; //bei iOS 0.5
             threeDots.Scale = 0.7;
 
             TapGestureRecognizer tapGestureRecognizer = new TapGestureRecognizer();
