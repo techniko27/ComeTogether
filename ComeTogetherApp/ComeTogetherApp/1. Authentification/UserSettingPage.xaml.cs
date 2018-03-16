@@ -124,6 +124,8 @@ namespace ComeTogetherApp
    
                     string userID = App.GetUserID();
 
+                    await App.firebase.Child("users").Child(userID).PutAsync(new User(usernameEntry.Text, App.GetEmail()));
+
                     DisplayAlert("Success", "All changes save!", "OK");
                 }
                 catch (Exception)
