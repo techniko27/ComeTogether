@@ -31,6 +31,8 @@ namespace ComeTogetherApp
         protected override void OnBindingContextChanged()
         {
             base.OnBindingContextChanged();
+            if (BindingContext == null)
+                return;
             this.user = (User) BindingContext;
 
             Image userIcon = new Image { Aspect = Aspect.AspectFit, VerticalOptions = LayoutOptions.Start };
@@ -85,8 +87,13 @@ namespace ComeTogetherApp
             Contract.Ensures(Contract.Result<Image>() != null);
             Image threeDots = new Image { Aspect = Aspect.AspectFit, VerticalOptions = LayoutOptions.Center, HorizontalOptions = LayoutOptions.EndAndExpand };
             threeDots.Source = "drei_punkte_schwarz.png";
-            threeDots.AnchorX = 0; //bei iOS 0.5
-            threeDots.AnchorY = 0; //bei iOS 0.5
+            threeDots.AnchorX = 0;
+            threeDots.AnchorY = 0;
+            if (Device.RuntimePlatform == Device.iOS)
+            {
+                threeDots.AnchorX = 0.5; //bei iOS 0.5
+                threeDots.AnchorY = 0.5; //bei iOS 0.5
+            }
             threeDots.Scale = 0.7;
 
             TapGestureRecognizer tapGestureRecognizer = new TapGestureRecognizer();
@@ -113,7 +120,7 @@ namespace ComeTogetherApp
                     bool answer = await memberPage.DisplayAlert("Are you sure?", $"Do you really want to kick {user.userName}?", "Yes", "No");
                     if(answer)
                     {
-                        removeUserFromEvent();
+                        removeUserFromEvent(false);
                         memberPage.eventMemberList.Remove(user);
                     }
                     break;
@@ -124,8 +131,7 @@ namespace ComeTogetherApp
                         answer = await memberPage.DisplayAlert("Are you sure?", $"Do you really want to leave this event? As the administrator of this event, leaving it will fully delete the event.", "Yes", "No");
                     if (answer)
                     {
-                        removeUserFromEvent();
-                        memberPage.Navigation.PushAsync(new EventsPage());
+                        removeUserFromEvent(true);
                     }
                     break;
                 default:
@@ -133,12 +139,12 @@ namespace ComeTogetherApp
             }
         }
 
-        private async void removeUserFromEvent()
+        private async void removeUserFromEvent(bool redirect)
         {
             string eventID = ev.ID;
 
             // if the admin is leaving the event, dissolve the whole event
-            if (App.GetUserID().Equals(ev.adminID))
+            if (user.ID.Equals(ev.adminID))
             {
                 foreach(User u in memberPage.eventMemberList)
                 {
@@ -148,11 +154,38 @@ namespace ComeTogetherApp
                 await App.firebase.Child("Veranstaltung_Benutzer").Child(eventID).DeleteAsync();
                 await App.firebase.Child("Veranstaltungen").Child(eventID).DeleteAsync();
 
+                if(redirect)
+                {
+                    await memberPage.Navigation.PushAsync(new EventsPage
+                    {
+                        Title = "Events"
+                    });
+                    clearNavigationStack();
+                }
+
                 return;
             }
 
-            await App.firebase.Child("Benutzer_Veranstaltung").Child(App.GetUserID()).Child(eventID).DeleteAsync();
-            await App.firebase.Child("Veranstaltung_Benutzer").Child(eventID).Child(App.GetUserID()).DeleteAsync();
+            await App.firebase.Child("Benutzer_Veranstaltung").Child(user.ID).Child(eventID).DeleteAsync();
+            await App.firebase.Child("Veranstaltung_Benutzer").Child(eventID).Child(user.ID).DeleteAsync();
+
+            if (redirect)
+            {
+                await memberPage.Navigation.PushAsync(new EventsPage
+                {
+                    Title = "Events"
+                });
+                clearNavigationStack();
+            }
+        }
+
+        private void clearNavigationStack()
+        {
+            var navigationPages = memberPage.Navigation.NavigationStack.ToList();
+            foreach (var page in navigationPages)
+            {
+                memberPage.Navigation.RemovePage(page);
+            }
         }
     }
 }
