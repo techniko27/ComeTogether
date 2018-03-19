@@ -11,6 +11,8 @@ namespace ComeTogetherApp
         public string userName { get; set; }
         public string email { get; set; }
         public string ID { get; set; }
+        public string PayPal_me_link { get; set; }
+
         public User(string userName, string email)
         {
             this.userName = userName;

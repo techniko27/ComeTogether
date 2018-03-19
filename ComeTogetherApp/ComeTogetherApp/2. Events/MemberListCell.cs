@@ -91,8 +91,8 @@ namespace ComeTogetherApp
             threeDots.AnchorY = 0;
             if (Device.RuntimePlatform == Device.iOS)
             {
-                threeDots.AnchorX = 0.5; //bei iOS 0.5
-                threeDots.AnchorY = 0.5; //bei iOS 0.5
+                threeDots.AnchorX = 0.4; //bei iOS 0.5
+                threeDots.AnchorY = 0.4; //bei iOS 0.5
             }
             threeDots.Scale = 0.7;
 

@@ -18,6 +18,7 @@ namespace ComeTogetherApp
         private StackLayout stack;
         private Label messageLabel;
         Entry usernameEntry;
+        Entry paypalMeEntry;
 
         public UserSettingPage()
         {
@@ -67,13 +68,25 @@ namespace ComeTogetherApp
                 Margin = new Thickness(0, 0, 0, 20)
             };
 
+            Label paypalMeLabel = new Label()
+            {
+                Text = "Paypal.me Link"
+            };
+
+            paypalMeEntry = new Entry()
+            { 
+                Margin = new Thickness(0, 0, 0, 20)
+            };
+
+
             Button buttonResetPassword = new Button()
             {
                 Text = "Reset Password",
                 TextColor = Color.FromHex(App.GetMenueColor()),
                 BackgroundColor = Color.White,
-                Margin = new Thickness(0, 0, 0, 0)
+                Margin = new Thickness(0, 60, 0, 0)
             };
+            buttonResetPassword.Clicked += OnButtonResetPasswordClicked;
 
             messageLabel = new Label
             {
@@ -93,9 +106,11 @@ namespace ComeTogetherApp
 
             stack.Children.Add(usernameLabel);
             stack.Children.Add(usernameEntry);
+            stack.Children.Add(paypalMeLabel);
+            stack.Children.Add(paypalMeEntry);
             stack.Children.Add(messageLabel);
-            stack.Children.Add(buttonResetPassword);
             stack.Children.Add(buttonSaveChanges);
+            stack.Children.Add(buttonResetPassword);
 
             ServerGetUser();
         }
@@ -114,8 +129,31 @@ namespace ComeTogetherApp
             if (usernameEntry.Text == "")
             {
                 messageLabel.Text = "Please enter a name for your username!";
-            } 
-            else 
+            }
+            else if (paypalMeEntry.Text != "")
+            {
+                string paypalMeLinkString = paypalMeEntry.Text.ToLower();
+
+                if (paypalMeLinkString.Contains("https://"))
+                {
+                    paypalMeLinkString = paypalMeLinkString.Substring(8);
+                }
+
+                string[] test = paypalMeLinkString.Split('/');
+
+
+                if(!paypalMeLinkString.Contains("paypal.me/") || paypalMeLinkString.Length < 10 || (test.Length >= 3 && test[2] != ""))
+                {
+                    messageLabel.Text = "Your PayPal.Me Link is not correct!";
+                }
+                else
+                {
+                    messageLabel.Text = "";
+
+                }
+
+            }
+            else
             {
                 try
                 { 
@@ -126,16 +164,52 @@ namespace ComeTogetherApp
 
                     await App.firebase.Child("users").Child(userID).PutAsync(new User(usernameEntry.Text, App.GetEmail()));
 
-                    DisplayAlert("Success", "All changes save!", "OK");
+                    DisplayAlert("Success", "All changes saved!", "OK");
                 }
                 catch (Exception)
                 {
                     DisplayAlert("Server connection failure", "Communication problems occured while adding event", "OK");
                 }
-                
-   
             }
+        }
 
+        async void OnButtonResetPasswordClicked(object sender, EventArgs e)
+        {
+            //Login Request
+            var authProvider = new FirebaseAuthProvider(new FirebaseConfig(App.GetFirebaseApiKey()));
+
+            try
+            {
+                await authProvider.SendPasswordResetEmailAsync(App.GetEmail());
+
+                DisplayAlert("Sucess", "Password reset mail is send to " + App.GetEmail(), "Ok");
+            }
+            catch (FirebaseAuthException exception)
+            {
+                /*
+                switch (exception.Reason)
+                {
+                    case AuthErrorReason.WrongPassword:
+                        messageLabel.Text = "Passwort ist falsch.";
+                        passwordEntry.Text = string.Empty;
+                        break;
+                    case AuthErrorReason.UserDisabled:
+                        messageLabel.Text = "Benutzer deaktiviert.";
+                        break;
+                    case AuthErrorReason.UnknownEmailAddress:
+                        messageLabel.Text = "Email Adresse unbekannt.";
+                        break;
+                    case AuthErrorReason.InvalidProviderID:
+                        messageLabel.Text = "InvalidProviderID";
+                        break;
+                    default:
+                        //messageLabel.Text = "Kommunikationsproblem, Undefinierte Antwort vom Server!";
+                        DisplayAlert("Server connection failure", "Communication problems occured while login", "OK");
+                        //await DisplayAlert("Anmeldefehler", "Sie konnten nicht angemeldet werden!", "OK");
+                        break;
+                }
+                */
+            }
         }
 
         private void update()
