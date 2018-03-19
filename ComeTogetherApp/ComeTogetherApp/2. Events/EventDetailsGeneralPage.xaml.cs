@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Firebase.Database;
+using Firebase.Database.Query;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -144,7 +145,7 @@ namespace ComeTogetherApp
             Button startEventButton = new Button
             {
                 Text = "Start Event",
-                TextColor = Color.White,
+                TextColor = Color.Black,
                 BackgroundColor = Color.LightGreen,
                 FontAttributes = FontAttributes.Bold
             };
@@ -156,7 +157,7 @@ namespace ComeTogetherApp
                 TextColor = Color.FromHex(App.GetMenueColor()),
                 FontAttributes = FontAttributes.Bold
             };
-            inviteFriendsButton.Clicked += OninviteFriendsButtonClicked;
+            inviteFriendsButton.Clicked += OnInviteFriendsButtonClicked;
 
             Button editEventButton = new Button
             {
@@ -169,22 +170,91 @@ namespace ComeTogetherApp
             Button leaveEventButton = new Button
             {
                 Text = "Leave Event",
-                TextColor = Color.White,
+                TextColor = Color.Black,
                 BackgroundColor = Color.OrangeRed,
                 FontAttributes = FontAttributes.Bold
             };
+            leaveEventButton.Clicked += OnLeaveEventButtonClicked;
 
-            buttonOptionsLayout.Children.Add(startEventButton);
+            if(ev.adminID.Equals(App.GetUserID()))
+                buttonOptionsLayout.Children.Add(startEventButton);
             buttonOptionsLayout.Children.Add(inviteFriendsButton);
-            buttonOptionsLayout.Children.Add(editEventButton);
+            if (ev.adminID.Equals(App.GetUserID()))
+                buttonOptionsLayout.Children.Add(editEventButton);
             buttonOptionsLayout.Children.Add(leaveEventButton);
 
             return buttonOptionsLayout;
         }
 
-        async void OninviteFriendsButtonClicked(object sender, EventArgs e)
+        private async void OnLeaveEventButtonClicked(object sender, EventArgs e)
         {
-            Navigation.PushAsync(new InviteToEventPage(ev));
+            string action;
+            action = await DisplayActionSheet("Member Options", "Cancel", null, "Leave Event");
+            switch (action)
+            {
+                case "Leave Event":
+                    bool answer;
+                    if (!App.GetUserID().Equals(ev.adminID))
+                        answer = await DisplayAlert("Are you sure?", $"Do you really want to leave this event?", "Yes", "No");
+                    else
+                        answer = await DisplayAlert("Are you sure?", $"Do you really want to leave this event? As the administrator of this event, leaving it will fully delete the event.", "Yes", "No");
+                    if (answer)
+                        removeUserFromEvent();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private async void OnInviteFriendsButtonClicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new InviteToEventPage(ev));
+        }
+
+        private async void removeUserFromEvent()
+        {
+            string eventID = ev.ID;
+
+            // if the admin is leaving the event, dissolve the whole event
+            if (App.GetUserID().Equals(ev.adminID))
+            {
+                var usersInEvent = await App.firebase.Child("Veranstaltung_Benutzer").Child(eventID).OnceAsync<string>();
+
+                foreach (FirebaseObject<string> e in usersInEvent)
+                {
+                    string userID = e.Key;
+                    await App.firebase.Child("Benutzer_Veranstaltung").Child(userID).Child(eventID).DeleteAsync();
+                }
+
+                await App.firebase.Child("Veranstaltung_Benutzer").Child(eventID).DeleteAsync();
+                await App.firebase.Child("Veranstaltungen").Child(eventID).DeleteAsync();
+
+                await Navigation.PushAsync(new EventsPage
+                {
+                    Title = "Events"
+                });
+                clearNavigationStack();
+
+                return;
+            }
+
+            await App.firebase.Child("Benutzer_Veranstaltung").Child(App.GetUserID()).Child(eventID).DeleteAsync();
+            await App.firebase.Child("Veranstaltung_Benutzer").Child(eventID).Child(App.GetUserID()).DeleteAsync();
+
+            await Navigation.PushAsync(new EventsPage
+            {
+                Title = "Events"
+            });
+            clearNavigationStack();
+        }
+
+        private void clearNavigationStack()
+        {
+            var navigationPages = Navigation.NavigationStack.ToList();
+            foreach (var page in navigationPages)
+            {
+                Navigation.RemovePage(page);
+            }
         }
     }
 }
