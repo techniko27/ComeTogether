@@ -48,7 +48,7 @@ namespace ComeTogetherApp
             }
         }
 
-        public static async Task<bool> firebaseClientRefresh()
+        public static async Task<string> firebaseClientRefresh()
         {
             try
             {
@@ -59,12 +59,13 @@ namespace ComeTogetherApp
                 {
                     AuthTokenAsyncFactory = () => Task.FromResult(auth.FirebaseToken)
                 });
+                return auth.FirebaseToken;
             }
             catch (Exception)
             {
                 await activePage.DisplayAlert("Server connection failure", "Communication problems occured while authentication", "OK");
             }
-            return true;
+            return "";
         }
 
         public static async Task<bool> LogInSwitch()

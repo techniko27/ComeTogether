@@ -23,10 +23,6 @@ namespace ComeTogetherApp
         public UserSettingPage()
         {
             InitializeComponent();
-            // scrollView.BackgroundColor = Color.FromHex(App.GetMenueColor());
-            // buttonSaveChanges.TextColor = Color.FromHex(App.GetMenueColor());
-            // buttonSaveChanges.BackgroundColor = Color.White;
-            // buttonSaveChanges.Margin = new Thickness(50, 0, 50, 0);
 
             scroll = new ScrollView
             {
@@ -44,7 +40,6 @@ namespace ComeTogetherApp
                 //Padding = new Thickness(2, 2, 2, 2)
             };
             scroll.Content = stack;
-
 
             activityIndicator = new ActivityIndicator()
             {
@@ -78,7 +73,6 @@ namespace ComeTogetherApp
                 Margin = new Thickness(0, 0, 0, 20)
             };
 
-
             Button buttonResetPassword = new Button()
             {
                 Text = "Reset Password",
@@ -104,6 +98,16 @@ namespace ComeTogetherApp
             };
             buttonSaveChanges.Clicked += OnButtonSaveChangesClicked;
 
+            Button buttonDeleteAccount = new Button()
+            {
+                Text = "Delete Account",
+                TextColor = Color.White,
+                BackgroundColor = Color.Red,
+                Margin = new Thickness(0, 0, 0, 0),
+
+            };
+            buttonDeleteAccount.Clicked += OnButtonDeleteAccount;
+
             stack.Children.Add(usernameLabel);
             stack.Children.Add(usernameEntry);
             stack.Children.Add(paypalMeLabel);
@@ -111,8 +115,34 @@ namespace ComeTogetherApp
             stack.Children.Add(messageLabel);
             stack.Children.Add(buttonSaveChanges);
             stack.Children.Add(buttonResetPassword);
+            stack.Children.Add(buttonDeleteAccount);
 
             ServerGetUser();
+        }
+
+        private async void OnButtonDeleteAccount(object sender, EventArgs e)
+        {
+            var answer = await DisplayAlert("Delete Account", "Do you want delete your account?", "Yes", "No");
+
+            if(answer == true)
+            {
+                var authProvider = new FirebaseAuthProvider(new FirebaseConfig(App.GetFirebaseApiKey()));
+
+                try
+                {
+                    await authProvider.DeleteUser(await App.firebaseClientRefresh());
+
+                    DisplayAlert("Sucess", "Your account is going to delete!", "Ok");
+
+                    Application.Current.Properties["IsUserLoggedIn"] = false;
+                    Device.BeginInvokeOnMainThread(() => App.LogInSwitch());
+
+                }
+                catch (FirebaseAuthException exception)
+                {
+                   
+                }
+            }
         }
 
         private async void ServerGetUser()
@@ -130,7 +160,7 @@ namespace ComeTogetherApp
             {
                 messageLabel.Text = "Please enter a name for your username!";
             }
-            else if (paypalMeEntry.Text != "")
+            else if (paypalMeEntry.Text != "" && paypalMeEntry.Text != null)
             {
                 string paypalMeLinkString = paypalMeEntry.Text.ToLower();
 
@@ -157,9 +187,6 @@ namespace ComeTogetherApp
             {
                 try
                 { 
-                    //await firebase.Child("users").Child(userID).PutAsync(new User(usernameEntry.Text, emailEntry.Text));
-                    //firebase.database().ref().update(updates);
-   
                     string userID = App.GetUserID();
 
                     await App.firebase.Child("users").Child(userID).PutAsync(new User(usernameEntry.Text, App.GetEmail()));
@@ -186,29 +213,8 @@ namespace ComeTogetherApp
             }
             catch (FirebaseAuthException exception)
             {
-                /*
-                switch (exception.Reason)
-                {
-                    case AuthErrorReason.WrongPassword:
-                        messageLabel.Text = "Passwort ist falsch.";
-                        passwordEntry.Text = string.Empty;
-                        break;
-                    case AuthErrorReason.UserDisabled:
-                        messageLabel.Text = "Benutzer deaktiviert.";
-                        break;
-                    case AuthErrorReason.UnknownEmailAddress:
-                        messageLabel.Text = "Email Adresse unbekannt.";
-                        break;
-                    case AuthErrorReason.InvalidProviderID:
-                        messageLabel.Text = "InvalidProviderID";
-                        break;
-                    default:
-                        //messageLabel.Text = "Kommunikationsproblem, Undefinierte Antwort vom Server!";
-                        DisplayAlert("Server connection failure", "Communication problems occured while login", "OK");
-                        //await DisplayAlert("Anmeldefehler", "Sie konnten nicht angemeldet werden!", "OK");
-                        break;
-                }
-                */
+                
+             
             }
         }
 
