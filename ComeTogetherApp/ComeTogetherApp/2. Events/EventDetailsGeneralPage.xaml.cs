@@ -166,6 +166,7 @@ namespace ComeTogetherApp
                 TextColor = Color.FromHex(App.GetMenueColor()),
                 FontAttributes = FontAttributes.Bold
             };
+            editEventButton.Clicked += OnEditEventButtonClicked;
 
             Button leaveEventButton = new Button
             {
@@ -184,6 +185,11 @@ namespace ComeTogetherApp
             buttonOptionsLayout.Children.Add(leaveEventButton);
 
             return buttonOptionsLayout;
+        }
+
+        private async void OnEditEventButtonClicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new EditEventInfoPage(ev));
         }
 
         private async void OnLeaveEventButtonClicked(object sender, EventArgs e)
