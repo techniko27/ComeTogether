@@ -46,6 +46,9 @@
     <Compile Include="2. Events\AddNewEventPage.xaml.cs">
       <DependentUpon>AddNewEventPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="2. Events\EditEventInfoPage.xaml.cs">
+      <DependentUpon>EditEventInfoPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="2. Events\EnterJoinCodePopupPage.xaml.cs">
       <DependentUpon>EnterJoinCodePopupPage.xaml</DependentUpon>
     </Compile>
@@ -251,9 +254,14 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="3. ToDos\ToDoDetailsPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="2. Events\EditEventInfoPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
       <SubType>Designer</SubType>
     </EmbeddedResource>
