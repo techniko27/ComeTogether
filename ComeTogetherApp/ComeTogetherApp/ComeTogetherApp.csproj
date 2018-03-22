@@ -69,6 +69,9 @@
     <Compile Include="2. Events\SingleEventPage.xaml.cs">
       <DependentUpon>SingleEventPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="3. ToDos\ToDoDetailsPage.xaml.cs">
+      <DependentUpon>ToDoDetailsPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
@@ -76,6 +79,7 @@
       <DependentUpon>AppStartPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Beans\Event.cs" />
+    <Compile Include="Beans\ToDo.cs" />
     <Compile Include="Beans\User.cs" />
     <Compile Include="ComeTogetherAppPage.xaml.cs">
       <DependentUpon>ComeTogetherAppPage.xaml</DependentUpon>
@@ -243,6 +247,13 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="2. Events\EnterJoinCodePopupPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="3. ToDos\ToDoDetailsPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
       <SubType>Designer</SubType>
     </EmbeddedResource>
