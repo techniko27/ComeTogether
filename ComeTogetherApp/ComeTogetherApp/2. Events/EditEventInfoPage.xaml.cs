@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Firebase.Database.Query;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -13,6 +13,14 @@ namespace ComeTogetherApp
     public partial class EditEventInfoPage : ContentPage
     {
         private Event ev;
+        private Entry titleEntry;
+        private Editor descriptionEntry;
+        private Image eventImage;
+        private Entry locationEntry;
+        private DatePicker datePicker;
+        private Button saveChangesButton;
+
+        private Label errorLabel;
 
         public EditEventInfoPage(Event ev)
         {
@@ -61,6 +69,11 @@ namespace ComeTogetherApp
             stackLayout.Children.Add(eventDateFrame);
             stackLayout.Children.Add(buttonsFrame);
 
+            titleEntry.TextChanged += textChangesMade;
+            descriptionEntry.TextChanged += textChangesMade;
+            locationEntry.TextChanged += textChangesMade;
+            datePicker.DateSelected += dateChangesMade;
+
             return stackLayout;
         }
 
@@ -70,17 +83,18 @@ namespace ComeTogetherApp
 
             Label eventTitleLabel = new Label
             {
-                Text = "Title:",
+                Text = "Name:",
                 TextColor = Color.White,
                 FontSize = 20,
                 Margin = new Thickness(5, 0, 0, 0),
             };
 
-            Entry titleEntry = new Entry
+            titleEntry = new Entry
             {
                 Text = ev.Name,
                 BackgroundColor = Color.White
             };
+
 
             Frame titleEntryFrame = new Frame
             {
@@ -115,7 +129,7 @@ namespace ComeTogetherApp
                 Margin = new Thickness(5, 0, 0, 0),
             };
 
-            Editor descriptionEntry = new Editor
+            descriptionEntry = new Editor
             {
                 Text = ev.Beschreibung,
                 BackgroundColor = Color.White,
@@ -147,10 +161,38 @@ namespace ComeTogetherApp
         {
             StackLayout eventIconLayout = new StackLayout();
 
+            Label eventIconLabel = new Label
+            {
+                Text = "Image:",
+                TextColor = Color.White,
+                FontSize = 20,
+                Margin = new Thickness(5, 0, 0, 0),
+            };
+
+            eventImage = new Image
+            {
+                Aspect = Aspect.AspectFit,
+                VerticalOptions = LayoutOptions.Center,
+                HorizontalOptions = LayoutOptions.Center
+            };
+            eventImage.Source = "icon.png";
+
+            Frame imageFrame = new Frame
+            {
+                Content = eventImage,
+                BackgroundColor = Color.FromHex(App.GetMenueColor()),
+                CornerRadius = 5
+            };
+
+            eventIconLayout.Children.Add(eventIconLabel);
+            eventIconLayout.Children.Add(imageFrame);
+
+
             Frame eventTitleFrame = new Frame
             {
                 Content = eventIconLayout,
-                BackgroundColor = Color.FromHex(App.GetMenueColor()),
+                Padding = 0,
+                BackgroundColor = Color.FromHex("376467"),
                 CornerRadius = 5
             };
             return eventTitleFrame;
@@ -168,7 +210,7 @@ namespace ComeTogetherApp
                 Margin = new Thickness(5, 0, 0, 0),
             };
 
-            Entry locationEntry = new Entry
+            locationEntry = new Entry
             {
                 Text = ev.Name,
                 BackgroundColor = Color.White
@@ -207,9 +249,20 @@ namespace ComeTogetherApp
                 Margin = new Thickness(5, 0, 0, 0),
             };
 
-            DatePicker datePicker = new DatePicker
+            string date = ev.Datum;
+            int year;
+            int month;
+            int day;
+            Int32.TryParse(date.Substring(0, 4), out year);
+            Int32.TryParse(date.Substring(5, 2), out month);
+            Int32.TryParse(date.Substring(8, 2), out day);
+
+            DateTime dt = new DateTime(year, month, day);
+
+            datePicker = new DatePicker
             {
                 Format = "D",
+                Date = dt,
                 BackgroundColor = Color.White,
             };
 
@@ -236,6 +289,11 @@ namespace ComeTogetherApp
 
         private Frame createButtonsFrame()
         {
+            StackLayout errorLabelLayout = new StackLayout
+            {
+                HorizontalOptions = LayoutOptions.CenterAndExpand
+            };
+
             StackLayout buttonsLayout = new StackLayout
             {
                 Orientation = StackOrientation.Horizontal,
@@ -250,26 +308,133 @@ namespace ComeTogetherApp
                 FontAttributes = FontAttributes.Bold,
                 WidthRequest = 150
             };
+            cancelButton.Clicked += cancelButtonClicked;
 
-            Button saveChangesButton = new Button
+            saveChangesButton = new Button
             {
                 Text = "Save Changes",
                 TextColor = Color.Black,
+                IsEnabled = false,
                 BackgroundColor = Color.LightGreen,
                 FontAttributes = FontAttributes.Bold,
                 WidthRequest = 150
+            };
+            saveChangesButton.Clicked += saveChanges;
+
+            errorLabel = new Label
+            {
+                IsVisible = false,
+                FontSize = 15,
+                TextColor = Color.Red
             };
 
             buttonsLayout.Children.Add(cancelButton);
             buttonsLayout.Children.Add(saveChangesButton);
 
+            errorLabelLayout.Children.Add(errorLabel);
+            errorLabelLayout.Children.Add(buttonsLayout);
+
             Frame buttonsFrame = new Frame
             {
-                Content = buttonsLayout,
+                Content = errorLabelLayout,
                 BackgroundColor = Color.FromHex(App.GetMenueColor()),
                 CornerRadius = 5
             };
             return buttonsFrame;
+        }
+
+        private void saveChanges(object sender, EventArgs e)
+        {
+            if (titleEntry.Text.Equals(""))
+            {
+                errorLabel.IsVisible = true;
+                errorLabel.Text = "Please enter a name for the event!";
+                return;
+            }
+            else if (descriptionEntry.Text.Equals(""))
+            {
+                errorLabel.IsVisible = true;
+                errorLabel.Text = "Please enter a descripion for the event!";
+                return;
+            }
+            else if (locationEntry.Text.Equals(""))
+            {
+                errorLabel.IsVisible = true;
+                errorLabel.Text = "Please enter a location for the event!";
+                return;
+            }
+            else if (datePicker.Date == null)
+            {
+                errorLabel.IsVisible = true;
+                errorLabel.Text = "Please enter a date for the event!";
+                return;
+            }
+            errorLabel.IsVisible = false;
+
+            updateEventAndWriteToDatabase();
+
+            List<Page> pages = Navigation.NavigationStack.ToList();
+            // remove the old event page and the editing page
+            Navigation.RemovePage(pages.ElementAt(pages.Count - 1));
+            Navigation.RemovePage(pages.ElementAt(pages.Count - 2));
+
+            Navigation.PushAsync(new SingleEventPage(ev));
+        }
+
+        private async void updateEventAndWriteToDatabase()
+        {
+            DateTime dt = datePicker.Date;
+            string eventDate = String.Format("{0:yyyy-MM-dd}", dt);
+
+            ev.Name = titleEntry.Text;
+            ev.Datum = eventDate;
+            ev.Beschreibung = descriptionEntry.Text;
+            ev.Ort = locationEntry.Text;
+
+            try
+            {
+                await App.firebase.Child("Veranstaltungen").Child(ev.ID).PutAsync(ev);
+            }
+            catch (Exception)
+            {
+                DisplayAlert("Server Connection Failure", "Communication problems occurred while updating event!", "OK");
+            }
+        }
+
+        private void cancelButtonClicked(object sender, EventArgs e)
+        {
+            Navigation.PopAsync();
+        }
+
+        private void textChangesMade(object sender, TextChangedEventArgs e)
+        {
+            DateTime dt = datePicker.Date;
+            string eventDate = String.Format("{0:yyyy-MM-dd}", dt);
+            if (!titleEntry.Text.Equals(ev.Name))
+            {
+                saveChangesButton.IsEnabled = true;
+                return;
+            }
+            else if (!descriptionEntry.Text.Equals(ev.Beschreibung))
+            {
+                saveChangesButton.IsEnabled = true;
+                return;
+            }
+            else if (!locationEntry.Text.Equals(ev.Ort))
+            {
+                saveChangesButton.IsEnabled = true;
+                return;
+            }
+            else if (!eventDate.Equals(ev.Datum))
+            {
+                saveChangesButton.IsEnabled = true;
+                return;
+            }
+            saveChangesButton.IsEnabled = false;
+        }
+        private void dateChangesMade(object sender, DateChangedEventArgs e)
+        {
+            textChangesMade(null, null);
         }
     }
 }
