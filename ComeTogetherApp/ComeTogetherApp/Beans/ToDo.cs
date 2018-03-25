@@ -14,6 +14,7 @@ namespace ComeTogetherApp
         public string Kosten { get; set; }
         public string Status { get; set; }
         public string Ort { get; set; }
+        public string ID { get; set; }
 
         public ToDo(string Beschreibung, string Datum, string Name, string Kosten, string Status, string Ort)
         {
