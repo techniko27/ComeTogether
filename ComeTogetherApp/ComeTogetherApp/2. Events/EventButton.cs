@@ -16,37 +16,67 @@ namespace ComeTogetherApp
     class EventButton : StackLayout
     {
         private EventsPage eventsPage;
+
         public EventButton(Event ev, EventsPage eventsPage)
         {
             this.eventsPage = eventsPage;
 
-            var eventImage = new Image { Aspect = Aspect.AspectFit };
+            this.VerticalOptions = LayoutOptions.Fill;
+            this.HorizontalOptions = LayoutOptions.Fill;
+            this.Padding = new Thickness(2, 2, 2, 2);
+            this.BackgroundColor = Color.FromHex("41BAC1");
+
+            var eventImage = new Image {Aspect = Aspect.AspectFit, Scale = 0.9};
             if (ev.Bild.Length < 3)
             {
-                eventImage.Source = "in_app_Logo_256x256.png";
+                eventImage.Source = "event_default.png";
             }
             else
             {
                 eventImage.Source = ev.Bild;
             }
+            this.Children.Add(eventImage);
+
             Label eventNameLabel = new Label
             {
                 Text = ev.Name,
                 VerticalOptions = LayoutOptions.Start,
                 FontSize = 20
             };
-            Label eventMembercountLabel = new Label
+            this.Children.Add(eventNameLabel);
+
+            if (ev.ID != "0")
             {
-                Text = "EventMemberCount",
-                VerticalOptions = LayoutOptions.Start,
-                FontSize = 15
-            };
+                Label eventPersonalCostLabel = new Label
+                {
+                    /*Text = "Personal Cost: " + EventCostCalculator.getPersonalCost(ev, App.GetUserID()).Result + "€"*/
+                    VerticalOptions = LayoutOptions.Start,
+                    FontSize = 15
+                };
+                this.Children.Add(eventPersonalCostLabel);
+
+                try
+                {
+                    Task<int> callTask = Task.Run(() => EventCostCalculator.getPersonalCost(ev, App.GetUserID()));
+                    callTask.Wait();
+                    eventPersonalCostLabel.Text = "Personal Cost: " + callTask.Result + "€";
+                }
+                catch (Exception)
+                {
+                    //eventsPage.DisplayAlert("Failure", "Cost for event " + ev.Name + " could not be calculated", "ok");
+                    eventPersonalCostLabel.Text = "Personal Cost: ?";
+                }
+                
+            }
+
             Label eventDateLabel = new Label
             {
                 Text = ev.Datum,
                 VerticalOptions = LayoutOptions.Start,
                 FontSize = 15
             };
+            this.Children.Add(eventDateLabel);
+
             var tapGestureRecognizer = new TapGestureRecognizer();
             tapGestureRecognizer.Tapped += (object sender, EventArgs e) =>
             {
@@ -54,16 +84,7 @@ namespace ComeTogetherApp
                 OnEventClicked(sender, e, ev);
             };
 
-            this.VerticalOptions = LayoutOptions.Fill;
-            this.HorizontalOptions = LayoutOptions.Fill;
-            this.Padding = new Thickness(2, 2, 2, 2);
-            this.BackgroundColor = Color.FromHex("41BAC1");
-
             this.GestureRecognizers.Add(tapGestureRecognizer);
-            this.Children.Add(eventImage);
-            this.Children.Add(eventNameLabel);
-            this.Children.Add(eventMembercountLabel);
-            this.Children.Add(eventDateLabel);
         }
         public async void OnEventClicked(object sender, EventArgs e, Event ev)
         {

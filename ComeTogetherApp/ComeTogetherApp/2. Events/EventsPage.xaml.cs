@@ -69,6 +69,7 @@ namespace ComeTogetherApp
         {
             try
             {
+
                 var benutzer_Events = await App.firebase.Child("Benutzer_Veranstaltung").Child(App.GetUserID).OnceAsync<string>();
 
                 foreach (var eventID in benutzer_Events)
@@ -115,7 +116,7 @@ namespace ComeTogetherApp
             int r = gridList.Count % 2;                 //List is odd (ungerade)
             for (int i = 0; i < (gridList.Count/2+r); i++)
             {
-                grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(260, GridUnitType.Absolute) });
+                grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(200, GridUnitType.Absolute) });
 
                 for (int j = 0; j < 2; j++)
                 {

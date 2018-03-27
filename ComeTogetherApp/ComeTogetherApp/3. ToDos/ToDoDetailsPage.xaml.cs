@@ -19,7 +19,7 @@ namespace ComeTogetherApp
             InitializeComponent();
 
             fontSize = 17;
-            this.todo = new ToDo("Beschreibung...", "2017-12-06", "Name...", "15€", "status...", "Ort..");
+            this.todo = new ToDo("Beschreibung...", "2017-12-06", "Name...", 15, "status...", "Ort..");
 
             Title = "ToDo details";
             BackgroundColor = Color.White;
@@ -138,6 +138,7 @@ namespace ComeTogetherApp
                 Placeholder = "Name",
                 Text = todo.Name,
                 TextColor = Color.White,
+                BackgroundColor = Color.FromHex(App.GetMenueColor()),
                 FontSize = fontSize
             };
 
@@ -146,6 +147,7 @@ namespace ComeTogetherApp
                 Placeholder = "Description",
                 Text = todo.Beschreibung + Environment.NewLine,
                 TextColor = Color.White,
+                BackgroundColor = Color.FromHex(App.GetMenueColor()),
                 FontSize = fontSize
             };
 
@@ -154,6 +156,7 @@ namespace ComeTogetherApp
                 Placeholder = "Place",
                 Text = "Place: " + todo.Ort,
                 TextColor = Color.White,
+                BackgroundColor = Color.FromHex(App.GetMenueColor()),
                 FontSize = fontSize
             };
 
@@ -169,6 +172,7 @@ namespace ComeTogetherApp
             {
                 Format = "D",
                 TextColor = Color.White,
+                BackgroundColor = Color.FromHex(App.GetMenueColor()),
                 Date = dt,
                 //HeightRequest = 35,
             };
@@ -294,8 +298,9 @@ namespace ComeTogetherApp
             Entry costEntry = new Entry
             {
                 Placeholder = "Cost in €",
-                Text = todo.Kosten,
+                Text = todo.Kosten.ToString(),
                 TextColor = Color.White,
+                BackgroundColor = Color.FromHex(App.GetMenueColor()),
                 FontSize = fontSize
             };
             editingCostLayout.Children.Add(costEntry);

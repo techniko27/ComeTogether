@@ -53,6 +53,7 @@
       <DependentUpon>EnterJoinCodePopupPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="2. Events\EventButton.cs" />
+    <Compile Include="2. Events\EventCostCalculator.cs" />
     <Compile Include="2. Events\EventDetailsGeneralPage.xaml.cs">
       <DependentUpon>EventDetailsGeneralPage.xaml</DependentUpon>
     </Compile>
@@ -75,6 +76,7 @@
     <Compile Include="3. ToDos\ToDoDetailsPage.xaml.cs">
       <DependentUpon>ToDoDetailsPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="3. ToDos\ToDoListCell.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
@@ -84,6 +86,7 @@
     <Compile Include="Beans\Event.cs" />
     <Compile Include="Beans\ToDo.cs" />
     <Compile Include="Beans\User.cs" />
+    <Compile Include="Beans\User_ToDo.cs" />
     <Compile Include="ComeTogetherAppPage.xaml.cs">
       <DependentUpon>ComeTogetherAppPage.xaml</DependentUpon>
     </Compile>
