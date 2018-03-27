@@ -22,7 +22,7 @@ namespace ComeTogetherApp
             Master = masterPage;
             Detail = new NavigationPage(new EventsPage()
             {
-                Title = "Events",
+                
             })
             {
                 BarBackgroundColor = Color.FromHex(App.GetMenueColor()), //#009acd

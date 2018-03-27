@@ -24,6 +24,8 @@ namespace ComeTogetherApp
         {
             InitializeComponent();
 
+            Title = "Account";
+
             scroll = new ScrollView
             {
                 BackgroundColor = Color.FromHex(App.GetMenueColor())
