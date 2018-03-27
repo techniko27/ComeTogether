@@ -3008,11 +3008,11 @@ namespace ComeTogetherApp.Droid
 			// aapt resource value: 0x7f020133
 			public const int notification_icon_background = 2130837811;
 			
-			// aapt resource value: 0x7f020139
-			public const int notification_template_icon_bg = 2130837817;
-			
 			// aapt resource value: 0x7f02013a
-			public const int notification_template_icon_low_bg = 2130837818;
+			public const int notification_template_icon_bg = 2130837818;
+			
+			// aapt resource value: 0x7f02013b
+			public const int notification_template_icon_low_bg = 2130837819;
 			
 			// aapt resource value: 0x7f020134
 			public const int notification_tile_bg = 2130837812;
@@ -3028,6 +3028,9 @@ namespace ComeTogetherApp.Droid
 			
 			// aapt resource value: 0x7f020138
 			public const int tooltip_frame_light = 2130837816;
+			
+			// aapt resource value: 0x7f020139
+			public const int urlaub = 2130837817;
 			
 			static Drawable()
 			{
