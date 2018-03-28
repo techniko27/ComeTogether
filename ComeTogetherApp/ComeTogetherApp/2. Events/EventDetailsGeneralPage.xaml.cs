@@ -78,8 +78,14 @@ namespace ComeTogetherApp
                 HorizontalOptions = LayoutOptions.Start,
             };
 
-            Image eventImage = new Image { Aspect = Aspect.AspectFit, VerticalOptions = LayoutOptions.Start };
-            eventImage.Source = "icon.png";
+            Image eventImage = new Image
+            {
+                Aspect = Aspect.AspectFit,
+                VerticalOptions = LayoutOptions.Start,
+                Scale = 0.5,
+                Margin = new Thickness(-90,0,-80,0)
+            };
+            eventImage.Source = ev.Bild;
 
             StackLayout infoLayout = new StackLayout
             {

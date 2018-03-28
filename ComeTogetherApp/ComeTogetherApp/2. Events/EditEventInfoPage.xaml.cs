@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Firebase.Database.Query;
+using Rg.Plugins.Popup.Extensions;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -175,7 +176,14 @@ namespace ComeTogetherApp
                 VerticalOptions = LayoutOptions.Center,
                 HorizontalOptions = LayoutOptions.Center
             };
-            eventImage.Source = "icon.png";
+            eventImage.Source = ev.Bild;
+            var eventImageTapGestureRecognizer = new TapGestureRecognizer();
+            eventImageTapGestureRecognizer.Tapped += (object sender, EventArgs e) =>
+            {
+                // handle the tap
+                OnEventImageClicked(sender, e);
+            };
+            eventImage.GestureRecognizers.Add(eventImageTapGestureRecognizer);
 
             Frame imageFrame = new Frame
             {
@@ -390,6 +398,7 @@ namespace ComeTogetherApp
             ev.Datum = eventDate;
             ev.Beschreibung = descriptionEntry.Text;
             ev.Ort = locationEntry.Text;
+            ev.Bild = eventImage.Source.ToString().Substring(6);
 
             try
             {
@@ -399,6 +408,10 @@ namespace ComeTogetherApp
             {
                 DisplayAlert("Server Connection Failure", "Communication problems occurred while updating event!", "OK");
             }
+        }
+        async void OnEventImageClicked(object sender, EventArgs e)
+        {
+            await Navigation.PushPopupAsync(new ChooseEventPicturePopupPage(eventImage));
         }
 
         private void cancelButtonClicked(object sender, EventArgs e)

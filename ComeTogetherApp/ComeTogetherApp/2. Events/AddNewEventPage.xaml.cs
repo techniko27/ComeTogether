@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Firebase.Database.Query;
+using Rg.Plugins.Popup.Extensions;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -13,6 +14,7 @@ namespace ComeTogetherApp
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class AddNewEventPage : ContentPage
     {
+        private ScrollView scroll;
         private StackLayout stack;
         private Entry nameEntry;
         private Entry descriptionEntry;
@@ -21,6 +23,10 @@ namespace ComeTogetherApp
         private Label messageLabel;
         private bool isDatePicked;
         private EventsPage eventsPage;
+
+        public Image eventImage;
+
+        private ActivityIndicator activityIndicator;
 
         public AddNewEventPage(EventsPage eventsPage)
         {
@@ -33,7 +39,7 @@ namespace ComeTogetherApp
 
             isDatePicked = false;
             
-            ScrollView scroll = new ScrollView();
+            scroll = new ScrollView();
 
             stack = new StackLayout
             {
@@ -42,8 +48,16 @@ namespace ComeTogetherApp
                 Padding = new Thickness(30, 0, 30, 0),
                 Margin = new Thickness(10, 10, 10, 10)
             };
-            Image eventImage = new Image {Aspect = Aspect.AspectFit, VerticalOptions = LayoutOptions.Start};
-            eventImage.Source = "events_icon_130x130.png";
+            eventImage = new Image {Aspect = Aspect.AspectFit, VerticalOptions = LayoutOptions.Start};
+            eventImage.Source = "event_default.png";
+            var eventImageTapGestureRecognizer = new TapGestureRecognizer();
+            eventImageTapGestureRecognizer.Tapped += (object sender, EventArgs e) =>
+            {
+                // handle the tap
+                OnEventImageClicked(sender, e);
+            };
+            eventImage.GestureRecognizers.Add(eventImageTapGestureRecognizer);
+
             int labelFontSize = 15;
             Label eventNameLabel = new Label
             {
@@ -115,11 +129,25 @@ namespace ComeTogetherApp
             stack.Children.Add(messageLabel);
             stack.Children.Add(saveEventButton);
             Content = scroll;
+
+            activityIndicator = new ActivityIndicator()
+            {
+                Color = Color.Gray,
+                IsRunning = false,
+                WidthRequest = 80,
+                HeightRequest = 80,
+                VerticalOptions = LayoutOptions.CenterAndExpand,
+                HorizontalOptions = LayoutOptions.CenterAndExpand,
+            };
         }
 
         void DateSelected(object sender, EventArgs e)
         {
             isDatePicked = true;
+        }
+        async void OnEventImageClicked(object sender, EventArgs e)
+        {
+            await Navigation.PushPopupAsync(new ChooseEventPicturePopupPage(eventImage));
         }
 
         async void OnsaveEventButtonClicked(object sender, EventArgs e)
@@ -142,31 +170,50 @@ namespace ComeTogetherApp
             }
             else
             {
+                activityIndicatorSwitch();
+
                 string eventID = Guid.NewGuid().ToString("N").Substring(0, 20);
 
                 DateTime dt = datePicker.Date;
                 string eventDate = String.Format("{0:yyyy-MM-dd}", dt);
 
-                Event ev = new Event(descriptionEntry.Text, eventDate, nameEntry.Text, locationEntry.Text, "1", eventID, App.GetUserID());       //TODO Picture
+                Event ev = new Event(descriptionEntry.Text, eventDate, nameEntry.Text, locationEntry.Text, eventImage.Source.ToString().Substring(6), eventID, App.GetUserID());       //TODO Picture
 
                 try
                 {
                     await App.firebase.Child("Veranstaltungen").Child(eventID).PutAsync(ev);
                     await App.firebase.Child("Veranstaltung_Benutzer").Child(eventID).Child(App.GetUserID()).PutAsync<string>(App.GetUsername());
                     await App.firebase.Child("Benutzer_Veranstaltung").Child(App.GetUserID()).Child(eventID).PutAsync<string>(nameEntry.Text);
-
+                    
                     DisplayAlert("Success", "Event is successful created", "OK");
-
-                    Navigation.PopToRootAsync();
 
                     eventsPage.eventList.Add(ev);
                     eventsPage.stack.Children.RemoveAt(eventsPage.stack.Children.IndexOf(eventsPage.stack.Children.Last()));         //Remove the last Grid from EventsPage
                     eventsPage.buildGrid(eventsPage.eventList);
+
+                    await Navigation.PopToRootAsync();
                 }
                 catch (Exception)
                 {
                     DisplayAlert("Server connection failure", "Communication problems occured while adding event", "OK");
+
+                    activityIndicatorSwitch();
                 }
+            }
+        }
+        private void activityIndicatorSwitch()
+        {
+            if (activityIndicator.IsRunning)
+            {
+                activityIndicator.IsRunning = false;
+
+                Content = scroll;
+            }
+            else
+            {
+                activityIndicator.IsRunning = true;
+
+                Content = activityIndicator;
             }
         }
     }
