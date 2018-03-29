@@ -177,6 +177,7 @@ namespace ComeTogetherApp
                 HorizontalOptions = LayoutOptions.Center
             };
             eventImage.Source = ev.Bild;
+            eventImage.Scale = 0.5;
             var eventImageTapGestureRecognizer = new TapGestureRecognizer();
             eventImageTapGestureRecognizer.Tapped += (object sender, EventArgs e) =>
             {
@@ -184,6 +185,7 @@ namespace ComeTogetherApp
                 OnEventImageClicked(sender, e);
             };
             eventImage.GestureRecognizers.Add(eventImageTapGestureRecognizer);
+            eventImage.PropertyChanged += eventImageChanged;
 
             Frame imageFrame = new Frame
             {
@@ -433,6 +435,11 @@ namespace ComeTogetherApp
                 saveChangesButton.IsEnabled = true;
                 return;
             }
+            else if(!ev.Bild.Equals(eventImage.Source.ToString().Substring(6)))
+            {
+                saveChangesButton.IsEnabled = true;
+                return;
+            }
             else if (!locationEntry.Text.Equals(ev.Ort))
             {
                 saveChangesButton.IsEnabled = true;
@@ -448,6 +455,12 @@ namespace ComeTogetherApp
         private void dateChangesMade(object sender, DateChangedEventArgs e)
         {
             textChangesMade(null, null);
+        }
+
+        private void eventImageChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if(e.PropertyName.Equals("Source"))
+                textChangesMade(null, null);
         }
     }
 }
