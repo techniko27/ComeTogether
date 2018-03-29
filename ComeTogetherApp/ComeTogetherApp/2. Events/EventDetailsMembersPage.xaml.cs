@@ -136,7 +136,8 @@ namespace ComeTogetherApp
                 }),
                 Margin = new Thickness(0, 0, 0, 10),
                 BackgroundColor = Color.FromHex(App.GetMenueColor()),
-                SeparatorColor = Color.LightSlateGray
+                SeparatorColor = Color.LightSlateGray,
+                
             };
             return memberList;
         }

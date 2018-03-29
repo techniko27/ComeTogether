@@ -55,7 +55,7 @@ namespace ComeTogetherApp
                     var toDoQuery = await App.firebase.Child("ToDos").OrderByKey().StartAt(toDoID).LimitToFirst(1).OnceAsync<ToDo>();
                     ToDo toDo = toDoQuery.ElementAt(0).Object;
                     toDo.ID = toDoID;
-                    if (!toDo.Status.Equals("Done"))
+                    if (!toDo.Status.Equals("Completed"))
                         ownToDosList.Add(toDo);
                     else
                         completedToDosList.Add(toDo);
@@ -64,11 +64,11 @@ namespace ComeTogetherApp
                 foreach (FirebaseObject<string> tD in toDosInEvent)
                 {
                     string toDoID = tD.Key;
-                    if (!isInOwnToDoList(toDoID))
+                    if (isInOwnToDoList(toDoID))
                         continue;
                     var toDoQuery = await App.firebase.Child("ToDos").OrderByKey().StartAt(toDoID).LimitToFirst(1).OnceAsync<ToDo>();
                     ToDo toDo = toDoQuery.ElementAt(0).Object;
-                    if (!toDo.Status.Equals("Done"))
+                    if (!toDo.Status.Equals("Completed"))
                         otherToDosList.Add(toDo);
                     else
                         completedToDosList.Add(toDo);
@@ -225,7 +225,7 @@ namespace ComeTogetherApp
                 ItemsSource = itemSource,
                 ItemTemplate = new DataTemplate(() =>
                 {
-                    return new ToDoListCell();
+                    return new ToDoListCell(this);
                 }),
                 Margin = new Thickness(0, 0, 0, 10),
                 BackgroundColor = Color.White,
@@ -236,12 +236,26 @@ namespace ComeTogetherApp
 
         private Frame createListViewFrame(ListView listView)
         {
-            return new Frame
+            ScrollView scrollableList = new ScrollView
             {
-                Content = listView,
-                BackgroundColor = Color.White,
-                CornerRadius = 5
+                Content = listView
             };
+            Frame whiteListFrame = new Frame
+            {
+                Content = scrollableList,
+                BackgroundColor = Color.White,
+                CornerRadius = 5,
+                Padding = 0
+            };
+
+            Frame listViewFrame = new Frame
+            {
+                Content = whiteListFrame,
+                BackgroundColor = Color.FromHex(App.GetMenueColor()),
+                CornerRadius = 5,
+                Padding = 5
+            };
+            return listViewFrame;
         }
 
         private Frame createToDosFrame(StackLayout toDoLayout)

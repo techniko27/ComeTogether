@@ -12,14 +12,14 @@ namespace ComeTogetherApp
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class ToDoDetailsPage : ContentPage
     {
-        private ToDo todo;
+        private ToDo toDo;
         private int fontSize;
-        public ToDoDetailsPage()
+        public ToDoDetailsPage(ToDo toDo)
         {
             InitializeComponent();
 
             fontSize = 17;
-            this.todo = new ToDo("Beschreibung...", "2017-12-06", "Name...", 15, "status...", "Ort..");
+            this.toDo = new ToDo("Beschreibung...", "2017-12-06", "Name...", 15, "status...", "Ort..");
 
             Title = "ToDo details";
             BackgroundColor = Color.White;
@@ -136,7 +136,7 @@ namespace ComeTogetherApp
             Entry todoNameEntry = new Entry
             {
                 Placeholder = "Name",
-                Text = todo.Name,
+                Text = toDo.Name,
                 TextColor = Color.White,
                 BackgroundColor = Color.FromHex(App.GetMenueColor()),
                 FontSize = fontSize
@@ -145,7 +145,7 @@ namespace ComeTogetherApp
             Entry todoDescriptionEntry = new Entry
             {
                 Placeholder = "Description",
-                Text = todo.Beschreibung + Environment.NewLine,
+                Text = toDo.Beschreibung + Environment.NewLine,
                 TextColor = Color.White,
                 BackgroundColor = Color.FromHex(App.GetMenueColor()),
                 FontSize = fontSize
@@ -154,18 +154,18 @@ namespace ComeTogetherApp
             Entry todoPlaceEntry = new Entry
             {
                 Placeholder = "Place",
-                Text = "Place: " + todo.Ort,
+                Text = "Place: " + toDo.Ort,
                 TextColor = Color.White,
                 BackgroundColor = Color.FromHex(App.GetMenueColor()),
                 FontSize = fontSize
             };
 
             int year;
-            Int32.TryParse(todo.Datum.Substring(0, 4), out year);
+            Int32.TryParse(toDo.Datum.Substring(0, 4), out year);
             int month;
-            Int32.TryParse(todo.Datum.Substring(5, 2), out month);
+            Int32.TryParse(toDo.Datum.Substring(5, 2), out month);
             int day;
-            Int32.TryParse(todo.Datum.Substring(8, 2), out day);
+            Int32.TryParse(toDo.Datum.Substring(8, 2), out day);
 
             DateTime dt = new DateTime(year, month, day);
             DatePicker todoDateEntry = new DatePicker()
@@ -298,7 +298,7 @@ namespace ComeTogetherApp
             Entry costEntry = new Entry
             {
                 Placeholder = "Cost in €",
-                Text = todo.Kosten.ToString(),
+                Text = toDo.Kosten.ToString(),
                 TextColor = Color.White,
                 BackgroundColor = Color.FromHex(App.GetMenueColor()),
                 FontSize = fontSize
