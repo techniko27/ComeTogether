@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Firebase.Database.Query;
+using Xamarin.Forms;
 
 namespace ComeTogetherApp
 {
     class EventCostCalculator
     {
-        public static async Task<int> getPersonalCost(Event ev, string userID)
+        public static async Task<int> getPersonalCost(Event ev, string userID, Label costlabel)
         {
             List<ToDo> todoList = new List<ToDo>();
             int costSumm = 0;
@@ -45,6 +46,11 @@ namespace ComeTogetherApp
             {
                 throw;
             }
+
+            Device.BeginInvokeOnMainThread(async () =>
+            {
+                costlabel.Text = "Personal Cost: " + costSumm + "€";
+            });
 
             return costSumm;
         }

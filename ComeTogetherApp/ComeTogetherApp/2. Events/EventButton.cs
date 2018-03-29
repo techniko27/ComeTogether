@@ -15,10 +15,13 @@ namespace ComeTogetherApp
 {
     class EventButton : StackLayout
     {
+        private Event ev;
         private EventsPage eventsPage;
+        public Label eventPersonalCostLabel;
 
         public EventButton(Event ev, EventsPage eventsPage)
         {
+            this.ev = ev;
             this.eventsPage = eventsPage;
 
             this.VerticalOptions = LayoutOptions.Fill;
@@ -47,9 +50,9 @@ namespace ComeTogetherApp
 
             if (ev.ID != "0")
             {
-                Label eventPersonalCostLabel = new Label
+                eventPersonalCostLabel = new Label
                 {
-                    /*Text = "Personal Cost: " + EventCostCalculator.getPersonalCost(ev, App.GetUserID()).Result + "€"*/
+                    Text = "Personal Cost: calculating",/* + EventCostCalculator.getPersonalCost(ev, App.GetUserID()).Result + "€"*/
                     VerticalOptions = LayoutOptions.Start,
                     FontSize = 15
                 };
@@ -57,9 +60,9 @@ namespace ComeTogetherApp
 
                 try
                 {
-                    Task<int> callTask = Task.Run(() => EventCostCalculator.getPersonalCost(ev, App.GetUserID()));
-                    callTask.Wait();
-                    eventPersonalCostLabel.Text = "Personal Cost: " + callTask.Result + "€";
+                    Task<int> callTask = Task.Run(() => EventCostCalculator.getPersonalCost(ev, App.GetUserID(), eventPersonalCostLabel));
+                    //callTask.Wait();
+                    //eventPersonalCostLabel.Text = "Personal Cost: " + callTask.Result + "€";
                 }
                 catch (Exception)
                 {
