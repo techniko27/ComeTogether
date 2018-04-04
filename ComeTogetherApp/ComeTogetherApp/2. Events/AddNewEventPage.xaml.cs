@@ -177,7 +177,7 @@ namespace ComeTogetherApp
                 DateTime dt = datePicker.Date;
                 string eventDate = String.Format("{0:yyyy-MM-dd}", dt);
 
-                Event ev = new Event(descriptionEntry.Text, eventDate, nameEntry.Text, locationEntry.Text, eventImage.Source.ToString().Substring(6), eventID, App.GetUserID());       //TODO Picture
+                Event ev = new Event(descriptionEntry.Text, eventDate, nameEntry.Text, locationEntry.Text, eventImage.Source.ToString().Substring(6), eventID, App.GetUserID(), "start");
 
                 try
                 {

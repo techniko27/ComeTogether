@@ -31,7 +31,7 @@ namespace ComeTogetherApp
             Title = "Events";
 
             eventList = new List<Event>();
-            eventList.Add(new Event("","","Add new Event","", "kreis_plus_schwarz.png", "0", "null"));
+            eventList.Add(new Event("","","Add new Event","", "kreis_plus_schwarz.png", "0", "null",""));
 
             searchBar = new SearchBar
             {

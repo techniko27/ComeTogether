@@ -15,7 +15,8 @@ namespace ComeTogetherApp
         public string Bild { get; set; }
         public string ID { get; set; }
         public string adminID { get; set; }
-        public Event(string Beschreibung, string Datum, string Name, string Ort, string Bild, string ID, string adminID)
+        public string Status { get; set; }
+        public Event(string Beschreibung, string Datum, string Name, string Ort, string Bild, string ID, string adminID, string Status)
         {
             this.Beschreibung = Beschreibung;
             this.Datum = Datum;
@@ -24,6 +25,7 @@ namespace ComeTogetherApp
             this.Bild = Bild;
             this.ID = ID;
             this.adminID = adminID;
+            this.Status = Status;
         }
     }
 }

@@ -111,6 +111,10 @@ namespace ComeTogetherApp
                         break;
                 }
             }
+            else if (ev.Status.Equals("stop"))
+            {
+                
+            }
             else
             {
                 Navigation.PushAsync(new SingleEventPage(ev)
