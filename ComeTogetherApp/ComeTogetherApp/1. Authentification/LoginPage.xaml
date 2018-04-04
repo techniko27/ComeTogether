@@ -18,9 +18,9 @@
                     <Entry x:Name="emailEntry" Placeholder="maxmustermann@mail.com" HeightRequest="50"/>
                     <Label Text="Passwort" />
                     <Entry x:Name="passwordEntry" IsPassword="true" Placeholder="****" HeightRequest="50"/>
+                    <Label x:Name="messageLabel" TextColor="Red" FontSize="20" HorizontalOptions="CenterAndExpand"/>
                     <Button x:Name="buttonLoginin" Text="Login" BackgroundColor="White" Clicked="OnLoginButtonClicked" FontAttributes="Bold"/>
                     <Button x:Name="buttonResetPassword" Text="Forget Password" BackgroundColor="White" Clicked="OnResetPasswordButtonClicked" FontAttributes="Bold" />
-                    <Label x:Name="messageLabel" TextColor="Red" FontSize="20" HorizontalOptions="CenterAndExpand"/>
                     <Label Text="Sign up if you have no account!" HorizontalOptions="Center"/>
                     <Button x:Name="buttonSignUp" Text="Sign up" BackgroundColor="White" Clicked="OnSignUpButtonClicked" FontAttributes="Bold"/>
                 </StackLayout>

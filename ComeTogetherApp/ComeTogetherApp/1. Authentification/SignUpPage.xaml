@@ -27,8 +27,8 @@
                     <Entry x:Name="passwordEntry2" IsPassword="true" Placeholder="****" HeightRequest="50"/>
                     <Label Text="Emailaddress" />
                     <Entry x:Name="emailEntry" Placeholder="maxmustermann@mail.com" HeightRequest="50"/>
-                    <Button x:Name="buttonSignUp" Text="Sign Up" Clicked="OnSignUpButtonClicked" HeightRequest="50"/>
                     <Label x:Name="messageLabel" TextColor="Red" FontSize="20" HorizontalOptions="CenterAndExpand" />
+                    <Button x:Name="buttonSignUp" Text="Sign Up" Clicked="OnSignUpButtonClicked" HeightRequest="50"/>
                 </StackLayout>
 
                 <ActivityIndicator x:Name="activityIndicator" Color="Gray" IsRunning="false"
