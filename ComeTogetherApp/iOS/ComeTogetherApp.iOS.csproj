@@ -271,22 +271,22 @@
     <BundleResource Include="Resources\hamburger%402x.png" />
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="Resources\logoff.png" />
+    <BundleResource Include="Resources\logoff_schwarz.png" />
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="Resources\logoff%402x.png" />
+    <BundleResource Include="Resources\logoff_schwarz%402x.png" />
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="Resources\todo.png" />
+    <BundleResource Include="Resources\todo_schwarz.png" />
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="Resources\todo%402x.png" />
+    <BundleResource Include="Resources\todo_schwarz%402x.png" />
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="Resources\contacts.png" />
+    <BundleResource Include="Resources\contacts_schwarz.png" />
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="Resources\contacts%402x.png" />
+    <BundleResource Include="Resources\contacts_schwarz%402x.png" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\kreis_plus_schwarz.png" />
@@ -323,6 +323,9 @@
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\events_icon_24x24.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\events_icon_40x40.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="..\packages\Xamarin.Forms.2.5.0.280555\build\netstandard1.0\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.2.5.0.280555\build\netstandard1.0\Xamarin.Forms.targets')" />
