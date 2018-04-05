@@ -2385,7 +2385,7 @@ namespace ComeTogetherApp.Droid
 			public const int event_urlaub = 2130837603;
 			
 			// aapt resource value: 0x7f020064
-			public const int events_icon_130x130 = 2130837604;
+			public const int events_icon_24x24 = 2130837604;
 			
 			// aapt resource value: 0x7f020065
 			public const int hamburger = 2130837605;
