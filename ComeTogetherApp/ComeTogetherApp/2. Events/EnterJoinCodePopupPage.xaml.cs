@@ -36,7 +36,8 @@ namespace ComeTogetherApp
             };
             joinCodeEntry = new Entry
             {
-                Text = "Enter Join-Code here",
+                Text = "",
+                Placeholder = "Enter Join-Code here",
                 FontSize = 15,
                 TextColor = Color.White,
                 BackgroundColor = Color.FromHex(App.GetMenueColor()),
@@ -89,7 +90,6 @@ namespace ComeTogetherApp
             catch (Exception)
             {
                 await DisplayAlert("Incorrect Joincode", "Event could not be found", "OK");
-                await Navigation.PopPopupAsync();
                 return;
             }
             try
@@ -112,7 +112,7 @@ namespace ComeTogetherApp
         }
         async void OnJoinCodeEntryClicked(object sender, EventArgs e)
         {
-            joinCodeEntry.Text = "";
+            
         }
 
         async void OnBackgroundClicked(object sender, EventArgs e)
