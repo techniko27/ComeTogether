@@ -30,9 +30,13 @@ namespace ComeTogetherApp
         private ListView otherToDosListView;
         private ListView completedToDosListView;
 
+        public Event ev;
+
         public EventDetailsToDosPage(Event ev)
         {
             InitializeComponent();
+
+            this.ev = ev;
 
             initProperties();
             initLayout(ev);

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Collections.ObjectModel;
+using Firebase.Database;
+using Firebase.Database.Query;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -13,16 +15,23 @@ namespace ComeTogetherApp
     public partial class ToDoDetailsPage : ContentPage
     {
         private ToDo toDo;
+        private Event ev;
         private const int FONT_SIZE = 17;
 
-        public ToDoDetailsPage(ToDo toDo)
+        private ObservableCollection<User> assignedMembersList;
+
+        public ToDoDetailsPage(ToDo toDo, Event ev)
         {
             InitializeComponent();
 
             this.toDo = toDo;
+            this.ev = ev;
+            assignedMembersList = new ObservableCollection<User>();
 
             initProperties();
             initLayout();
+
+            retrieveAssignedMembersFromServer(ev);
         }
 
         private void initProperties()
@@ -311,6 +320,17 @@ namespace ComeTogetherApp
                 FontSize = FONT_SIZE
             };
 
+            Picker statusPicker = new Picker
+            {
+                Title = "Status",
+                TextColor = Color.White
+            };
+
+            statusPicker.Items.Add("In Progress");
+            statusPicker.Items.Add("Completed");
+
+            statusPicker.SelectedItem = toDo.Status;
+
             int year;
             Int32.TryParse(toDo.Datum.Substring(0, 4), out year);
             int month;
@@ -331,7 +351,7 @@ namespace ComeTogetherApp
             infoLayout.Children.Add(todoDescriptionEntry);
             infoLayout.Children.Add(todoPlaceEntry);
             infoLayout.Children.Add(todoDateEntry);
-
+            infoLayout.Children.Add(statusPicker);
 
             Frame overviewContentFrame = new Frame
             {
@@ -349,6 +369,26 @@ namespace ComeTogetherApp
             {
                 VerticalOptions = LayoutOptions.Start,
             };
+
+            ListView assignedMembersListView = new ListView
+            {
+                ItemsSource = assignedMembersList,
+                ItemTemplate = new DataTemplate(() =>
+                {
+                    return new AssignedMembersListCell(ev);
+                }),
+                Margin = new Thickness(0, 0, 0, 10),
+                BackgroundColor = Color.FromHex(App.GetMenueColor()),
+                SeparatorColor = Color.LightSlateGray
+            };
+
+            ScrollView scrollableList = new ScrollView
+            {
+                Content = assignedMembersListView,
+                HeightRequest = 150
+            };
+
+            assignMembersContentLayout.Children.Add(scrollableList);
 
             Frame assignMembersContentFrame = new Frame
             {
@@ -427,6 +467,32 @@ namespace ComeTogetherApp
         async void OnInfoImageClicked(object sender, EventArgs e)
         {
             await DisplayAlert("InfoImage","","Ok");
+        }
+
+        private async void retrieveAssignedMembersFromServer(Event ev)
+        {
+            String eventID = ev.ID;
+            String toDoID = toDo.ID;
+
+            try
+            {
+                var assignedUsersInToDo = await App.firebase.Child("ToDo_Benutzer").Child(toDoID).OnceAsync<string>();
+
+                foreach (FirebaseObject<string> e in assignedUsersInToDo)
+                {
+                    string userID = e.Key;
+                    var userQuery = await App.firebase.Child("users").OrderByKey().StartAt(userID).LimitToFirst(1).OnceAsync<User>();
+                    User user = userQuery.ElementAt(0).Object;
+                    user.ID = userID;
+                    assignedMembersList.Add(user);
+                }
+                //activityIndicatorSwitch(); individual indicator for each list
+            }
+            catch (Exception e)
+            {
+                await DisplayAlert("Server connection failure", "Communication problems occured while querying", "OK");
+                System.Diagnostics.Debug.WriteLine(e);
+            }
         }
     }
 }

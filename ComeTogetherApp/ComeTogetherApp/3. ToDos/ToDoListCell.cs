@@ -12,6 +12,7 @@ namespace ComeTogetherApp
     class ToDoListCell : ViewCell
     {
         private ToDo toDo;
+        private Event ev;
         private EventDetailsToDosPage toDosPage;
 
         StackLayout horizontalLayout;
@@ -19,6 +20,7 @@ namespace ComeTogetherApp
         public ToDoListCell(EventDetailsToDosPage toDosPage)
         {
             this.toDosPage = toDosPage;
+            ev = toDosPage.ev;
 
             horizontalLayout = new StackLayout();
 
@@ -67,7 +69,7 @@ namespace ComeTogetherApp
         private void toDoTapped(object sender, EventArgs e)
         {
             System.Diagnostics.Debug.WriteLine(toDo.ID);
-            toDosPage.Navigation.PushAsync(new ToDoDetailsPage(toDo));
+            toDosPage.Navigation.PushAsync(new ToDoDetailsPage(toDo, ev));
         }
     }
 }
