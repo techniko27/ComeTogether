@@ -20,6 +20,22 @@ namespace ComeTogetherApp
 
             this.parrentImage = parrentImage;
 
+            List<string> pictureList = new List<string>();
+            pictureList.Add("event_default.png");
+            pictureList.Add("event_abschluss.png");
+            pictureList.Add("event_essen.png");
+            pictureList.Add("event_geburtstag.png");
+            pictureList.Add("event_grillen.png");
+            pictureList.Add("event_hochzeit.png");
+            pictureList.Add("event_kino.png");
+            pictureList.Add("event_party.png");
+            pictureList.Add("event_silvester.png");
+            pictureList.Add("event_sport_hantel.png");
+            pictureList.Add("event_sport_fussball.png");
+            pictureList.Add("event_theater.png");
+            pictureList.Add("event_urlaub.png");
+            pictureList.Add("event_zelten.png");
+
             StackLayout stack = new StackLayout
             {
                 //BackgroundColor = Color.FromHex(App.GetMenueColor()),
@@ -39,92 +55,42 @@ namespace ComeTogetherApp
                 RowSpacing = 1
             };
 
+            int counter = 0;
+            int r = pictureList.Count % 2;                 //List is odd (ungerade)
+            for (int i = 0; i < (pictureList.Count / 2 + r); i++)
+            {
+                grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(120, GridUnitType.Absolute) });      //Width of the Colums not implemented because of scree rotation issues
 
-            grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(100, GridUnitType.Absolute) });
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(120, GridUnitType.Absolute) });      //Width of the Colums not implemented because of scree rotation issues
-            Image event_default = new Image()
-            {
-                Aspect = Aspect.AspectFit,
-                //Scale = 0.9,
-                Source = "event_default.png"
-            };
-            var event_defaultTapGestureRecognizer = new TapGestureRecognizer();
-            event_defaultTapGestureRecognizer.Tapped += (object sender, EventArgs e) =>
-            {
-                // handle the tap
-                OnEventImageClicked(sender, e, event_default.Source.ToString());
-            };  
-            event_default.GestureRecognizers.Add(event_defaultTapGestureRecognizer);
-            grid.Children.Add(event_default, 0, 0);
+                for (int j = 0; j < 2; j++)
+                {
+                    if (pictureList.Count == 1)
+                    {
+                        grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(100, GridUnitType.Absolute) });
+                    }
 
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(120, GridUnitType.Absolute) });      //Width of the Colums not implemented because of scree rotation issues
-            Image event_essen = new Image()
-            {
-                Aspect = Aspect.AspectFit,
-                //Scale = 0.9,
-                Source = "event_essen.png"
-            };
-            grid.Children.Add(event_essen, 1, 0);
-            var event_essenTapGestureRecognizer = new TapGestureRecognizer();
-            event_essenTapGestureRecognizer.Tapped += (object sender, EventArgs e) =>
-            {
-                // handle the tap
-                OnEventImageClicked(sender, e, event_essen.Source.ToString());
-            };
-            event_essen.GestureRecognizers.Add(event_essenTapGestureRecognizer);
+                    if (pictureList.Count <= counter)
+                    {
+                        break;
+                    }
 
+                    Image eventImage = new Image()
+                    {
+                        Aspect = Aspect.AspectFit,
+                        //Scale = 0.9,
+                        Source = pictureList[counter]
+                    };
+                    var eventImageTapGestureRecognizer = new TapGestureRecognizer();
+                    eventImageTapGestureRecognizer.Tapped += (object sender, EventArgs e) =>
+                    {
+                        // handle the tap
+                        OnEventImageClicked(sender, e, eventImage.Source.ToString());
+                    };
+                    eventImage.GestureRecognizers.Add(eventImageTapGestureRecognizer);
+                    grid.Children.Add(eventImage, j, i);
 
-            grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(100, GridUnitType.Absolute) });
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(120, GridUnitType.Absolute) });      //Width of the Colums not implemented because of scree rotation issues
-            Image event_hochzeit = new Image()
-            {
-                Aspect = Aspect.AspectFit,
-                //Scale = 0.9,
-                Source = "event_hochzeit.png"
-            };
-            grid.Children.Add(event_hochzeit, 0, 1);
-            var event_hochzeitTapGestureRecognizer = new TapGestureRecognizer();
-            event_hochzeitTapGestureRecognizer.Tapped += (object sender, EventArgs e) =>
-            {
-                // handle the tap
-                OnEventImageClicked(sender, e, event_hochzeit.Source.ToString());
-            };
-            event_hochzeit.GestureRecognizers.Add(event_hochzeitTapGestureRecognizer);
-
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(120, GridUnitType.Absolute) });      //Width of the Colums not implemented because of scree rotation issues
-            Image event_silvester = new Image()
-            {
-                Aspect = Aspect.AspectFit,
-                //Scale = 0.9,
-                Source = "event_silvester.png"
-            };
-            grid.Children.Add(event_silvester, 1, 1);
-            var event_silvesterTapGestureRecognizer = new TapGestureRecognizer();
-            event_silvesterTapGestureRecognizer.Tapped += (object sender, EventArgs e) =>
-            {
-                // handle the tap
-                OnEventImageClicked(sender, e, event_silvester.Source.ToString());
-            };
-            event_silvester.GestureRecognizers.Add(event_silvesterTapGestureRecognizer);
-
-
-            grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(100, GridUnitType.Absolute) });
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(120, GridUnitType.Absolute) });      //Width of the Colums not implemented because of scree rotation issues
-            Image event_urlaub = new Image()
-            {
-                Aspect = Aspect.AspectFit,
-                //Scale = 0.9,
-                Source = "event_urlaub.png"
-            };
-            grid.Children.Add(event_urlaub, 0, 2);
-            var event_urlaubTapGestureRecognizer = new TapGestureRecognizer();
-            event_urlaubTapGestureRecognizer.Tapped += (object sender, EventArgs e) =>
-            {
-                // handle the tap
-                OnEventImageClicked(sender, e, event_urlaub.Source.ToString());
-            };
-            event_urlaub.GestureRecognizers.Add(event_urlaubTapGestureRecognizer);
-
+                    counter++;
+                }
+            }
 
             stack.Children.Add(grid);
             Content = stack;

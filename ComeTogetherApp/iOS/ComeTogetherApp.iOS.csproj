@@ -327,6 +327,33 @@
   <ItemGroup>
     <BundleResource Include="Resources\events_icon_40x40.png" />
   </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\event_abschluss.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\event_geburtstag.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\event_grillen.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\event_kino.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\event_party.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\event_sport_hantel.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\event_sport_fussball.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\event_theater.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\event_zelten.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="..\packages\Xamarin.Forms.2.5.0.280555\build\netstandard1.0\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.2.5.0.280555\build\netstandard1.0\Xamarin.Forms.targets')" />
 </Project>
