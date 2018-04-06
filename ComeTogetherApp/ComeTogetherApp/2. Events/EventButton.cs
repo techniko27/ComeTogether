@@ -47,6 +47,10 @@ namespace ComeTogetherApp
                 FontSize = 20
             };
             this.Children.Add(eventNameLabel);
+            if (ev.Name.Length > 16)
+            {
+                eventNameLabel.Text = ev.Name.Substring(0, 16) + "...";         //Show dots at the end of the eventName when it is to long
+            }
 
             if (ev.ID != "0")
             {
@@ -72,13 +76,35 @@ namespace ComeTogetherApp
                 
             }
 
+            StackLayout horizontalDateAndStateLayout = new StackLayout
+            {
+                Orientation = StackOrientation.Horizontal,
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+                Margin = new Thickness(0, 0, 0, 0),
+                HeightRequest = 25
+            };
+            this.Children.Add(horizontalDateAndStateLayout);
+
             Label eventDateLabel = new Label
             {
                 Text = ev.Datum,
                 VerticalOptions = LayoutOptions.Start,
                 FontSize = 15
             };
-            this.Children.Add(eventDateLabel);
+            horizontalDateAndStateLayout.Children.Add(eventDateLabel);
+
+            Image statusImage = new Image
+            {
+                Aspect = Aspect.AspectFit,
+                Source = "drei_punkte_weiss.png",
+                HorizontalOptions = LayoutOptions.EndAndExpand,
+                VerticalOptions = LayoutOptions.Start,
+                Scale = 0.75
+            };
+            if (ev.Status.Equals("stop"))
+            {
+                horizontalDateAndStateLayout.Children.Add(statusImage);
+            }
 
             var tapGestureRecognizer = new TapGestureRecognizer();
             tapGestureRecognizer.Tapped += (object sender, EventArgs e) =>
