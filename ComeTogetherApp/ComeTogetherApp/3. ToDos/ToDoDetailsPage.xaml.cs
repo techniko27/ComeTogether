@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
+using Rg.Plugins.Popup.Extensions;
 using Firebase.Database;
 using Firebase.Database.Query;
 using Xamarin.Forms;
@@ -455,9 +456,26 @@ namespace ComeTogetherApp
             };
         }
 
+        public async void assignMemberToToDo(User user)
+        {
+            assignedMembersList.Add(user);
+
+            try
+            {
+                User_ToDo uTD = new User_ToDo("false", "false");
+                await App.firebase.Child("Benutzer_ToDo").Child(user.ID).Child(ev.ID).Child(toDo.ID).PutAsync(uTD);
+                await App.firebase.Child("ToDo_Benutzer").Child(toDo.ID).Child(user.ID).PutAsync<string>(user.userName);
+            }
+            catch (Exception e)
+            {
+                DisplayAlert("Server Connection Failure", "Communication problems occurred while updating event!", "OK");
+                System.Diagnostics.Debug.WriteLine(e);
+            }
+        }
+
         async void OnAssignMemberClicked(object sender, EventArgs e)
         {
-            await DisplayAlert("EditMember", "", "Ok");
+            await Navigation.PushPopupAsync(new AssignMemberToDoPopUp(ev, this));
         }
         async void OnAssignCostClicked(object sender, EventArgs e)
         {
