@@ -30,13 +30,14 @@ namespace ComeTogetherApp
                 {
                     if (todoID.Object.isPaying.Equals("true"))
                     {
-                        string todoid = todoID.Key;
+                        
 
                         foreach (ToDo todoInList in todoList)
                         {
                             if (todoInList.ID.Equals(todoID.Key))
                             {
-                                costSumm += todoInList.Kosten;
+                                var todo_Benutzer = await App.firebase.Child("ToDo_Benutzer").Child(todoID.Key).OnceAsync<string>();
+                                costSumm += todoInList.Kosten/todo_Benutzer.Count;
                             }
                         }
                     }
