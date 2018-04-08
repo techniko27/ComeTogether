@@ -76,6 +76,11 @@
     <Compile Include="2. Events\SingleEventPage.xaml.cs">
       <DependentUpon>SingleEventPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="3. ToDos\AssignedMembersListCell.cs" />
+    <Compile Include="3. ToDos\AssignMembersPopUpListCell.cs" />
+    <Compile Include="3. ToDos\AssignMemberToDoPopUp.xaml.cs">
+      <DependentUpon>AssignMemberToDoPopUp.xaml</DependentUpon>
+    </Compile>
     <Compile Include="3. ToDos\ToDoDetailsPage.xaml.cs">
       <DependentUpon>ToDoDetailsPage.xaml</DependentUpon>
     </Compile>
@@ -274,6 +279,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="2. Events\ChooseEventPicturePopupPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="3. ToDos\AssignMemberToDoPopUp.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
       <SubType>Designer</SubType>
     </EmbeddedResource>
