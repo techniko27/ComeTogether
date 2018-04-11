@@ -47,7 +47,7 @@ namespace ComeTogetherApp
             {
                 Title = "Settings",
                 IconSource = "todo_schwarz.png",
-                TargetType = typeof(ToDoDetailsPage)
+                TargetType = typeof(EventsPage)
             });
             masterPageItems.Add(new MasterPageItem
             {

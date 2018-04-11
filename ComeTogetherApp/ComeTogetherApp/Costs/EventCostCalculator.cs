@@ -13,7 +13,7 @@ namespace ComeTogetherApp
         public static async Task<int> getPersonalCost(Event ev, string userID, Label costlabel)
         {
             List<ToDo> todoList = new List<ToDo>();
-            int costSumm = 0;
+            int personalCost = 0;
 
             //IReadOnlyCollection<Firebase.Database.FirebaseObject<string>> veranstaltung_ToDos = null;
             try
@@ -37,7 +37,7 @@ namespace ComeTogetherApp
                             if (todoInList.ID.Equals(todoID.Key))
                             {
                                 var todo_Benutzer = await App.firebase.Child("ToDo_Benutzer").Child(todoID.Key).OnceAsync<string>();
-                                costSumm += todoInList.Kosten/todo_Benutzer.Count;
+                                personalCost += todoInList.Kosten/todo_Benutzer.Count;
                             }
                         }
                     }
@@ -50,10 +50,10 @@ namespace ComeTogetherApp
 
             Device.BeginInvokeOnMainThread(async () =>
             {
-                costlabel.Text = "Personal Cost: " + costSumm + "€";
+                costlabel.Text = "Personal Cost: " + personalCost + "€";
             });
 
-            return costSumm;
+            return personalCost;
         }
     }
 }

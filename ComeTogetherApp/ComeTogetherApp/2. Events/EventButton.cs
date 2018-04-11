@@ -139,7 +139,7 @@ namespace ComeTogetherApp
             }
             else if (ev.Status.Equals("stop"))
             {
-                
+                Navigation.PushAsync(new CostOverviewPage(ev));
             }
             else
             {
