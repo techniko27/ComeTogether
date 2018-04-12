@@ -2415,7 +2415,7 @@ namespace ComeTogetherApp.Droid
 			public const int event_zelten = 2130837613;
 			
 			// aapt resource value: 0x7f02006e
-			public const int events_icon_128x128 = 2130837614;
+			public const int events_icon = 2130837614;
 			
 			// aapt resource value: 0x7f02006f
 			public const int events_icon_24x24 = 2130837615;

@@ -322,9 +322,6 @@
     <BundleResource Include="Resources\event_silvester.png" />
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="Resources\events_icon_24x24.png" />
-  </ItemGroup>
-  <ItemGroup>
     <BundleResource Include="Resources\events_icon_40x40.png" />
   </ItemGroup>
   <ItemGroup>
@@ -356,6 +353,12 @@
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\events_icon_128x128.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\events_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\events_icon%402.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="..\packages\Xamarin.Forms.2.5.0.280555\build\netstandard1.0\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.2.5.0.280555\build\netstandard1.0\Xamarin.Forms.targets')" />
