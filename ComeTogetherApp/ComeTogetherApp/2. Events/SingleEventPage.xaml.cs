@@ -30,7 +30,7 @@ namespace ComeTogetherApp
             Children.Add(membersPage);
             Children.Add(generalPage);
 
-            CurrentPage = generalPage;
+            CurrentPage = toDosPage;
         }
 
         private void initProperties()

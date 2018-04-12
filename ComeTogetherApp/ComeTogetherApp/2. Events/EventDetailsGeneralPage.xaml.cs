@@ -148,11 +148,11 @@ namespace ComeTogetherApp
                 Margin = 5
             };
 
-            Button startEventButton = new Button
+            Button endEventButton = new Button
             {
-                Text = "Start Event",
-                TextColor = Color.Black,
-                BackgroundColor = Color.LightGreen,
+                Text = "End Event",
+                TextColor = Color.White,
+                BackgroundColor = Color.Orange,
                 FontAttributes = FontAttributes.Bold
             };
 
@@ -177,17 +177,18 @@ namespace ComeTogetherApp
             Button leaveEventButton = new Button
             {
                 Text = "Leave Event",
-                TextColor = Color.Black,
+                TextColor = Color.White,
                 BackgroundColor = Color.OrangeRed,
                 FontAttributes = FontAttributes.Bold
             };
             leaveEventButton.Clicked += OnLeaveEventButtonClicked;
 
-            if(ev.adminID.Equals(App.GetUserID()))
-                buttonOptionsLayout.Children.Add(startEventButton);
             buttonOptionsLayout.Children.Add(inviteFriendsButton);
             if (ev.adminID.Equals(App.GetUserID()))
+            {
                 buttonOptionsLayout.Children.Add(editEventButton);
+                buttonOptionsLayout.Children.Add(endEventButton);
+            }
             buttonOptionsLayout.Children.Add(leaveEventButton);
 
             return buttonOptionsLayout;

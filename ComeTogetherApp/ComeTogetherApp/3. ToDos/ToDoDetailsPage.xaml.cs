@@ -20,6 +20,7 @@ namespace ComeTogetherApp
         private const int FONT_SIZE = 17;
 
         private ObservableCollection<User> assignedMembersList;
+        private ObservableCollection<Cost> assignedCostsList;
 
         public ToDoDetailsPage(ToDo toDo, Event ev)
         {
@@ -28,11 +29,13 @@ namespace ComeTogetherApp
             this.toDo = toDo;
             this.ev = ev;
             assignedMembersList = new ObservableCollection<User>();
+            assignedCostsList = new ObservableCollection<Cost>();
 
             initProperties();
             initLayout();
 
             retrieveAssignedMembersFromServer(ev);
+            retrieveAssignedCostsFromServer();
         }
 
         private void initProperties()
@@ -59,12 +62,12 @@ namespace ComeTogetherApp
 
             Frame overviewFrame = createOverviewFrame();
             Frame assignMembersFrame = createAssignMembersFrame();
-            Frame currentCostsFrame = createCurrentCostsFrame();
+            //Frame currentCostsFrame = createCurrentCostsFrame();
             Frame assignCostsFrame = createAssignCostsFrame();
 
             stackLayout.Children.Add(overviewFrame);
             stackLayout.Children.Add(assignMembersFrame);
-            stackLayout.Children.Add(currentCostsFrame);
+            //stackLayout.Children.Add(currentCostsFrame);
             stackLayout.Children.Add(assignCostsFrame);
 
             return stackLayout;
@@ -236,7 +239,7 @@ namespace ComeTogetherApp
 
             Label currentCostsLabel = new Label
             {
-                Text = "Total Cost:",
+                Text = "Total Cost: " + toDo.Kosten.ToString(),
                 FontSize = 20,
                 TextColor = Color.White,
                 Margin = new Thickness(10, 0, 0, 0),
@@ -259,7 +262,7 @@ namespace ComeTogetherApp
 
             Label assignCostLabel = new Label
             {
-                Text = "Individual Costs:",
+                Text = $"Costs (Total: {toDo.Kosten.ToString()}€):",
                 FontSize = 20,
                 TextColor = Color.White,
                 Margin = new Thickness(10, 0, 0, 0),
@@ -413,11 +416,12 @@ namespace ComeTogetherApp
             {
                 Placeholder = "Cost in €",
                 Text = toDo.Kosten.ToString(),
+                IsEnabled = false,
                 TextColor = Color.White,
                 BackgroundColor = Color.FromHex(App.GetMenueColor()),
-                FontSize = FONT_SIZE
+                FontSize = 20
             };
-            currentCostsContentLayout.Children.Add(costEntry);
+            //currentCostsContentLayout.Children.Add(costEntry);
 
             Frame currentCostsContentFrame = new Frame
             {
@@ -435,6 +439,28 @@ namespace ComeTogetherApp
             {
                 VerticalOptions = LayoutOptions.Start,
             };
+
+            ListView assignedCostsListView = new ListView
+            {
+                ItemsSource = assignedCostsList,
+                ItemTemplate = new DataTemplate(() =>
+                {
+                    return new AssignedCostsListCell();
+                }),
+                Margin = new Thickness(0, 0, 0, 10),
+                BackgroundColor = Color.FromHex(App.GetMenueColor()),
+                SeparatorColor = Color.LightSlateGray,
+                VerticalOptions = LayoutOptions.FillAndExpand,
+                HorizontalOptions = LayoutOptions.FillAndExpand
+            };
+
+            ScrollView scrollableList = new ScrollView
+            {
+                Content = assignedCostsListView,
+                HeightRequest = 150
+            };
+
+            assignCostsContentLayout.Children.Add(scrollableList);
 
             Frame assignCostsContentFrame = new Frame
             {
@@ -469,7 +495,7 @@ namespace ComeTogetherApp
         }
         async void OnAssignCostClicked(object sender, EventArgs e)
         {
-            await DisplayAlert("EditCost", "", "Ok");
+            await Navigation.PushPopupAsync(new AssignCostToDoPopUp());
         }
 
         async void OnInfoImageClicked(object sender, EventArgs e)
@@ -493,6 +519,28 @@ namespace ComeTogetherApp
                     User user = userQuery.ElementAt(0).Object;
                     user.ID = userID;
                     assignedMembersList.Add(user);
+                }
+                //activityIndicatorSwitch(); individual indicator for each list
+            }
+            catch (Exception e)
+            {
+                await DisplayAlert("Server connection failure", "Communication problems occured while querying", "OK");
+                System.Diagnostics.Debug.WriteLine(e);
+            }
+        }
+        private async void retrieveAssignedCostsFromServer()
+        {
+            String toDoID = toDo.ID;
+
+            try
+            {
+                var assignedCostsInToDo = await App.firebase.Child("ToDo_Kosten").Child(toDoID).OnceAsync<Cost>();
+
+                foreach (FirebaseObject<Cost> e in assignedCostsInToDo)
+                {
+                    Cost cost = e.Object;
+                    cost.ID = e.Key;
+                    assignedCostsList.Add(cost);
                 }
                 //activityIndicatorSwitch(); individual indicator for each list
             }
