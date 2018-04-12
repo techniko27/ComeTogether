@@ -324,7 +324,8 @@ namespace ComeTogetherApp
             Picker statusPicker = new Picker
             {
                 Title = "Status",
-                TextColor = Color.White
+                TextColor = Color.White,
+                BackgroundColor = Color.FromHex(App.GetMenueColor())
             };
 
             statusPicker.Items.Add("In Progress");
@@ -456,26 +457,15 @@ namespace ComeTogetherApp
             };
         }
 
-        public async void assignMemberToToDo(User user)
+        public void assignMemberToToDo(User user)
         {
-            assignedMembersList.Add(user);
-
-            try
-            {
-                User_ToDo uTD = new User_ToDo("false", "false");
-                await App.firebase.Child("Benutzer_ToDo").Child(user.ID).Child(ev.ID).Child(toDo.ID).PutAsync(uTD);
-                await App.firebase.Child("ToDo_Benutzer").Child(toDo.ID).Child(user.ID).PutAsync<string>(user.userName);
-            }
-            catch (Exception e)
-            {
-                DisplayAlert("Server Connection Failure", "Communication problems occurred while updating event!", "OK");
-                System.Diagnostics.Debug.WriteLine(e);
-            }
+            if(!assignedMembersList.Contains(user))
+                assignedMembersList.Add(user);
         }
 
         async void OnAssignMemberClicked(object sender, EventArgs e)
         {
-            await Navigation.PushPopupAsync(new AssignMemberToDoPopUp(ev, this));
+            await Navigation.PushPopupAsync(new AssignMemberToDoPopUp(ev, toDo, this));
         }
         async void OnAssignCostClicked(object sender, EventArgs e)
         {
@@ -509,6 +499,24 @@ namespace ComeTogetherApp
             catch (Exception e)
             {
                 await DisplayAlert("Server connection failure", "Communication problems occured while querying", "OK");
+                System.Diagnostics.Debug.WriteLine(e);
+            }
+        }
+
+        private async void saveChanges()
+        {
+            try
+            {
+                foreach (User user in assignedMembersList)
+                {
+                    User_ToDo uTD = new User_ToDo("false", "false");
+                    await App.firebase.Child("Benutzer_ToDo").Child(user.ID).Child(ev.ID).Child(toDo.ID).PutAsync(uTD);
+                    await App.firebase.Child("ToDo_Benutzer").Child(toDo.ID).Child(user.ID).PutAsync<string>(user.userName);
+                }
+            }
+            catch (Exception e)
+            {
+                DisplayAlert("Server Connection Failure", "Communication problems occurred while updating event!", "OK");
                 System.Diagnostics.Debug.WriteLine(e);
             }
         }

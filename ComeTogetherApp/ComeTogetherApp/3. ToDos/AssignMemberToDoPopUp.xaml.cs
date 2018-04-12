@@ -19,6 +19,7 @@ namespace ComeTogetherApp
 
         private ObservableCollection<User> eventMemberList;
         private Event ev;
+        private ToDo toDo;
 
         private StackLayout mainLayout;
         private ActivityIndicator activityIndicator;
@@ -26,11 +27,12 @@ namespace ComeTogetherApp
 
         private ToDoDetailsPage detailsPage;
 
-        public AssignMemberToDoPopUp(Event ev, ToDoDetailsPage detailsPage)
+        public AssignMemberToDoPopUp(Event ev, ToDo toDo, ToDoDetailsPage detailsPage)
         {
             InitializeComponent();
 
             this.ev = ev;
+            this.toDo = toDo;
             this.detailsPage = detailsPage;
             eventMemberList = new ObservableCollection<User>();
 
@@ -63,10 +65,23 @@ namespace ComeTogetherApp
         private async void retrieveMemberListFromServer(Event ev)
         {
             String eventID = ev.ID;
+            String toDoID = toDo.ID;
 
             try
             {
                 var usersInEvent = await App.firebase.Child("Veranstaltung_Benutzer").Child(eventID).OnceAsync<string>();
+                var usersInToDo = await App.firebase.Child("ToDo_Benutzer").Child(toDoID).OnceAsync<string>();
+
+                List<User> usersAlreadyInToDo = new List<User>();
+
+                foreach (FirebaseObject<string> e in usersInToDo)
+                {
+                    string userID = e.Key;
+                    var userQuery = await App.firebase.Child("users").OrderByKey().StartAt(userID).LimitToFirst(1).OnceAsync<User>();
+                    User user = userQuery.ElementAt(0).Object;
+                    user.ID = userID;
+                    usersAlreadyInToDo.Add(user);
+                }
 
                 foreach (FirebaseObject<string> e in usersInEvent)
                 {
@@ -74,8 +89,9 @@ namespace ComeTogetherApp
                     var userQuery = await App.firebase.Child("users").OrderByKey().StartAt(userID).LimitToFirst(1).OnceAsync<User>();
                     User user = userQuery.ElementAt(0).Object;
                     user.ID = userID;
+                    if (usersAlreadyInToDo.Contains(user))
+                        continue;
                     eventMemberList.Add(user);
-                    System.Diagnostics.Debug.WriteLine($"Name of {userID} is {user.userName}");
                 }
                 activityIndicatorSwitch();
             }

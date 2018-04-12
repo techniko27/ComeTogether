@@ -18,5 +18,12 @@ namespace ComeTogetherApp
             this.userName = userName;
             this.email = email;
         }
+        public override bool Equals(object obj)
+        {
+            var user = obj as User;
+            if (user == null)
+                return false;
+            return ID.Equals(user.ID);
+        }
     }
 }

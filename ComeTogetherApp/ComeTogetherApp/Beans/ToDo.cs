@@ -25,5 +25,13 @@ namespace ComeTogetherApp
             this.Status = Status;
             this.Ort = Ort;
         }
+
+        public override bool Equals(object obj)
+        {
+            var toDo = obj as ToDo;
+            if (toDo == null)
+                return false;
+            return ID.Equals(toDo.ID);
+        }
     }
 }
