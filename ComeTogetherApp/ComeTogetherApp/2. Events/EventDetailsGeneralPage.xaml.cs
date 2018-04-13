@@ -14,6 +14,7 @@ namespace ComeTogetherApp
     public partial class EventDetailsGeneralPage : ContentPage
     {
         private Event ev;
+
         public EventDetailsGeneralPage(Event ev)
         {
             InitializeComponent();
@@ -83,7 +84,7 @@ namespace ComeTogetherApp
                 Aspect = Aspect.AspectFit,
                 VerticalOptions = LayoutOptions.Start,
                 Scale = 0.5,
-                Margin = new Thickness(-90,0,-80,0)
+                Margin = new Thickness(-90, 0, -80, 0)
             };
             eventImage.Source = ev.Bild;
 
@@ -155,6 +156,7 @@ namespace ComeTogetherApp
                 BackgroundColor = Color.Orange,
                 FontAttributes = FontAttributes.Bold
             };
+            endEventButton.Clicked += OnEndEventButtonClicked;
 
             Button inviteFriendsButton = new Button
             {
@@ -199,6 +201,31 @@ namespace ComeTogetherApp
             await Navigation.PushAsync(new EditEventInfoPage(ev));
         }
 
+        private async void OnEndEventButtonClicked(object sender, EventArgs e)
+        {
+            bool answer = await DisplayAlert("Are you sure?", $"Do you really want to end this event?", "Yes", "No");
+            if (answer ==false)
+            {
+                return;
+            }
+
+            try
+            {
+                await App.firebase.Child("Veranstaltungen").Child(ev.ID).Child("Status").PutAsync<string>("stop");
+            }
+            catch (Exception)
+            {
+                await DisplayAlert("Server connection failure", "Communication problems occured while querying", "OK");
+                System.Diagnostics.Debug.WriteLine(e);
+            }
+
+            await Navigation.PushAsync(new EventsPage
+            {
+                Title = "Events"
+            });
+            clearNavigationStack();
+        }
+
         private async void OnLeaveEventButtonClicked(object sender, EventArgs e)
         {
             string action;
@@ -208,9 +235,14 @@ namespace ComeTogetherApp
                 case "Leave Event":
                     bool answer;
                     if (!App.GetUserID().Equals(ev.adminID))
-                        answer = await DisplayAlert("Are you sure?", $"Do you really want to leave this event?", "Yes", "No");
+                        answer =
+                            await DisplayAlert("Are you sure?", $"Do you really want to leave this event?", "Yes", "No");
                     else
-                        answer = await DisplayAlert("Are you sure?", $"Do you really want to leave this event? As the administrator of this event, leaving it will fully delete the event.", "Yes", "No");
+                        answer =
+                            await
+                                DisplayAlert("Are you sure?",
+                                    $"Do you really want to leave this event? As the administrator of this event, leaving it will fully delete the event.",
+                                    "Yes", "No");
                     if (answer)
                         removeUserFromEvent();
                     break;
@@ -226,39 +258,47 @@ namespace ComeTogetherApp
 
         private async void removeUserFromEvent()
         {
-            string eventID = ev.ID;
-
-            // if the admin is leaving the event, dissolve the whole event
-            if (App.GetUserID().Equals(ev.adminID))
+            try
             {
-                var usersInEvent = await App.firebase.Child("Veranstaltung_Benutzer").Child(eventID).OnceAsync<string>();
+                string eventID = ev.ID;
 
-                foreach (FirebaseObject<string> e in usersInEvent)
+                // if the admin is leaving the event, dissolve the whole event
+                if (App.GetUserID().Equals(ev.adminID))
                 {
-                    string userID = e.Key;
-                    await App.firebase.Child("Benutzer_Veranstaltung").Child(userID).Child(eventID).DeleteAsync();
+                    var usersInEvent = await App.firebase.Child("Veranstaltung_Benutzer").Child(eventID).OnceAsync<string>();
+
+                    foreach (FirebaseObject<string> e in usersInEvent)
+                    {
+                        string userID = e.Key;
+                        await App.firebase.Child("Benutzer_Veranstaltung").Child(userID).Child(eventID).DeleteAsync();
+                    }
+
+                    await App.firebase.Child("Veranstaltung_Benutzer").Child(eventID).DeleteAsync();
+                    await App.firebase.Child("Veranstaltungen").Child(eventID).DeleteAsync();
+
+                    await Navigation.PushAsync(new EventsPage
+                    {
+                        Title = "Events"
+                    });
+                    clearNavigationStack();
+
+                    return;
                 }
 
-                await App.firebase.Child("Veranstaltung_Benutzer").Child(eventID).DeleteAsync();
-                await App.firebase.Child("Veranstaltungen").Child(eventID).DeleteAsync();
+                await App.firebase.Child("Benutzer_Veranstaltung").Child(App.GetUserID()).Child(eventID).DeleteAsync();
+                await App.firebase.Child("Veranstaltung_Benutzer").Child(eventID).Child(App.GetUserID()).DeleteAsync();
 
                 await Navigation.PushAsync(new EventsPage
                 {
                     Title = "Events"
                 });
                 clearNavigationStack();
-
-                return;
             }
-
-            await App.firebase.Child("Benutzer_Veranstaltung").Child(App.GetUserID()).Child(eventID).DeleteAsync();
-            await App.firebase.Child("Veranstaltung_Benutzer").Child(eventID).Child(App.GetUserID()).DeleteAsync();
-
-            await Navigation.PushAsync(new EventsPage
+            catch (Exception e)
             {
-                Title = "Events"
-            });
-            clearNavigationStack();
+                await DisplayAlert("Server connection failure", "Communication problems occured while querying", "OK");
+                System.Diagnostics.Debug.WriteLine(e);
+            }    
         }
 
         private void clearNavigationStack()

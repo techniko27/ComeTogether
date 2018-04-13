@@ -64,7 +64,6 @@ namespace ComeTogetherApp
                 }
 
                 updateMemberCostFrame();
-                activityIndicatorSwitch();
             }
             catch (Exception e)
             {
@@ -103,6 +102,7 @@ namespace ComeTogetherApp
                 }
 
                 updateTransactionFrame();
+                activityIndicatorSwitch();
             }
             catch (Exception e)
             {
@@ -333,14 +333,14 @@ namespace ComeTogetherApp
                 stackLayout.Children.Add(eventMemberCostFrame);
                 stackLayout.Children.Add(transactionsFrame);
 
-                if (ev.adminID.Equals(App.GetUserID()))
+                if (ev.adminID.Equals(App.GetUserID()) && eventTransactionsList.Count == 0)
                     stackLayout.Children.Add(restartEventButton);
             }
             else
             {
                 activityIndicator.IsRunning = true;
 
-                if (ev.adminID.Equals(App.GetUserID()))
+                if (ev.adminID.Equals(App.GetUserID()) && eventTransactionsList.Count == 0)
                     stackLayout.Children.Remove(restartEventButton);
 
                 stackLayout.Children.Remove(transactionsFrame);
@@ -356,7 +356,29 @@ namespace ComeTogetherApp
         }
         async void OnRestartEventButtonClicked(object sender, EventArgs e)
         {
-            await DisplayAlert("Restart Event", "has to be implemented, only possible, when no transaction is done", "ok");
+            try
+            {
+                await App.firebase.Child("Veranstaltungen").Child(ev.ID).Child("Status").PutAsync<string>("start");
+            }
+            catch (Exception)
+            {
+                await DisplayAlert("Server connection failure", "Communication problems occured while querying", "OK");
+                System.Diagnostics.Debug.WriteLine(e);
+            }
+
+            await Navigation.PushAsync(new EventsPage
+            {
+                Title = "Events"
+            });
+            clearNavigationStack();
+        }
+        private void clearNavigationStack()
+        {
+            var navigationPages = Navigation.NavigationStack.ToList();
+            foreach (var page in navigationPages)
+            {
+                Navigation.RemovePage(page);
+            }
         }
     }
 }
