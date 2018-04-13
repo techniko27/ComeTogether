@@ -56,7 +56,7 @@ namespace ComeTogetherApp
             {
                 eventPersonalCostLabel = new Label
                 {
-                    Text = "Personal Cost: calculating",/* + EventCostCalculator.getPersonalCost(ev, App.GetUserID()).Result + "€"*/
+                    Text = "Personal Cost: ...",/* + EventCostCalculator.getPersonalCost(ev, App.GetUserID()).Result + "€"*/
                     VerticalOptions = LayoutOptions.Start,
                     FontSize = 15
                 };
@@ -64,7 +64,7 @@ namespace ComeTogetherApp
 
                 try
                 {
-                    Task<int> callTask = Task.Run(() => EventCostCalculator.getPersonalCost(ev, App.GetUserID(), eventPersonalCostLabel));
+                    Task<int> callTask = Task.Run(() => EventCostCalculator.getPersonalCost(ev, App.GetUserID(), eventPersonalCostLabel, new Button()));
                     //callTask.Wait();
                     //eventPersonalCostLabel.Text = "Personal Cost: " + callTask.Result + "€";
                 }
@@ -81,7 +81,7 @@ namespace ComeTogetherApp
                 Orientation = StackOrientation.Horizontal,
                 HorizontalOptions = LayoutOptions.FillAndExpand,
                 Margin = new Thickness(0, 0, 0, 0),
-                HeightRequest = 25
+                HeightRequest = 30
             };
             this.Children.Add(horizontalDateAndStateLayout);
 
@@ -96,10 +96,10 @@ namespace ComeTogetherApp
             Image statusImage = new Image
             {
                 Aspect = Aspect.AspectFit,
-                Source = "drei_punkte_weiss.png",
+                Source = "Stop.png",
                 HorizontalOptions = LayoutOptions.EndAndExpand,
                 VerticalOptions = LayoutOptions.Start,
-                Scale = 0.75
+                Margin = new Thickness(0, 0, 10, 0)
             };
             if (ev.Status.Equals("stop"))
             {

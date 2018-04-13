@@ -73,7 +73,7 @@ namespace ComeTogetherApp
             {
 
                 var benutzer_Events = await App.firebase.Child("Benutzer_Veranstaltung").Child(App.GetUserID).OnceAsync<string>();
-
+                
                 foreach (var eventID in benutzer_Events)
                 {
                     var ev = await App.firebase.Child("Veranstaltungen").OrderByKey().StartAt(eventID.Key).LimitToFirst(1).OnceAsync<Event>();
