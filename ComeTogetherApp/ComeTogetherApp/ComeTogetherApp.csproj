@@ -56,6 +56,7 @@
       <DependentUpon>EnterJoinCodePopupPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="2. Events\EventButton.cs" />
+    <Compile Include="Beans\Transaction.cs" />
     <Compile Include="Costs\CostOverviewPage.xaml.cs">
       <DependentUpon>CostOverviewPage.xaml</DependentUpon>
     </Compile>

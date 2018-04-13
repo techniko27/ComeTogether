@@ -10,7 +10,7 @@ namespace ComeTogetherApp
 {
     class EventCostCalculator
     {
-        public static async Task<int> getPersonalCost(Event ev, string userID, Label costlabel)
+        public static async Task<int> getPersonalCost(Event ev, string userID, Label costLabel, Button costButton)
         {
             List<ToDo> todoList = new List<ToDo>();
             int personalCost = 0;
@@ -50,7 +50,12 @@ namespace ComeTogetherApp
 
             Device.BeginInvokeOnMainThread(async () =>
             {
-                costlabel.Text = "Personal Cost: " + personalCost + "€";
+                costLabel.Text = "Personal Cost: " + personalCost + "€";
+            });
+
+            Device.BeginInvokeOnMainThread(async () =>
+            {
+                costButton.Text = personalCost + "€";
             });
 
             return personalCost;
