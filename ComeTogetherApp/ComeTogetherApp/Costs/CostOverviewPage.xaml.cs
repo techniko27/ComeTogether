@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Firebase.Database;
@@ -28,7 +29,8 @@ namespace ComeTogetherApp
         private StackLayout eventMemberCostInnerLayout;
         private StackLayout transactionInnerLayout;
 
-
+        private int reloadCount;
+        private bool pageIsDisappeared;
         public CostOverviewPage(Event ev)
         {
             InitializeComponent();
@@ -36,10 +38,17 @@ namespace ComeTogetherApp
             Title = "Cost Overview";
             this.ev = ev;
 
+            pageIsDisappeared = false;
+            this.Disappearing += pageOnDisappearing;
+
+            eventTransactionsList = new ObservableCollection<Transaction>();
+
             initLayout();
 
             retrieveMemberFromServer();
-            retrieveTransactionsFromServer();
+            retrieveTransactionsFromServer(true);
+
+            continuousRetrieveTransactionsFromServer(4000);
         }
 
         private async void retrieveMemberFromServer()
@@ -80,11 +89,11 @@ namespace ComeTogetherApp
                 eventMemberCostInnerLayout.Children.Add(eventMemberFrame);
             }
         }
-        private async void retrieveTransactionsFromServer()
+        private async Task<bool> retrieveTransactionsFromServer(bool firstRun)
         {
             String eventID = ev.ID;
 
-            eventTransactionsList = new ObservableCollection<Transaction>();
+            ObservableCollection<Transaction> newEventTransactionsList = new ObservableCollection<Transaction>();
 
             try
             {
@@ -98,17 +107,29 @@ namespace ComeTogetherApp
                     var receiverInfos = await App.firebase.Child("users").OrderByKey().StartAt(transaction.Object.receiver).LimitToFirst(1).OnceAsync<User>();
                     transaction.Object.receiverName = receiverInfos.ElementAt(0).Object.userName;
 
-                    eventTransactionsList.Add(transaction.Object);
+                    newEventTransactionsList.Add(transaction.Object);
                 }
 
-                updateTransactionFrame();
-                activityIndicatorSwitch();
+                if (firstRun)
+                {
+                    eventTransactionsList = newEventTransactionsList;
+
+                    updateTransactionFrame();
+                    activityIndicatorSwitch();
+                }
+                else if (eventTransactionsList.Count != newEventTransactionsList.Count)
+                {
+                    Navigation.InsertPageBefore(new CostOverviewPage(ev), Navigation.NavigationStack[Navigation.NavigationStack.Count - 1]);
+                    await Navigation.PopAsync();
+                }
             }
             catch (Exception e)
             {
                 await DisplayAlert("Server Connection Failure", "Communication problems occured while querying!", "OK");
                 System.Diagnostics.Debug.WriteLine(e);
             }
+
+            return true;
         }
         private void updateTransactionFrame()
         {
@@ -303,7 +324,7 @@ namespace ComeTogetherApp
             Frame transactionFrame = new Frame
             {
                 Content = transactionFrameLayout,
-                BackgroundColor = Color.FromHex(App.GetMenueColor()),
+                BackgroundColor = Color.LightGreen,
                 CornerRadius = 5,
                 Padding = 1
             };
@@ -312,7 +333,7 @@ namespace ComeTogetherApp
             Label transactionLabel = new Label
             {
                 Text = transaction.senderName + " sent " + transaction.receiverName + " " + transaction.amount + "€",
-                TextColor = Color.White,
+                TextColor = Color.Black,
                 FontSize = 15,
                 Margin = new Thickness(0, 0, 0, 0),
                 HorizontalOptions = LayoutOptions.StartAndExpand,
@@ -379,6 +400,23 @@ namespace ComeTogetherApp
             {
                 Navigation.RemovePage(page);
             }
+        }
+
+        private async void continuousRetrieveTransactionsFromServer(int ms)
+        {
+            while (!pageIsDisappeared)
+            {
+                //await Task.Delay(ms);
+                await retrieveTransactionsFromServer(false);
+                System.Diagnostics.Debug.WriteLine("Refresh" + reloadCount);
+                reloadCount++;
+            }
+
+            System.Diagnostics.Debug.WriteLine("Refresh End");
+        }
+        async void pageOnDisappearing(object sender, EventArgs e)
+        {
+            pageIsDisappeared = true;
         }
     }
 }
