@@ -20,7 +20,9 @@ namespace ComeTogetherApp
         private const int FONT_SIZE = 17;
 
         private ObservableCollection<User> assignedMembersList;
-        private ObservableCollection<Cost> assignedCostsList;
+        private ObservableCollection<User> assignedCostsList;
+
+        private StackLayout assignCostsContentLayout;
 
         public ToDoDetailsPage(ToDo toDo, Event ev)
         {
@@ -29,13 +31,23 @@ namespace ComeTogetherApp
             this.toDo = toDo;
             this.ev = ev;
             assignedMembersList = new ObservableCollection<User>();
-            assignedCostsList = new ObservableCollection<Cost>();
+            assignedCostsList = new ObservableCollection<User>();
+           // assignedCostsList.CollectionChanged += costAssigned;
 
             initProperties();
             initLayout();
 
             retrieveAssignedMembersFromServer(ev);
-            retrieveAssignedCostsFromServer();
+        }
+
+        private void costAssigned(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            foreach(var item in e.NewItems)
+            {
+                AssignedCostsEntry costEntry = new AssignedCostsEntry();
+                costEntry.BindingContext = item;
+                assignCostsContentLayout.Children.Insert(0, costEntry);
+            }
         }
 
         private void initProperties()
@@ -62,12 +74,12 @@ namespace ComeTogetherApp
 
             Frame overviewFrame = createOverviewFrame();
             Frame assignMembersFrame = createAssignMembersFrame();
-            //Frame currentCostsFrame = createCurrentCostsFrame();
+            Frame currentCostsFrame = createCurrentCostsFrame();
             Frame assignCostsFrame = createAssignCostsFrame();
 
             stackLayout.Children.Add(overviewFrame);
             stackLayout.Children.Add(assignMembersFrame);
-            //stackLayout.Children.Add(currentCostsFrame);
+            stackLayout.Children.Add(currentCostsFrame);
             stackLayout.Children.Add(assignCostsFrame);
 
             return stackLayout;
@@ -143,6 +155,7 @@ namespace ComeTogetherApp
 
             // Put it together in a single frame
             Frame assignCostsFrame = createInfoFrame(assignCostsLayout);
+            assignCostsFrame.MinimumHeightRequest = 150;
 
             return assignCostsFrame;
         }
@@ -262,7 +275,7 @@ namespace ComeTogetherApp
 
             Label assignCostLabel = new Label
             {
-                Text = $"Costs (Total: {toDo.Kosten.ToString()}€):",
+                Text = $"Paying Members:",
                 FontSize = 20,
                 TextColor = Color.White,
                 Margin = new Thickness(10, 0, 0, 0),
@@ -416,12 +429,11 @@ namespace ComeTogetherApp
             {
                 Placeholder = "Cost in €",
                 Text = toDo.Kosten.ToString(),
-                IsEnabled = false,
                 TextColor = Color.White,
                 BackgroundColor = Color.FromHex(App.GetMenueColor()),
                 FontSize = 20
             };
-            //currentCostsContentLayout.Children.Add(costEntry);
+            currentCostsContentLayout.Children.Add(costEntry);
 
             Frame currentCostsContentFrame = new Frame
             {
@@ -435,9 +447,10 @@ namespace ComeTogetherApp
 
         private Frame createAssignCostsContentFrame()
         {
-            StackLayout assignCostsContentLayout = new StackLayout
+            assignCostsContentLayout = new StackLayout
             {
                 VerticalOptions = LayoutOptions.Start,
+                MinimumHeightRequest = 150
             };
 
             ListView assignedCostsListView = new ListView
@@ -445,29 +458,24 @@ namespace ComeTogetherApp
                 ItemsSource = assignedCostsList,
                 ItemTemplate = new DataTemplate(() =>
                 {
-                    return new AssignedCostsListCell();
+                    return new AssignedMembersListCell(ev);
                 }),
                 Margin = new Thickness(0, 0, 0, 10),
                 BackgroundColor = Color.FromHex(App.GetMenueColor()),
                 SeparatorColor = Color.LightSlateGray,
                 VerticalOptions = LayoutOptions.FillAndExpand,
-                HorizontalOptions = LayoutOptions.FillAndExpand
+                HorizontalOptions = LayoutOptions.FillAndExpand,
             };
 
-            ScrollView scrollableList = new ScrollView
-            {
-                Content = assignedCostsListView,
-                HeightRequest = 150
-            };
-
-            assignCostsContentLayout.Children.Add(scrollableList);
+            //assignCostsContentLayout.Children.Add(scrollableList);
 
             Frame assignCostsContentFrame = new Frame
             {
-                Content = assignCostsContentLayout,
+                Content = assignedCostsListView,
                 BackgroundColor = Color.FromHex(App.GetMenueColor()),
                 CornerRadius = 5,
-                Padding = 5
+                Padding = 5,
+                MinimumHeightRequest = 150
             };
             return assignCostsContentFrame;
         }
@@ -495,7 +503,7 @@ namespace ComeTogetherApp
         }
         async void OnAssignCostClicked(object sender, EventArgs e)
         {
-            await Navigation.PushPopupAsync(new AssignCostToDoPopUp());
+           await Navigation.PushPopupAsync(new AssignCostToDoPopUp(assignedMembersList, assignedCostsList));
         }
 
         async void OnInfoImageClicked(object sender, EventArgs e)
@@ -515,32 +523,17 @@ namespace ComeTogetherApp
                 foreach (FirebaseObject<string> e in assignedUsersInToDo)
                 {
                     string userID = e.Key;
+
                     var userQuery = await App.firebase.Child("users").OrderByKey().StartAt(userID).LimitToFirst(1).OnceAsync<User>();
+                    var assignedCostsInToDo = await App.firebase.Child("Benutzer_ToDo").Child(userID).Child(eventID).OrderByKey().StartAt(toDoID).LimitToFirst(1).OnceAsync<User_ToDo>();
+
                     User user = userQuery.ElementAt(0).Object;
                     user.ID = userID;
                     assignedMembersList.Add(user);
-                }
-                //activityIndicatorSwitch(); individual indicator for each list
-            }
-            catch (Exception e)
-            {
-                await DisplayAlert("Server connection failure", "Communication problems occured while querying", "OK");
-                System.Diagnostics.Debug.WriteLine(e);
-            }
-        }
-        private async void retrieveAssignedCostsFromServer()
-        {
-            String toDoID = toDo.ID;
 
-            try
-            {
-                var assignedCostsInToDo = await App.firebase.Child("ToDo_Kosten").Child(toDoID).OnceAsync<Cost>();
-
-                foreach (FirebaseObject<Cost> e in assignedCostsInToDo)
-                {
-                    Cost cost = e.Object;
-                    cost.ID = e.Key;
-                    assignedCostsList.Add(cost);
+                    User_ToDo userToDo = assignedCostsInToDo.ElementAt(0).Object;
+                    if(userToDo.isPaying.Equals("true"))
+                        assignedCostsList.Add(user);
                 }
                 //activityIndicatorSwitch(); individual indicator for each list
             }
@@ -558,6 +551,8 @@ namespace ComeTogetherApp
                 foreach (User user in assignedMembersList)
                 {
                     User_ToDo uTD = new User_ToDo("false", "false");
+                    if (assignedCostsList.Contains(user))
+                        uTD.isPaying = "true";
                     await App.firebase.Child("Benutzer_ToDo").Child(user.ID).Child(ev.ID).Child(toDo.ID).PutAsync(uTD);
                     await App.firebase.Child("ToDo_Benutzer").Child(toDo.ID).Child(user.ID).PutAsync<string>(user.userName);
                 }

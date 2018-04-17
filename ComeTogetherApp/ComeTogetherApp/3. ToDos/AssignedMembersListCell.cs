@@ -69,7 +69,6 @@ namespace ComeTogetherApp
 
         private Image createThreeDotsButton()
         {
-            Contract.Ensures(Contract.Result<Image>() != null);
             Image threeDots = new Image { Aspect = Aspect.AspectFit, VerticalOptions = LayoutOptions.Center, HorizontalOptions = LayoutOptions.EndAndExpand };
             threeDots.Source = "drei_punkte_schwarz.png";
             threeDots.AnchorX = 0;

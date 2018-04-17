@@ -16,15 +16,18 @@ namespace ComeTogetherApp
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class AssignCostToDoPopUp : PopupPage
     {
-        private Cost cost;
+        private ObservableCollection<User> eventMemberList;
+        private ObservableCollection<User> assignedCostsMemberList;
 
         private StackLayout mainLayout;
+        private ActivityIndicator activityIndicator;
         private Frame memberListFrame;
 
-
-        public AssignCostToDoPopUp()
+        public AssignCostToDoPopUp(ObservableCollection<User> eventMemberList, ObservableCollection<User> assignedCostsMemberList)
         {
             InitializeComponent();
+            this.eventMemberList = eventMemberList;
+            this.assignedCostsMemberList = assignedCostsMemberList;
 
             mainLayout = new StackLayout
             {
@@ -44,9 +47,11 @@ namespace ComeTogetherApp
         {
             StackLayout membersLayout = new StackLayout();
 
-            Label membersLabel = createFrameHeaderLabel("Create New Cost");
+            Label membersLabel = createFrameHeaderLabel("Assign Event Member:");
 
-            Frame membersListFrame = createDetailsFrame();
+            ListView membersListView = createMembersListView();
+
+            Frame membersListFrame = createListViewFrame(membersListView);
 
             membersLayout.Children.Add(membersLabel);
             membersLayout.Children.Add(membersListFrame);
@@ -67,54 +72,44 @@ namespace ComeTogetherApp
             };
         }
 
-        private Frame createDetailsFrame()
+        private ListView createMembersListView()
         {
-            StackLayout detailsLayout = new StackLayout();
-
-            Entry descriptionEntry = new Entry
+            ObservableCollection<User> possibleMembersList = new ObservableCollection<User>();
+            foreach(User user in eventMemberList)
             {
-                Placeholder = "Description...",
-                TextColor = Color.White,
+                if (!assignedCostsMemberList.Contains(user))
+                    possibleMembersList.Add(user);
+            }
+
+            ListView memberListView = new ListView
+            {
+                ItemsSource = possibleMembersList,
+                ItemTemplate = new DataTemplate(() =>
+                {
+                    return new AssignCostMembersPopUpListCell(this, assignedCostsMemberList);
+                }),
+                Margin = new Thickness(0, 0, 0, 10),
                 BackgroundColor = Color.FromHex(App.GetMenueColor()),
-                FontSize = 18
+                SeparatorColor = Color.LightSlateGray
             };
+            return memberListView;
+        }
 
-            Entry costEntry = new Entry
+        private Frame createListViewFrame(ListView listView)
+        {
+            ScrollView scrollableList = new ScrollView
             {
-                Placeholder = "Amount...",
-                TextColor = Color.White,
-                BackgroundColor = Color.FromHex(App.GetMenueColor()),
-                FontSize = 18
+                Content = listView
             };
-
-            Button saveCostButton = new Button
-            {
-                Text = "Add Cost",
-                TextColor = Color.Black,
-                BackgroundColor = Color.LightGreen,
-                HorizontalOptions = LayoutOptions.CenterAndExpand
-            };
-            saveCostButton.Clicked += saveCost;
-
-            detailsLayout.Children.Add(descriptionEntry);
-            detailsLayout.Children.Add(costEntry);
-            detailsLayout.Children.Add(saveCostButton);
 
             Frame listViewFrame = new Frame
             {
-                Content = detailsLayout,
+                Content = scrollableList,
                 BackgroundColor = Color.FromHex(App.GetMenueColor()),
                 CornerRadius = 5,
-                Padding = 5,
-                WidthRequest = 250,
-                HeightRequest = 150
+                Padding = 5
             };
             return listViewFrame;
-        }
-
-        private void saveCost(object sender, EventArgs e)
-        {
-            Navigation.PopPopupAsync();
         }
 
         private Frame createToDosFrame(StackLayout toDoLayout)
