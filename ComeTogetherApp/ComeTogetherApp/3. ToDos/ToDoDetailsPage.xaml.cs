@@ -24,6 +24,12 @@ namespace ComeTogetherApp
 
         private StackLayout assignCostsContentLayout;
 
+        private Entry costEntry;
+        private Entry todoNameEntry;
+        private Entry todoDescriptionEntry;
+        private Entry todoPlaceEntry;
+        private Picker statusPicker;
+
         public ToDoDetailsPage(ToDo toDo, Event ev)
         {
             InitializeComponent();
@@ -180,6 +186,23 @@ namespace ComeTogetherApp
             };
             overviewHeaderLayout.Children.Add(infoLabel);
 
+            StackLayout buttonLayout = new StackLayout
+            {
+                Orientation = StackOrientation.Horizontal,
+                Margin = new Thickness(0, 0, 0, 0),
+                HeightRequest = 30,
+                HorizontalOptions = LayoutOptions.EndAndExpand
+            };
+
+            Image saveImage = new Image
+            {
+                Aspect = Aspect.AspectFit,
+                Source = "speichern.png",
+                HorizontalOptions = LayoutOptions.EndAndExpand,
+                VerticalOptions = LayoutOptions.Start,
+                Scale = 0.75
+            };
+
             Image infoImage = new Image
             {
                 Aspect = Aspect.AspectFit,
@@ -188,7 +211,17 @@ namespace ComeTogetherApp
                 VerticalOptions = LayoutOptions.Start,
                 Scale = 0.75
             };
-            overviewHeaderLayout.Children.Add(infoImage);
+            buttonLayout.Children.Add(saveImage);
+            buttonLayout.Children.Add(infoImage);
+            overviewHeaderLayout.Children.Add(buttonLayout);
+
+            var saveImageTapGestureRecognizer = new TapGestureRecognizer();
+            saveImageTapGestureRecognizer.Tapped += (object sender, EventArgs e) =>
+            {
+                saveChanges();
+            };
+            saveImage.GestureRecognizers.Add(saveImageTapGestureRecognizer);
+
             var infoImageTapGestureRecognizer = new TapGestureRecognizer();
             infoImageTapGestureRecognizer.Tapped += (object sender, EventArgs e) =>
             {
@@ -310,7 +343,7 @@ namespace ComeTogetherApp
                 VerticalOptions = LayoutOptions.Start,
             };
 
-            Entry todoNameEntry = new Entry
+            todoNameEntry = new Entry
             {
                 Placeholder = "Name...",
                 Text = toDo.Name,
@@ -319,7 +352,7 @@ namespace ComeTogetherApp
                 FontSize = FONT_SIZE
             };
 
-            Entry todoDescriptionEntry = new Entry
+            todoDescriptionEntry = new Entry
             {
                 Placeholder = "Description...",
                 Text = toDo.Beschreibung + Environment.NewLine,
@@ -328,7 +361,7 @@ namespace ComeTogetherApp
                 FontSize = FONT_SIZE
             };
 
-            Entry todoPlaceEntry = new Entry
+            todoPlaceEntry = new Entry
             {
                 Placeholder = "Place...",
                 Text = toDo.Ort,
@@ -337,7 +370,7 @@ namespace ComeTogetherApp
                 FontSize = FONT_SIZE
             };
 
-            Picker statusPicker = new Picker
+            statusPicker = new Picker
             {
                 Title = "Status",
                 TextColor = Color.White,
@@ -425,7 +458,7 @@ namespace ComeTogetherApp
                 VerticalOptions = LayoutOptions.Start,
             };
 
-            Entry costEntry = new Entry
+            costEntry = new Entry
             {
                 Placeholder = "Cost in €",
                 Text = toDo.Kosten.ToString(),
@@ -556,10 +589,21 @@ namespace ComeTogetherApp
                     await App.firebase.Child("Benutzer_ToDo").Child(user.ID).Child(ev.ID).Child(toDo.ID).PutAsync(uTD);
                     await App.firebase.Child("ToDo_Benutzer").Child(toDo.ID).Child(user.ID).PutAsync<string>(user.userName);
                 }
+
+                int cost;
+                Int32.TryParse(costEntry.Text, out cost);
+                toDo.Kosten = cost;
+                toDo.Beschreibung = todoDescriptionEntry.Text;
+                toDo.Name = todoNameEntry.Text;
+                toDo.Status = statusPicker.SelectedItem.ToString();
+
+                await App.firebase.Child("ToDos").Child(toDo.ID).PutAsync(toDo);
+
+                await DisplayAlert("Success", "Successfully saved your changes!", "OK");
             }
             catch (Exception e)
             {
-                DisplayAlert("Server Connection Failure", "Communication problems occurred while updating event!", "OK");
+                await DisplayAlert("Server Connection Failure", "Communication problems occurred while saving changes!", "OK");
                 System.Diagnostics.Debug.WriteLine(e);
             }
         }
