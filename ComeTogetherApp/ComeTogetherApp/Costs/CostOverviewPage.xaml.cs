@@ -48,7 +48,7 @@ namespace ComeTogetherApp
             retrieveMemberFromServer();
             retrieveTransactionsFromServer(true);
 
-            continuousRetrieveTransactionsFromServer(4000);
+            continuousRetrieveTransactionsFromServer(3000);
         }
 
         private async void retrieveMemberFromServer()
@@ -253,7 +253,7 @@ namespace ComeTogetherApp
             horizontalLayoutTapGestureRecognizer.Tapped += (object sender, EventArgs e) =>
             {
                 // handle the tap
-                OnCostButtonClicked(sender, e);
+                OnCostButtonClicked(sender, e, member);
             };
             horizontalLableAndButtonLayout.GestureRecognizers.Add(horizontalLayoutTapGestureRecognizer);
 
@@ -279,7 +279,11 @@ namespace ComeTogetherApp
                 CornerRadius = 40,
                 HorizontalOptions = LayoutOptions.EndAndExpand
             };
-            costButton.Clicked += OnCostButtonClicked;
+            costButton.Clicked += (object sender, EventArgs e) =>
+            {
+                // handle the tap
+                OnCostButtonClicked(sender, e, member);
+            };
             horizontalLableAndButtonLayout.Children.Add(costButton);
 
             try
@@ -332,7 +336,7 @@ namespace ComeTogetherApp
 
             Label transactionLabel = new Label
             {
-                Text = transaction.senderName + " sent " + transaction.receiverName + " " + transaction.amount + "€",
+                Text = transaction.senderName + " sent " + transaction.receiverName + " " + transaction.amount + "€ by " + transaction.type,
                 TextColor = Color.Black,
                 FontSize = 15,
                 Margin = new Thickness(0, 0, 0, 0),
@@ -371,9 +375,21 @@ namespace ComeTogetherApp
             }
         }
 
-        async void OnCostButtonClicked(object sender, EventArgs e)
+        async void OnCostButtonClicked(object sender, EventArgs e, User member)
         {
-            await DisplayAlert("CostButton", "Clicked", "ok");
+            string action;
+            action = await DisplayActionSheet("Payment Options", "Cancel", null, "PayPal","Cash");
+            switch (action)
+            {
+                case "PayPal":
+                    
+                    break;
+                case "Cash":
+
+                    break;
+                default:
+                    break;
+            }
         }
         async void OnRestartEventButtonClicked(object sender, EventArgs e)
         {
@@ -404,9 +420,10 @@ namespace ComeTogetherApp
 
         private async void continuousRetrieveTransactionsFromServer(int ms)
         {
+            await Task.Delay(ms);                   //only for wait until the first retrieveTransactionsFromServer(true); ist finished
             while (!pageIsDisappeared)
             {
-                //await Task.Delay(ms);
+                //await Task.Delay(ms);                                               //not really needed anymore, because of await and continuous reading from database
                 await retrieveTransactionsFromServer(false);
                 System.Diagnostics.Debug.WriteLine("Refresh" + reloadCount);
                 reloadCount++;
