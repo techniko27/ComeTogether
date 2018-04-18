@@ -56,9 +56,11 @@
       <DependentUpon>EnterJoinCodePopupPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="2. Events\EventButton.cs" />
+    <Compile Include="3. ToDos\AssignCostMembersPopUpListCell.cs" />
     <Compile Include="3. ToDos\AssignCostToDoPopUp.xaml.cs">
       <DependentUpon>AssignCostToDoPopUp.xaml</DependentUpon>
     </Compile>
+    <Compile Include="3. ToDos\AssignedCostsEntry.cs" />
     <Compile Include="3. ToDos\AssignedCostsListCell.cs" />
     <Compile Include="Beans\Cost.cs" />
     <Compile Include="Beans\Transaction.cs" />
