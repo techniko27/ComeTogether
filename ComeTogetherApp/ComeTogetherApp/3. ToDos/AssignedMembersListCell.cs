@@ -9,21 +9,14 @@ using System.Diagnostics.Contracts;
 
 namespace ComeTogetherApp
 {
-    class AssignedMembersListCell : ViewCell
+    class AssignedMembersListCell : StackLayout
     {
         private User user;
         private Event ev;
 
-        StackLayout horizontalLayout;
-
         public AssignedMembersListCell(Event ev)
         {
             this.ev = ev;
-
-            horizontalLayout = new StackLayout();
-
-            View = horizontalLayout;
-            View.BackgroundColor = Color.FromHex(App.GetMenueColor());
         }
 
         protected override void OnBindingContextChanged()
@@ -51,41 +44,17 @@ namespace ComeTogetherApp
             usernameLabel.TextColor = Color.Black;
             usernameLabel.FontSize = 18;
 
-            Image threeDots = createThreeDotsButton();
 
-            horizontalLayout.Orientation = StackOrientation.Horizontal;
-            horizontalLayout.VerticalOptions = LayoutOptions.CenterAndExpand;
-            horizontalLayout.Padding = new Thickness(5, 10, 0, 0);
+            Orientation = StackOrientation.Horizontal;
+            VerticalOptions = LayoutOptions.CenterAndExpand;
+            Padding = new Thickness(5, 10, 0, 0);
+            BackgroundColor = Color.FromHex(App.GetMenueColor());
+            HeightRequest = 30;
 
-            horizontalLayout.Children.Add(userIcon);
-            horizontalLayout.Children.Add(usernameLabel);
-            // add option button (three dots) to all users if the current user is the admin
-            // add it also for the current user in the list so they can leave if they want to
-            if (App.GetUserID().Equals(ev.adminID) || App.GetUserID().Equals(user.ID))
-            {
-                horizontalLayout.Children.Add(threeDots);
-            }
-        }
+            Children.Clear();
 
-        private Image createThreeDotsButton()
-        {
-            Image threeDots = new Image { Aspect = Aspect.AspectFit, VerticalOptions = LayoutOptions.Center, HorizontalOptions = LayoutOptions.EndAndExpand };
-            threeDots.Source = "drei_punkte_schwarz.png";
-            threeDots.AnchorX = 0;
-            threeDots.AnchorY = 0;
-            if (Device.RuntimePlatform == Device.iOS)
-            {
-                threeDots.AnchorX = 0.4; //bei iOS 0.5
-                threeDots.AnchorY = 0.4; //bei iOS 0.5
-            }
-            threeDots.Scale = 0.7;
-
-            TapGestureRecognizer tapGestureRecognizer = new TapGestureRecognizer();
-            //tapGestureRecognizer.Tapped += threeDotsTappedEvent;
-
-            threeDots.GestureRecognizers.Add(tapGestureRecognizer);
-
-            return threeDots;
+            Children.Add(userIcon);
+            Children.Add(usernameLabel);
         }
     }
 }

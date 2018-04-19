@@ -15,8 +15,9 @@ namespace ComeTogetherApp
         public string Status { get; set; }
         public string Ort { get; set; }
         public string ID { get; set; }
+        public string OrganisatorID { get; set; }
 
-        public ToDo(string Beschreibung, string Datum, string Name, int Kosten, string Status, string Ort)
+        public ToDo(string Beschreibung, string Datum, string Name, int Kosten, string Status, string Ort, string OrganisatorID)
         {
             this.Beschreibung = Beschreibung;
             this.Datum = Datum;
@@ -24,6 +25,7 @@ namespace ComeTogetherApp
             this.Kosten = Kosten;
             this.Status = Status;
             this.Ort = Ort;
+            this.OrganisatorID = OrganisatorID;
         }
 
         public override bool Equals(object obj)

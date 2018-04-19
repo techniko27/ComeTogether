@@ -59,6 +59,7 @@ namespace ComeTogetherApp
                     var toDoQuery = await App.firebase.Child("ToDos").OrderByKey().StartAt(toDoID).LimitToFirst(1).OnceAsync<ToDo>();
                     ToDo toDo = toDoQuery.ElementAt(0).Object;
                     toDo.ID = toDoID;
+
                     if (!toDo.Status.Equals("Completed"))
                         ownToDosList.Add(toDo);
                     else
@@ -72,6 +73,7 @@ namespace ComeTogetherApp
                         continue;
                     var toDoQuery = await App.firebase.Child("ToDos").OrderByKey().StartAt(toDoID).LimitToFirst(1).OnceAsync<ToDo>();
                     ToDo toDo = toDoQuery.ElementAt(0).Object;
+
                     if (!toDo.Status.Equals("Completed"))
                         otherToDosList.Add(toDo);
                     else

@@ -70,18 +70,6 @@ namespace ComeTogetherApp
             try
             {
                 var usersInEvent = await App.firebase.Child("Veranstaltung_Benutzer").Child(eventID).OnceAsync<string>();
-                var usersInToDo = await App.firebase.Child("ToDo_Benutzer").Child(toDoID).OnceAsync<string>();
-
-                List<User> usersAlreadyInToDo = new List<User>();
-
-                foreach (FirebaseObject<string> e in usersInToDo)
-                {
-                    string userID = e.Key;
-                    var userQuery = await App.firebase.Child("users").OrderByKey().StartAt(userID).LimitToFirst(1).OnceAsync<User>();
-                    User user = userQuery.ElementAt(0).Object;
-                    user.ID = userID;
-                    usersAlreadyInToDo.Add(user);
-                }
 
                 foreach (FirebaseObject<string> e in usersInEvent)
                 {
@@ -89,7 +77,7 @@ namespace ComeTogetherApp
                     var userQuery = await App.firebase.Child("users").OrderByKey().StartAt(userID).LimitToFirst(1).OnceAsync<User>();
                     User user = userQuery.ElementAt(0).Object;
                     user.ID = userID;
-                    if (usersAlreadyInToDo.Contains(user))
+                    if (userID.Equals(toDo.OrganisatorID))
                         continue;
                     eventMemberList.Add(user);
                 }

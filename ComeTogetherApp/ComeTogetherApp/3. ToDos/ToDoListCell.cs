@@ -66,10 +66,12 @@ namespace ComeTogetherApp
             Tapped += toDoTapped;
         }
 
-        private void toDoTapped(object sender, EventArgs e)
+        private async void toDoTapped(object sender, EventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine(toDo.ID);
-            toDosPage.Navigation.PushAsync(new ToDoDetailsPage(toDo, ev));
+            var assignedUserQuery = await App.firebase.Child("users").OrderByKey().StartAt(toDo.OrganisatorID).LimitToFirst(1).OnceAsync<User>();
+            User assignedUser = assignedUserQuery.ElementAt(0).Object;
+
+            await toDosPage.Navigation.PushAsync(new ToDoDetailsPage(toDo, ev, assignedUser));
         }
     }
 }
