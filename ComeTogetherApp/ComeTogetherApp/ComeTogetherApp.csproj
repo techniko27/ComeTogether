@@ -62,6 +62,7 @@
     </Compile>
     <Compile Include="3. ToDos\AssignedCostsEntry.cs" />
     <Compile Include="3. ToDos\AssignedCostsListCell.cs" />
+    <Compile Include="3. ToDos\LoadingPopUp.cs" />
     <Compile Include="Beans\Cost.cs" />
     <Compile Include="Beans\Transaction.cs" />
     <Compile Include="Costs\CostOverviewPage.xaml.cs">

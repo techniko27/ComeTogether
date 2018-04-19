@@ -197,7 +197,7 @@ namespace ComeTogetherApp
             Image saveImage = new Image
             {
                 Aspect = Aspect.AspectFit,
-                Source = "speichern.png",
+                Source = "speichern_weis.png",
                 HorizontalOptions = LayoutOptions.EndAndExpand,
                 VerticalOptions = LayoutOptions.Start,
                 Scale = 0.75
@@ -579,6 +579,8 @@ namespace ComeTogetherApp
 
         private async void saveChanges()
         {
+            LoadingPopUp loadingPopUp = new LoadingPopUp();
+            await Navigation.PushPopupAsync(loadingPopUp);
             try
             {
                 foreach (User user in assignedMembersList)
@@ -599,7 +601,14 @@ namespace ComeTogetherApp
 
                 await App.firebase.Child("ToDos").Child(toDo.ID).PutAsync(toDo);
 
-                await DisplayAlert("Success", "Successfully saved your changes!", "OK");
+                await Navigation.PopPopupAsync();
+
+                var navStack = Navigation.NavigationStack;
+
+                Navigation.RemovePage(navStack.ElementAt(navStack.Count - 2));
+                await Navigation.PushAsync(new SingleEventPage(ev));
+
+                Navigation.RemovePage(navStack.ElementAt(navStack.Count - 2));
             }
             catch (Exception e)
             {
