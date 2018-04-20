@@ -10,10 +10,12 @@ namespace ComeTogetherApp
 {
     class AssignedCostsEntry : StackLayout
     {
-        private User user;
+        public User user;
+        private ToDoDetailsPage detailsPage;
 
-        public AssignedCostsEntry()
+        public AssignedCostsEntry(ToDoDetailsPage detailsPage)
         {
+            this.detailsPage = detailsPage;
         }
 
         protected override void OnBindingContextChanged()
@@ -75,9 +77,17 @@ namespace ComeTogetherApp
             return threeDots;
         }
 
-        private void threeDotsTapped(object sender, EventArgs e)
+        private async void threeDotsTapped(object sender, EventArgs e)
         {
-            
+            string action = await detailsPage.DisplayActionSheet("Member Options", "Cancel", null, "Remove");
+            switch (action)
+            {
+                case "Remove":
+                    detailsPage.assignedCostsList.Remove(user);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

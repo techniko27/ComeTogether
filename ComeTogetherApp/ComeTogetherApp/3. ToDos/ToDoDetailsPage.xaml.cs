@@ -21,11 +21,12 @@ namespace ComeTogetherApp
 
         private User assignedUser;
         private ObservableCollection<User> eventMemberList;
-        private ObservableCollection<User> assignedCostsList;
+        public ObservableCollection<User> assignedCostsList;
 
         private ObservableCollection<User> removedPayingUsers;
 
         private StackLayout assignCostsContentLayout;
+        private Frame assignCostsContentFrame;
 
         private AssignedMembersListCell assignedUserCell;
 
@@ -46,6 +47,7 @@ namespace ComeTogetherApp
 
             assignedCostsList = new ObservableCollection<User>();
             eventMemberList = new ObservableCollection<User>();
+            removedPayingUsers = new ObservableCollection<User>();
             assignedCostsList.CollectionChanged += costAssigned;
 
             initProperties();
@@ -56,12 +58,42 @@ namespace ComeTogetherApp
 
         private void costAssigned(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            foreach(var item in e.NewItems)
+            // add new users
+            if(e.NewItems != null)
             {
-                AssignedCostsEntry costEntry = new AssignedCostsEntry();
-                costEntry.BindingContext = item;
-                assignCostsContentLayout.Children.Insert(0, costEntry);
+                foreach (User item in e.NewItems)
+                {
+                    AssignedCostsEntry costEntry = new AssignedCostsEntry(this);
+                    costEntry.BindingContext = item;
+                    assignCostsContentLayout.Children.Insert(0, costEntry);
+                    if (removedPayingUsers.Contains(item))
+                        removedPayingUsers.Remove(item);
+                }
             }
+            // remove old users
+            if(e.OldItems != null)
+            {
+                foreach (User user in e.OldItems)
+                {
+                    AssignedCostsEntry entryToRemove = null;
+                    foreach (AssignedCostsEntry entry in assignCostsContentLayout.Children)
+                    {
+                        if (entry.user.Equals(user))
+                        {
+                            entryToRemove = entry;
+                        }
+                    }
+                    if (entryToRemove != null)
+                    {
+                        assignCostsContentLayout.Children.Remove(entryToRemove);
+                        removedPayingUsers.Add(user);
+                    }
+                }
+            }
+            // adjust height of encompassing frame according to the number of entries in the list
+            int newHeight = assignCostsContentLayout.Children.Count * 40;
+            newHeight = newHeight > 200 ? newHeight : 200;
+            assignCostsContentFrame.HeightRequest = newHeight;
         }
 
         private void initProperties()
@@ -169,7 +201,6 @@ namespace ComeTogetherApp
 
             // Put it together in a single frame
             Frame assignCostsFrame = createInfoFrame(assignCostsLayout);
-            assignCostsFrame.MinimumHeightRequest = 150;
 
             return assignCostsFrame;
         }
@@ -476,16 +507,16 @@ namespace ComeTogetherApp
             assignCostsContentLayout = new StackLayout
             {
                 VerticalOptions = LayoutOptions.Start,
-                MinimumHeightRequest = 150
+                BackgroundColor = Color.FromHex(App.GetMenueColor())
             };
 
-            Frame assignCostsContentFrame = new Frame
+            assignCostsContentFrame = new Frame
             {
                 Content = assignCostsContentLayout,
                 BackgroundColor = Color.FromHex(App.GetMenueColor()),
                 CornerRadius = 5,
                 Padding = 5,
-                MinimumHeightRequest = 150
+                HeightRequest = 200
             };
             return assignCostsContentFrame;
         }
@@ -570,6 +601,12 @@ namespace ComeTogetherApp
                 {
                     await App.firebase.Child("ToDo_Benutzer").Child(toDo.ID).Child(user.ID).PutAsync<string>(user.userName);
                     await App.firebase.Child("Benutzer_ToDo").Child(user.ID).Child(ev.ID).Child(toDo.ID).Child("isPaying").PutAsync<string>("true");
+                }
+
+                foreach (User user in removedPayingUsers)
+                {
+                    await App.firebase.Child("ToDo_Benutzer").Child(toDo.ID).Child(user.ID).DeleteAsync();
+                    await App.firebase.Child("Benutzer_ToDo").Child(user.ID).Child(ev.ID).Child(toDo.ID).Child("isPaying").PutAsync<string>("false");
                 }
 
                 int cost;
