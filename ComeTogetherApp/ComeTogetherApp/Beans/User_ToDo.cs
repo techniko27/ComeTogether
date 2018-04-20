@@ -8,12 +8,10 @@ namespace ComeTogetherApp
 {
     class User_ToDo
     {
-        public string isOrganizer { get; set; }
         public string isPaying { get; set; }
 
-        public User_ToDo(string isOrganizer, string isPaying)
+        public User_ToDo(string isPaying)
         {
-            this.isOrganizer = isOrganizer;
             this.isPaying = isPaying;
         }
     }

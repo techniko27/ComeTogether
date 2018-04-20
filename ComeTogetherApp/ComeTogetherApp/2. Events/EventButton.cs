@@ -19,6 +19,8 @@ namespace ComeTogetherApp
         private EventsPage eventsPage;
         public Label eventPersonalCostLabel;
 
+        private Task<int> personalCostCalculatingTask;
+
         public EventButton(Event ev, EventsPage eventsPage)
         {
             this.ev = ev;
@@ -29,7 +31,7 @@ namespace ComeTogetherApp
             this.Padding = new Thickness(2, 2, 2, 2);
             this.BackgroundColor = Color.FromHex("41BAC1");
 
-            var eventImage = new Image {Aspect = Aspect.AspectFit, Scale = 0.9};
+            var eventImage = new Image { Aspect = Aspect.AspectFit, Scale = 0.9 };
             if (ev.Bild.Length < 3)
             {
                 eventImage.Source = "event_default.png";
@@ -64,7 +66,7 @@ namespace ComeTogetherApp
 
                 try
                 {
-                    Task<int> callTask = Task.Run(() => EventCostCalculator.getPersonalCost(ev, App.GetUserID(), eventPersonalCostLabel, new Button()));
+                    personalCostCalculatingTask = Task.Run(() => EventCostCalculator.getPersonalCost(ev, App.GetUserID(), eventPersonalCostLabel, new Button()));
                     //callTask.Wait();
                     //eventPersonalCostLabel.Text = "Personal Cost: " + callTask.Result + "€";
                 }
@@ -73,7 +75,7 @@ namespace ComeTogetherApp
                     //eventsPage.DisplayAlert("Failure", "Cost for event " + ev.Name + " could not be calculated", "ok");
                     eventPersonalCostLabel.Text = "Personal Cost: ?";
                 }
-                
+
             }
 
             StackLayout horizontalDateAndStateLayout = new StackLayout
@@ -139,7 +141,7 @@ namespace ComeTogetherApp
             }
             else if (ev.Status.Equals("stop"))
             {
-                Navigation.PushAsync(new CostOverviewPage(ev));
+                Navigation.PushAsync(new CostOverviewPage(ev, personalCostCalculatingTask));
             }
             else
             {
@@ -220,7 +222,7 @@ namespace ComeTogetherApp
                 eventsPage.stack.Children.RemoveAt(eventsPage.stack.Children.IndexOf(eventsPage.stack.Children.Last()));         //Remove the last Grid from EventsPage
                 eventsPage.buildGrid(eventsPage.eventList);
 
-                await eventsPage.DisplayAlert("Success", "Event "+ ev.ElementAt(0).Object.Name +" added", "OK");
+                await eventsPage.DisplayAlert("Success", "Event " + ev.ElementAt(0).Object.Name + " added", "OK");
             }
             catch (Exception)
             {

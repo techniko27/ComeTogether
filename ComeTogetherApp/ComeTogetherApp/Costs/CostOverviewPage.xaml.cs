@@ -16,11 +16,15 @@ namespace ComeTogetherApp
     public partial class CostOverviewPage : ContentPage
     {
         public Event ev;
+        public Task<int> personalCostCalculatingTask;
+        private int personalCosts;
 
         private ActivityIndicator activityIndicator;
 
         private ObservableCollection<User> eventMemberList;
         private ObservableCollection<Transaction> eventTransactionsList;
+
+        private List<CostButtonElement> costButtonList;
 
         private StackLayout stackLayout;
         private Frame eventMemberCostFrame;
@@ -28,25 +32,31 @@ namespace ComeTogetherApp
         private Button restartEventButton;
         private StackLayout eventMemberCostInnerLayout;
         private StackLayout transactionInnerLayout;
+        private Label explanationLabel;
 
         private int reloadCount;
         private bool pageIsDisappeared;
-        public CostOverviewPage(Event ev)
+
+        public CostOverviewPage(Event ev, Task<int> personalCostCalculatingTask)
         {
             InitializeComponent();
 
             Title = "Cost Overview";
             this.ev = ev;
+            this.personalCostCalculatingTask = personalCostCalculatingTask;
+            personalCosts = personalCostCalculatingTask.Result;
 
             pageIsDisappeared = false;
             this.Disappearing += pageOnDisappearing;
 
             eventTransactionsList = new ObservableCollection<Transaction>();
 
+            costButtonList = new List<CostButtonElement>();
+
             initLayout();
 
-            retrieveMemberFromServer();
             retrieveTransactionsFromServer(true);
+            retrieveMemberFromServer();
 
             continuousRetrieveTransactionsFromServer(3000);
         }
@@ -72,7 +82,8 @@ namespace ComeTogetherApp
                     System.Diagnostics.Debug.WriteLine($"Name of {userID} is {user.userName}");
                 }
 
-                updateMemberCostFrame();
+                await updateMemberCostFrame();
+                Task<bool> updateCostButtonsTask = Task.Run(() => updateCostButtonsDependingOnTransactions());
             }
             catch (Exception e)
             {
@@ -81,14 +92,19 @@ namespace ComeTogetherApp
             }
         }
 
-        private void updateMemberCostFrame()
+        private async Task<bool> updateMemberCostFrame()
         {
             for (int i = 0; i < eventMemberList.Count; i++)
             {
-                Frame eventMemberFrame = createListElementFrame(eventMemberList[i]);
-                eventMemberCostInnerLayout.Children.Add(eventMemberFrame);
+                if (!eventMemberList[i].ID.Equals(App.GetUserID()))
+                {
+                    Frame eventMemberFrame = createListElementFrame(eventMemberList[i]);
+                    eventMemberCostInnerLayout.Children.Add(eventMemberFrame);
+                }
             }
+            return true;
         }
+
         private async Task<bool> retrieveTransactionsFromServer(bool firstRun)
         {
             String eventID = ev.ID;
@@ -97,14 +113,27 @@ namespace ComeTogetherApp
 
             try
             {
-                var transactionsInEvent = await App.firebase.Child("Transaktionen").Child(eventID).OnceAsync<Transaction>();
+                var transactionsInEvent =
+                    await App.firebase.Child("Transaktionen").Child(eventID).OnceAsync<Transaction>();
 
                 foreach (FirebaseObject<Transaction> transaction in transactionsInEvent)
                 {
-                    var senderInfos = await App.firebase.Child("users").OrderByKey().StartAt(transaction.Object.sender).LimitToFirst(1).OnceAsync<User>();
+                    var senderInfos =
+                        await
+                            App.firebase.Child("users")
+                                .OrderByKey()
+                                .StartAt(transaction.Object.sender)
+                                .LimitToFirst(1)
+                                .OnceAsync<User>();
                     transaction.Object.senderName = senderInfos.ElementAt(0).Object.userName;
 
-                    var receiverInfos = await App.firebase.Child("users").OrderByKey().StartAt(transaction.Object.receiver).LimitToFirst(1).OnceAsync<User>();
+                    var receiverInfos =
+                        await
+                            App.firebase.Child("users")
+                                .OrderByKey()
+                                .StartAt(transaction.Object.receiver)
+                                .LimitToFirst(1)
+                                .OnceAsync<User>();
                     transaction.Object.receiverName = receiverInfos.ElementAt(0).Object.userName;
 
                     newEventTransactionsList.Add(transaction.Object);
@@ -115,11 +144,13 @@ namespace ComeTogetherApp
                     eventTransactionsList = newEventTransactionsList;
 
                     updateTransactionFrame();
+                    updateCostLabelDependingOnTransactions();
                     activityIndicatorSwitch();
                 }
                 else if (eventTransactionsList.Count != newEventTransactionsList.Count)
                 {
-                    Navigation.InsertPageBefore(new CostOverviewPage(ev), Navigation.NavigationStack[Navigation.NavigationStack.Count - 1]);
+                    Navigation.InsertPageBefore(new CostOverviewPage(ev, personalCostCalculatingTask),
+                        Navigation.NavigationStack[Navigation.NavigationStack.Count - 1]);
                     await Navigation.PopAsync();
                 }
             }
@@ -131,6 +162,7 @@ namespace ComeTogetherApp
 
             return true;
         }
+
         private void updateTransactionFrame()
         {
             for (int i = 0; i < eventTransactionsList.Count; i++)
@@ -139,6 +171,7 @@ namespace ComeTogetherApp
                 transactionInnerLayout.Children.Add(transactionFrame);
             }
         }
+
         private void initLayout()
         {
             ScrollView scrollView = new ScrollView();
@@ -167,7 +200,7 @@ namespace ComeTogetherApp
                 Padding = new Thickness(10, 10, 10, 10)
             };
 
-            Label explanationLabel = new Label
+            explanationLabel = new Label
             {
                 Text =
                     "If you have something to pay, just click on someone with a minus, to balance the incurred costs.",
@@ -178,6 +211,8 @@ namespace ComeTogetherApp
                 VerticalOptions = LayoutOptions.StartAndExpand
             };
             stackLayout.Children.Add(explanationLabel);
+
+            updateExplanationLabel();
 
             eventMemberCostFrame = createEventMemberCostFrame();
             transactionsFrame = createTransactionFrame();
@@ -242,6 +277,36 @@ namespace ComeTogetherApp
                 Padding = 1
             };
 
+            Button costButton = new Button()
+            {
+                Text = "...",
+                BackgroundColor = Color.White,
+                TextColor = Color.FromHex(App.GetMenueColor()),
+                FontAttributes = FontAttributes.Bold,
+                WidthRequest = 80,
+                HeightRequest = 80,
+                CornerRadius = 40,
+                HorizontalOptions = LayoutOptions.EndAndExpand,
+            };
+            Task<int> memberCostCalculatingTask = null;
+            try
+            {
+                memberCostCalculatingTask =
+                    Task.Run(() => EventCostCalculator.getPersonalCost(ev, member.ID, new Label(), costButton));
+            }
+            catch (Exception)
+            {
+                costButton.Text = "?";
+            }
+            costButton.Clicked += (object sender, EventArgs e) =>
+            {
+                // handle the tap
+                OnCostButtonClicked(sender, e, member, memberCostCalculatingTask);
+            };
+
+            costButtonList.Add(new CostButtonElement(costButton, member, memberCostCalculatingTask));
+            //Create List for refreshing reasons
+
             StackLayout horizontalLableAndButtonLayout = new StackLayout
             {
                 Orientation = StackOrientation.Horizontal,
@@ -253,7 +318,7 @@ namespace ComeTogetherApp
             horizontalLayoutTapGestureRecognizer.Tapped += (object sender, EventArgs e) =>
             {
                 // handle the tap
-                OnCostButtonClicked(sender, e, member);
+                OnCostButtonClicked(sender, e, member, memberCostCalculatingTask);
             };
             horizontalLableAndButtonLayout.GestureRecognizers.Add(horizontalLayoutTapGestureRecognizer);
 
@@ -268,37 +333,13 @@ namespace ComeTogetherApp
             };
             horizontalLableAndButtonLayout.Children.Add(memberLabel);
 
-            Button costButton = new Button()
-            {
-                Text = "...",
-                BackgroundColor = Color.White,
-                TextColor = Color.FromHex(App.GetMenueColor()),
-                FontAttributes = FontAttributes.Bold,
-                WidthRequest = 80,
-                HeightRequest = 80,
-                CornerRadius = 40,
-                HorizontalOptions = LayoutOptions.EndAndExpand
-            };
-            costButton.Clicked += (object sender, EventArgs e) =>
-            {
-                // handle the tap
-                OnCostButtonClicked(sender, e, member);
-            };
             horizontalLableAndButtonLayout.Children.Add(costButton);
-
-            try
-            {
-                Task<int> callTask = Task.Run(() => EventCostCalculator.getPersonalCost(ev, App.GetUserID(), new Label(), costButton));
-            }
-            catch (Exception)
-            {
-                costButton.Text = "?";
-            }
 
             listViewFrameLayout.Children.Add(horizontalLableAndButtonLayout);
 
             return listViewFrame;
         }
+
         private Frame createTransactionFrame()
         {
             StackLayout transactionLayout = new StackLayout();
@@ -321,6 +362,7 @@ namespace ComeTogetherApp
                 HeightRequest = 200
             };
         }
+
         private Frame createTransactionElementFrame(Transaction transaction)
         {
             StackLayout transactionFrameLayout = new StackLayout();
@@ -336,7 +378,9 @@ namespace ComeTogetherApp
 
             Label transactionLabel = new Label
             {
-                Text = transaction.senderName + " sent " + transaction.receiverName + " " + transaction.amount + "€ by " + transaction.type,
+                Text =
+                    transaction.senderName + " sent " + transaction.receiverName + " " + transaction.amount + "€ by " +
+                    transaction.type,
                 TextColor = Color.Black,
                 FontSize = 15,
                 Margin = new Thickness(0, 0, 0, 0),
@@ -347,6 +391,7 @@ namespace ComeTogetherApp
 
             return transactionFrame;
         }
+
         private void activityIndicatorSwitch()
         {
             if (activityIndicator.IsRunning)
@@ -375,22 +420,55 @@ namespace ComeTogetherApp
             }
         }
 
-        async void OnCostButtonClicked(object sender, EventArgs e, User member)
+        async void OnCostButtonClicked(object sender, EventArgs e, User member, Task<int> memberCostCalculatingTask)
         {
+            int memberCost = 0;
+
+            if (memberCostCalculatingTask == null)
+            {
+                DisplayAlert("Sorry", "Cost calculation went wrong.", "ok");
+                return;
+            }
+            else
+            {
+                memberCost = memberCostCalculatingTask.Result;
+            }
+
+            if (personalCosts <= 0)
+            {
+                await DisplayAlert("Nothing to pay", "You have nothing to pay, others have to send you money.", "ok");
+                return;
+            }
+
+            int sendAmount;
+            if (memberCost * (-1) >= personalCosts)
+            {
+                sendAmount = personalCosts;
+            }
+            else if (memberCost * (-1) < personalCosts)
+            {
+                sendAmount = memberCost * (-1);
+            }
+            else
+            {
+                return;
+            }
+
             string action;
-            action = await DisplayActionSheet("Payment Options", "Cancel", null, "PayPal","Cash");
+            action = await DisplayActionSheet("Payment Options", "Cancel", null, "PayPal", "Cash");
             switch (action)
             {
                 case "PayPal":
-                    
+
                     break;
                 case "Cash":
-
+                    await Navigation.PushAsync(new CashPaymentPage(ev, member, sendAmount, personalCostCalculatingTask));
                     break;
                 default:
                     break;
             }
         }
+
         async void OnRestartEventButtonClicked(object sender, EventArgs e)
         {
             try
@@ -409,6 +487,7 @@ namespace ComeTogetherApp
             });
             clearNavigationStack();
         }
+
         private void clearNavigationStack()
         {
             var navigationPages = Navigation.NavigationStack.ToList();
@@ -420,7 +499,7 @@ namespace ComeTogetherApp
 
         private async void continuousRetrieveTransactionsFromServer(int ms)
         {
-            await Task.Delay(ms);                   //only for wait until the first retrieveTransactionsFromServer(true); ist finished
+            await Task.Delay(ms); //only for wait until the first retrieveTransactionsFromServer(true); ist finished
             while (!pageIsDisappeared)
             {
                 //await Task.Delay(ms);                                               //not really needed anymore, because of await and continuous reading from database
@@ -430,6 +509,75 @@ namespace ComeTogetherApp
             }
 
             System.Diagnostics.Debug.WriteLine("Refresh End");
+        }
+
+        private async void updateCostLabelDependingOnTransactions()
+        {
+            if (eventTransactionsList.Count != 0) //refresh cost when there are already transactions were made
+            {
+                foreach (var transaction in eventTransactionsList)
+                {
+                    if (transaction.sender.Equals(App.GetUserID()))
+                    {
+                        personalCosts -= transaction.amount;
+                    }
+                    else if (transaction.receiver.Equals(App.GetUserID()))
+                    {
+                        personalCosts += transaction.amount;
+                    }
+                }
+
+                updateExplanationLabel();
+            }
+        }
+        private async Task<bool> updateCostButtonsDependingOnTransactions()
+        {
+            if (eventTransactionsList.Count != 0) //refresh cost when there are already transactions were made
+            {
+                foreach (var transaction in eventTransactionsList)
+                {
+                    foreach (var costButtonElement in costButtonList) //for Buttons
+                    {
+                        while (costButtonElement.costButton.Text.Equals("..."))
+                        {
+                            //Waiting until Task has written the cost in the button
+                        }
+
+                        int buttonCostValue;
+                        try
+                        {
+                            buttonCostValue = Convert.ToInt32(costButtonElement.costButton.Text.Remove(costButtonElement.costButton.Text.Length - 1));
+                        }
+                        catch (Exception e)
+                        {
+                            DisplayAlert("Sorry", "Cost calculation went wrong!", "ok");
+                            return false;
+                        }
+
+                        if (transaction.sender.Equals(costButtonElement.member.ID))
+                        {
+                            costButtonElement.costButton.Text = (buttonCostValue - transaction.amount) + "€";
+                        }
+                        else if (transaction.receiver.Equals(costButtonElement.member.ID))
+                        {
+                            costButtonElement.costButton.Text = (buttonCostValue + transaction.amount) + "€";
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        private void updateExplanationLabel()
+        {
+            if (personalCosts <= 0)
+            {
+                explanationLabel.Text = "You have to get " + personalCosts + "€. The following people have to pay:";
+            }
+            else
+            {
+                explanationLabel.Text = "You have to pay " + personalCosts + "€, just click on someone with a minus, to balance the incurred costs.";
+            }
         }
         async void pageOnDisappearing(object sender, EventArgs e)
         {

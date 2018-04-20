@@ -65,6 +65,7 @@
     <Compile Include="3. ToDos\LoadingPopUp.cs" />
     <Compile Include="Beans\Cost.cs" />
     <Compile Include="Beans\Transaction.cs" />
+    <Compile Include="Costs\CostButtonElement.cs" />
     <Compile Include="Costs\CostOverviewPage.xaml.cs">
       <DependentUpon>CostOverviewPage.xaml</DependentUpon>
     </Compile>
