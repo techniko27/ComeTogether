@@ -550,7 +550,17 @@ namespace ComeTogetherApp
 
         async void OnInfoImageClicked(object sender, EventArgs e)
         {
-            await DisplayAlert("InfoImage","","Ok");
+            string action = await DisplayActionSheet("ToDo Options", "Cancel", null, "Delete ToDo");
+            switch (action)
+            {
+                case "Delete ToDo":
+                    bool answer = await DisplayAlert("Are you sure?", $"Do you really want to delete this ToDo?", "Yes", "No");
+                    if (answer)
+                        deleteToDo();
+                    break;
+                default:
+                    break;
+            }
         }
 
         private async void retrieveAssignedMembersFromServer(Event ev)
@@ -630,6 +640,42 @@ namespace ComeTogetherApp
             catch (Exception e)
             {
                 await DisplayAlert("Server Connection Failure", "Communication problems occurred while saving changes!", "OK");
+                System.Diagnostics.Debug.WriteLine(e);
+            }
+        }
+
+        private async void deleteToDo()
+        {
+            LoadingPopUp loadingPopUp = new LoadingPopUp();
+            await Navigation.PushPopupAsync(loadingPopUp);
+            try
+            {
+                foreach (User user in assignedCostsList)
+                {
+                    await App.firebase.Child("ToDo_Benutzer").Child(toDo.ID).Child(user.ID).DeleteAsync();
+                    await App.firebase.Child("Benutzer_ToDo").Child(user.ID).Child(ev.ID).Child(toDo.ID).DeleteAsync();
+                }
+
+                foreach (User user in removedPayingUsers)
+                {
+                    await App.firebase.Child("ToDo_Benutzer").Child(toDo.ID).Child(user.ID).DeleteAsync();
+                    await App.firebase.Child("Benutzer_ToDo").Child(user.ID).Child(ev.ID).Child(toDo.ID).DeleteAsync();
+                }
+
+                await App.firebase.Child("ToDos").Child(toDo.ID).DeleteAsync();
+
+                await Navigation.PopPopupAsync();
+
+                var navStack = Navigation.NavigationStack;
+
+                Navigation.RemovePage(navStack.ElementAt(navStack.Count - 2));
+                await Navigation.PushAsync(new SingleEventPage(ev));
+
+                Navigation.RemovePage(navStack.ElementAt(navStack.Count - 2));
+            }
+            catch (Exception e)
+            {
+                await DisplayAlert("Server Connection Failure", "Communication problems occurred while deleting the ToDo!", "OK");
                 System.Diagnostics.Debug.WriteLine(e);
             }
         }
