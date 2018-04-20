@@ -65,6 +65,9 @@
     <Compile Include="3. ToDos\LoadingPopUp.cs" />
     <Compile Include="Beans\Cost.cs" />
     <Compile Include="Beans\Transaction.cs" />
+    <Compile Include="Costs\CashPaymentPage.xaml.cs">
+      <DependentUpon>CashPaymentPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Costs\CostButtonElement.cs" />
     <Compile Include="Costs\CostOverviewPage.xaml.cs">
       <DependentUpon>CostOverviewPage.xaml</DependentUpon>
@@ -310,6 +313,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="3. ToDos\AssignCostToDoPopUp.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Costs\CashPaymentPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
       <SubType>Designer</SubType>
     </EmbeddedResource>
