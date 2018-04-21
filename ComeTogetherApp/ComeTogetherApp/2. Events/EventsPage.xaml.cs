@@ -10,6 +10,9 @@ using Firebase.Database;
 using Firebase.Database.Query;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using Rg.Plugins.Popup.Extensions;
+using ZXing.Mobile;
+using ZXing.Net.Mobile.Forms;
 
 namespace ComeTogetherApp
 {
@@ -31,15 +34,18 @@ namespace ComeTogetherApp
             Title = "Events";
 
             eventList = new List<Event>();
-            eventList.Add(new Event("","","Add New Event","", "kreis_plus_schwarz.png", "0", "null",""));
+            //eventList.Add(new Event("","","Add New Event","", "kreis_plus_schwarz.png", "0", "null",""));
 
             searchBar = new SearchBar
             {
-                Placeholder = "Enter event to search",
-                //SearchCommand = new Command(() => createSearchList(searchBar.Text)),
-                
+                Placeholder = "Search events...",
+                Margin = new Thickness(0, 0, 10, 0),
+                WidthRequest = 300
+
             };
             searchBar.TextChanged += SearchBar_TextChanged;
+
+            Frame addNewEventButton = createAddEventButton();
 
             scroll = new ScrollView();
 
@@ -49,7 +55,16 @@ namespace ComeTogetherApp
                 HorizontalOptions = LayoutOptions.CenterAndExpand,
                 Padding = new Thickness(2, 2, 2, 2)
             };
-            stack.Children.Add(searchBar);
+
+            StackLayout topHorizontalLayout = new StackLayout
+            {
+                Orientation = StackOrientation.Horizontal
+            };
+
+            topHorizontalLayout.Children.Add(searchBar);
+            topHorizontalLayout.Children.Add(addNewEventButton);
+
+            stack.Children.Add(topHorizontalLayout);
 
             scroll.Content = stack;
 
@@ -65,6 +80,58 @@ namespace ComeTogetherApp
             Content = activityIndicator;
 
             ServerGetEvents();
+        }
+
+        private Frame createAddEventButton()
+        {
+            Image plusImage = new Image
+            {
+                Aspect = Aspect.AspectFit,
+                HorizontalOptions = LayoutOptions.CenterAndExpand,
+                VerticalOptions = LayoutOptions.CenterAndExpand
+            };
+            plusImage.Source = "kreis_plus_weiss.png";
+
+
+            Frame addEventButtonFrame = new Frame
+            {
+                Content = plusImage,
+                BackgroundColor = Color.FromHex(App.GetMenueColor()),
+                HorizontalOptions = LayoutOptions.EndAndExpand,
+                CornerRadius = 5,
+                Padding = 7,
+                WidthRequest = 40,
+                HeightRequest = 30,
+            };
+
+
+            TapGestureRecognizer tapGestureRecognizer = new TapGestureRecognizer();
+            tapGestureRecognizer.Tapped += addEventButtonTapped;
+
+            addEventButtonFrame.GestureRecognizers.Add(tapGestureRecognizer);
+
+            return addEventButtonFrame;
+        }
+
+        private async void addEventButtonTapped(object sender, EventArgs e)
+        {
+            string action = await DisplayActionSheet("", "Cancel", null, "Add New Event", "Enter Joincode", "Scan Joincode");
+            Debug.WriteLine("Action: " + action);
+            switch (action)
+            {
+                case "Add New Event":
+                    await Navigation.PushAsync(new AddNewEventPage(this));
+                    break;
+                case "Enter Joincode":
+                    await Navigation.PushPopupAsync(new EnterJoinCodePopupPage(this));
+                    break;
+                case "Scan Joincode":
+                    useScanPage();
+                    break;
+                default:
+
+                    break;
+            }
         }
 
         private async void ServerGetEvents()
@@ -161,6 +228,83 @@ namespace ComeTogetherApp
             }
             stack.Children.RemoveAt(stack.Children.IndexOf(stack.Children.Last()));         //Remove the last Grid
             buildGrid(searchList);                                                          //build new Grid
+        }
+        public async void useScanPage()
+        {
+            var options = new MobileBarcodeScanningOptions
+            {
+                AutoRotate = false,
+                UseFrontCameraIfAvailable = false,
+                TryHarder = true,
+                PossibleFormats = new List<ZXing.BarcodeFormat>
+                            {
+                               ZXing.BarcodeFormat.EAN_8, ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.QR_CODE
+                            }
+            };
+            var scanPage = new ZXingScannerPage(options)
+            {
+                DefaultOverlayTopText = "Scan the Joincode",
+                DefaultOverlayBottomText = "lala",
+                DefaultOverlayShowFlashButton = true
+            };
+            // Navigate to our scanner page
+            await Navigation.PushAsync(scanPage);
+            scanPage.OnScanResult += (result) =>
+            {
+                // Stop scanning
+                scanPage.IsScanning = false;
+
+                // Pop the page and show the result
+                Device.BeginInvokeOnMainThread(async () =>
+                {
+                    //Add user to event in Database
+                    addUsertoEvent(result.Text);
+
+                    await Navigation.PopAsync();
+                });
+            };
+        }
+
+        public async void addUsertoEvent(string eventID)
+        {
+            foreach (var eventPageEvent in eventList)
+            {
+                //Check if event allready exist for this user
+                if (eventPageEvent.ID == eventID)
+                {
+                    await DisplayAlert("Note", "You are already member of the event named " + eventPageEvent.Name, "OK");
+                    return;
+                }
+            }
+
+            IReadOnlyCollection<Firebase.Database.FirebaseObject<Event>> ev = null;
+            try
+            {
+                ev = await App.firebase.Child("Veranstaltungen").OrderByKey().StartAt(eventID).LimitToFirst(1).OnceAsync<Event>();
+
+                if (ev.ElementAt(0).Object.ID != eventID)                //Check if right joincode exist in database.
+                    throw null;
+            }
+            catch (Exception)
+            {
+                await DisplayAlert("Incorrect Joincode", "Event could not be found with ID " + eventID, "OK");
+                return;
+            }
+            try
+            {
+                await App.firebase.Child("Veranstaltung_Benutzer").Child(eventID).Child(App.GetUserID()).PutAsync<string>(App.GetUsername());
+                await App.firebase.Child("Benutzer_Veranstaltung").Child(App.GetUserID()).Child(eventID).PutAsync<string>(ev.ElementAt(0).Object.Name);
+
+                eventList.Add(ev.ElementAt(0).Object);
+                stack.Children.RemoveAt(stack.Children.IndexOf(stack.Children.Last()));         //Remove the last Grid from EventsPage
+                buildGrid(eventList);
+
+                await DisplayAlert("Success", "Event " + ev.ElementAt(0).Object.Name + " added", "OK");
+            }
+            catch (Exception)
+            {
+                await DisplayAlert("Server connection failure", "Communication problems occured while adding event", "OK");
+            }
         }
 
         private void activityIndicatorSwitch()

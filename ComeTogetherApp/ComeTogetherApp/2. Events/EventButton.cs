@@ -137,115 +137,15 @@ namespace ComeTogetherApp
         }
         public async void OnEventClicked(object sender, EventArgs e, Event ev)
         {
-            if (ev.ID == "0")
+            if (ev.Status.Equals("stop"))
             {
-                string action = await eventsPage.DisplayActionSheet("", "Cancel", null, "Add New Event", "Enter Joincode", "Scan Joincode");
-                Debug.WriteLine("Action: " + action);
-                switch (action)
-                {
-                    case "Add New Event":
-                        await Navigation.PushAsync(new AddNewEventPage(eventsPage));
-                        break;
-                    case "Enter Joincode":
-                        await Navigation.PushPopupAsync(new EnterJoinCodePopupPage(eventsPage));
-                        break;
-                    case "Scan Joincode":
-                        useScanPage();
-                        break;
-                    default:
-
-                        break;
-                }
-            }
-            else if (ev.Status.Equals("stop"))
-            {
-                Navigation.PushAsync(new CostOverviewPage(ev, personalCostCalculatingTask));
+                await Navigation.PushAsync(new CostOverviewPage(ev, personalCostCalculatingTask));
             }
             else
             {
-                Navigation.PushAsync(new SingleEventPage(ev)
-                {
-                    //Title = "Edit Event"
-                });
+                await Navigation.PushAsync(new SingleEventPage(ev));
             }
         }
 
-        public async void useScanPage()
-        {
-            var options = new MobileBarcodeScanningOptions
-            {
-                AutoRotate = false,
-                UseFrontCameraIfAvailable = false,
-                TryHarder = true,
-                PossibleFormats = new List<ZXing.BarcodeFormat>
-                            {
-                               ZXing.BarcodeFormat.EAN_8, ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.QR_CODE
-                            }
-            };
-            var scanPage = new ZXingScannerPage(options)
-            {
-                DefaultOverlayTopText = "Scan the Joincode",
-                DefaultOverlayBottomText = "lala",
-                DefaultOverlayShowFlashButton = true
-            };
-            // Navigate to our scanner page
-            await Navigation.PushAsync(scanPage);
-            scanPage.OnScanResult += (result) =>
-            {
-                // Stop scanning
-                scanPage.IsScanning = false;
-
-                // Pop the page and show the result
-                Device.BeginInvokeOnMainThread(async () =>
-                {
-                    //Add user to event in Database
-                    addUsertoEvent(result.Text);
-
-                    await Navigation.PopAsync();
-                });
-            };
-        }
-
-        public async void addUsertoEvent(string eventID)
-        {
-            foreach (var eventPageEvent in eventsPage.eventList)
-            {
-                //Check if event allready exist for this user
-                if (eventPageEvent.ID == eventID)
-                {
-                    await eventsPage.DisplayAlert("Note", "You are already member of the event named " + eventPageEvent.Name, "OK");
-                    return;
-                }
-            }
-
-            IReadOnlyCollection<Firebase.Database.FirebaseObject<Event>> ev = null;
-            try
-            {
-                ev = await App.firebase.Child("Veranstaltungen").OrderByKey().StartAt(eventID).LimitToFirst(1).OnceAsync<Event>();
-
-                if (ev.ElementAt(0).Object.ID != eventID)                //Check if right joincode exist in database.
-                    throw null;
-            }
-            catch (Exception)
-            {
-                await eventsPage.DisplayAlert("Incorrect Joincode", "Event could not be found with ID " + eventID, "OK");
-                return;
-            }
-            try
-            {
-                await App.firebase.Child("Veranstaltung_Benutzer").Child(eventID).Child(App.GetUserID()).PutAsync<string>(App.GetUsername());
-                await App.firebase.Child("Benutzer_Veranstaltung").Child(App.GetUserID()).Child(eventID).PutAsync<string>(ev.ElementAt(0).Object.Name);
-
-                eventsPage.eventList.Add(ev.ElementAt(0).Object);
-                eventsPage.stack.Children.RemoveAt(eventsPage.stack.Children.IndexOf(eventsPage.stack.Children.Last()));         //Remove the last Grid from EventsPage
-                eventsPage.buildGrid(eventsPage.eventList);
-
-                await eventsPage.DisplayAlert("Success", "Event " + ev.ElementAt(0).Object.Name + " added", "OK");
-            }
-            catch (Exception)
-            {
-                await eventsPage.DisplayAlert("Server connection failure", "Communication problems occured while adding event", "OK");
-            }
-        }
     }
 }
