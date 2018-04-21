@@ -293,23 +293,6 @@ namespace ComeTogetherApp
             };
             assignMembersHeaderLayout.Children.Add(assignMemberLabel);
 
-            Image plusImage = new Image
-            {
-                Aspect = Aspect.AspectFit,
-                Source = "kreis_plus_weiss.png",
-                HorizontalOptions = LayoutOptions.EndAndExpand,
-                VerticalOptions = LayoutOptions.Start,
-                Scale = 0.75
-            };
-            assignMembersHeaderLayout.Children.Add(plusImage);
-            var infoImageTapGestureRecognizer = new TapGestureRecognizer();
-            infoImageTapGestureRecognizer.Tapped += (object sender, EventArgs e) =>
-            {
-                // handle the tap
-                OnAssignMemberClicked(sender, e);
-            };
-            plusImage.GestureRecognizers.Add(infoImageTapGestureRecognizer);
-
             return assignMembersHeaderLayout;
         }
 
@@ -461,7 +444,7 @@ namespace ComeTogetherApp
                 VerticalOptions = LayoutOptions.Start,
             };
 
-            assignedUserCell = new AssignedMembersListCell(ev);
+            assignedUserCell = new AssignedMembersListCell(ev, toDo, this);
             assignedUserCell.BindingContext = assignedUser;
 
             assignMembersContentLayout.Children.Add(assignedUserCell);
@@ -541,10 +524,6 @@ namespace ComeTogetherApp
             assignedUserCell.BindingContext = assignedUser;
         }
 
-        async void OnAssignMemberClicked(object sender, EventArgs e)
-        {
-            await Navigation.PushPopupAsync(new AssignMemberToDoPopUp(ev, toDo, this));
-        }
         async void OnAssignCostClicked(object sender, EventArgs e)
         {
            await Navigation.PushPopupAsync(new AssignCostToDoPopUp(eventMemberList, assignedCostsList));

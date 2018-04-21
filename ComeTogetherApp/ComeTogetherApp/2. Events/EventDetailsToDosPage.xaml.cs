@@ -155,14 +155,35 @@ namespace ComeTogetherApp
             Label ownToDosLabel = createFrameHeaderLabel("My ToDos:");
 
             ownToDosList = new ObservableCollection<ToDo>();
-            ownToDosListView = createToDosListView(ownToDosList);
+            StackLayout listLayout = new StackLayout
+            {
+                VerticalOptions = LayoutOptions.Start,
+                BackgroundColor = Color.White
+            };
 
-            Frame ownToDosListFrame = createListViewFrame(ownToDosListView);
+            Frame whiteListFrame = new Frame
+            {
+                Content = listLayout,
+                BackgroundColor = Color.White,
+                CornerRadius = 5,
+                Padding = 0,
+                HeightRequest = 200
+            };
+
+            Frame ownToDosListFrame = new Frame
+            {
+                Content = whiteListFrame,
+                BackgroundColor = Color.FromHex(App.GetMenueColor()),
+                CornerRadius = 5,
+                Padding = 5,
+                HeightRequest = 200
+            };
 
             ownToDosLayout.Children.Add(ownToDosLabel);
             ownToDosLayout.Children.Add(ownToDosListFrame);
 
             Frame ownToDosFrame = createToDosFrame(ownToDosLayout);
+            addCollectionListenerToToDoList(listLayout, whiteListFrame, ownToDosListFrame, ownToDosFrame, ownToDosList);
 
             return ownToDosFrame;
         }
@@ -174,14 +195,35 @@ namespace ComeTogetherApp
             Label otherToDosLabel = createFrameHeaderLabel("Other ToDos:");
 
             otherToDosList = new ObservableCollection<ToDo>();
-            otherToDosListView = createToDosListView(otherToDosList);
+            StackLayout listLayout = new StackLayout
+            {
+                VerticalOptions = LayoutOptions.Start,
+                BackgroundColor = Color.White
+            };
 
-            Frame otherToDosListFrame = createListViewFrame(otherToDosListView);
+            Frame whiteListFrame = new Frame
+            {
+                Content = listLayout,
+                BackgroundColor = Color.White,
+                CornerRadius = 5,
+                Padding = 0,
+                HeightRequest = 200
+            };
+
+            Frame otherToDosListFrame = new Frame
+            {
+                Content = whiteListFrame,
+                BackgroundColor = Color.FromHex(App.GetMenueColor()),
+                CornerRadius = 5,
+                Padding = 5,
+                HeightRequest = 200
+            };
 
             otherToDosLayout.Children.Add(otherToDosLabel);
             otherToDosLayout.Children.Add(otherToDosListFrame);
 
             Frame otherToDosFrame = createToDosFrame(otherToDosLayout);
+            addCollectionListenerToToDoList(listLayout, whiteListFrame, otherToDosListFrame, otherToDosFrame, otherToDosList);
 
             return otherToDosFrame;
         }
@@ -193,14 +235,35 @@ namespace ComeTogetherApp
             Label completedToDosLabel = createFrameHeaderLabel("Completed ToDos:");
 
             completedToDosList = new ObservableCollection<ToDo>();
-            completedToDosListView = createToDosListView(completedToDosList);
+            StackLayout listLayout = new StackLayout
+            {
+                VerticalOptions = LayoutOptions.Start,
+                BackgroundColor = Color.White,
+            };
 
-            Frame completedToDosListFrame = createListViewFrame(completedToDosListView);
+            Frame whiteListFrame = new Frame
+            {
+                Content = listLayout,
+                BackgroundColor = Color.White,
+                CornerRadius = 5,
+                Padding = 0,
+                HeightRequest = 200
+            };
+
+            Frame completedToDosListFrame = new Frame
+            {
+                Content = whiteListFrame,
+                BackgroundColor = Color.FromHex(App.GetMenueColor()),
+                CornerRadius = 5,
+                Padding = 5,
+                HeightRequest = 200
+            };
 
             completedToDosLayout.Children.Add(completedToDosLabel);
             completedToDosLayout.Children.Add(completedToDosListFrame);
 
             Frame completedToDosFrame = createToDosFrame(completedToDosLayout);
+            addCollectionListenerToToDoList(listLayout, whiteListFrame, completedToDosListFrame, completedToDosFrame, completedToDosList);
 
             return completedToDosFrame;
         }
@@ -216,46 +279,6 @@ namespace ComeTogetherApp
             };
         }
 
-        private ListView createToDosListView(ObservableCollection<ToDo> itemSource)
-        {
-            ListView memberList = new ListView
-            {
-                ItemsSource = itemSource,
-                ItemTemplate = new DataTemplate(() =>
-                {
-                    return new ToDoListCell(this);
-                }),
-                Margin = new Thickness(0, 0, 0, 10),
-                BackgroundColor = Color.White,
-                SeparatorColor = Color.LightSlateGray
-            };
-            return memberList;
-        }
-
-        private Frame createListViewFrame(ListView listView)
-        {
-            ScrollView scrollableList = new ScrollView
-            {
-                Content = listView
-            };
-            Frame whiteListFrame = new Frame
-            {
-                Content = scrollableList,
-                BackgroundColor = Color.White,
-                CornerRadius = 5,
-                Padding = 0
-            };
-
-            Frame listViewFrame = new Frame
-            {
-                Content = whiteListFrame,
-                BackgroundColor = Color.FromHex(App.GetMenueColor()),
-                CornerRadius = 5,
-                Padding = 5
-            };
-            return listViewFrame;
-        }
-
         private Frame createToDosFrame(StackLayout toDoLayout)
         {
             return new Frame
@@ -265,6 +288,38 @@ namespace ComeTogetherApp
                 BackgroundColor = Color.FromHex("376467"),
                 CornerRadius = 5,
                 HeightRequest = 200
+            };
+        }
+
+        private void addCollectionListenerToToDoList(StackLayout listLayout, Frame whiteListFrame, Frame listViewFrame, Frame toDoFrame, ObservableCollection<ToDo> itemSource)
+        {
+            itemSource.CollectionChanged += (object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) =>
+            {
+                if (e.NewItems != null)
+                {
+                    foreach (ToDo item in e.NewItems)
+                    {
+                        ToDoListCell listEntry = new ToDoListCell(this);
+                        listEntry.BindingContext = item;
+                        if (listLayout.Children.Count > 0)
+                        {
+                            listLayout.Children.Add(new BoxView()
+                            {
+                                Color = Color.LightSlateGray,
+                                WidthRequest = 1000,
+                                HeightRequest = 1,
+                                HorizontalOptions = LayoutOptions.Center
+                            });
+                        }
+                        listLayout.Children.Add(listEntry);
+                    }
+                }
+                int newHeight = (listLayout.Children.Count + 1) / 2 * 60;
+                System.Diagnostics.Debug.WriteLine($"Height: {newHeight}");
+                newHeight = newHeight > 200 ? newHeight : 200;
+                whiteListFrame.HeightRequest = newHeight;
+                listViewFrame.HeightRequest = newHeight;
+                toDoFrame.HeightRequest = newHeight;
             };
         }
 

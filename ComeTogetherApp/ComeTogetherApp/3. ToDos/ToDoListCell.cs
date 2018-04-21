@@ -9,23 +9,16 @@ using System.Diagnostics.Contracts;
 
 namespace ComeTogetherApp
 {
-    class ToDoListCell : ViewCell
+    class ToDoListCell : StackLayout
     {
         private ToDo toDo;
         private Event ev;
         private EventDetailsToDosPage toDosPage;
 
-        StackLayout horizontalLayout;
-
         public ToDoListCell(EventDetailsToDosPage toDosPage)
         {
             this.toDosPage = toDosPage;
             ev = toDosPage.ev;
-
-            horizontalLayout = new StackLayout();
-
-            View = horizontalLayout;
-            //View.BackgroundColor = Color.White;
         }
 
         protected override void OnBindingContextChanged()
@@ -38,8 +31,8 @@ namespace ComeTogetherApp
             Label toDoNameLabel = new Label();
             toDoNameLabel.SetBinding(Label.TextProperty, "Name");
             toDoNameLabel.TextColor = Color.Black;
-            toDoNameLabel.FontSize = 15;
-            toDoNameLabel.VerticalOptions = LayoutOptions.FillAndExpand;
+            toDoNameLabel.FontSize = 18;
+            toDoNameLabel.VerticalOptions = LayoutOptions.CenterAndExpand;
 
             Label statusLabel = new Label
             {
@@ -55,16 +48,21 @@ namespace ComeTogetherApp
             else if (toDo.Status.Equals("In Progress"))
                 statusLabel.TextColor = Color.Orange;
 
-            horizontalLayout.Orientation = StackOrientation.Horizontal;
-            horizontalLayout.VerticalOptions = LayoutOptions.CenterAndExpand;
-            horizontalLayout.Padding = new Thickness(5, 0, 5, 0);
-            //horizontalLayout.BackgroundColor = Color.White;
+            Orientation = StackOrientation.Horizontal;
+            VerticalOptions = LayoutOptions.CenterAndExpand;
+            Padding = new Thickness(5, 0, 5, 0);
+            BackgroundColor = Color.White;
+            HeightRequest = 40;
 
-            horizontalLayout.Children.Add(toDoNameLabel);
-            horizontalLayout.Children.Add(statusLabel);
+            Children.Add(toDoNameLabel);
+            Children.Add(statusLabel);
 
-            Tapped += toDoTapped;
+            var tapGestureRecognizer = new TapGestureRecognizer();
+            tapGestureRecognizer.Tapped += toDoTapped;
+
+            GestureRecognizers.Add(tapGestureRecognizer);
         }
+
 
         private async void toDoTapped(object sender, EventArgs e)
         {

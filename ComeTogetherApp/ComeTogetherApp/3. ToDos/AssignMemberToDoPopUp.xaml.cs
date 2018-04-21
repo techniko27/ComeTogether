@@ -165,13 +165,13 @@ namespace ComeTogetherApp
 
         public void assignMemberToToDo(User user)
         {
-            ToDoDetailsPage detailsPage = (ToDoDetailsPage) parentPage;
+            ToDoDetailsPage detailsPage = parentPage as ToDoDetailsPage;
             if(detailsPage != null)
             {
                 detailsPage.assignMemberToToDo(user);
                 return;
             }
-            CreateToDoPage createPage = (CreateToDoPage) parentPage;
+            CreateToDoPage createPage = parentPage as CreateToDoPage;
             if(createPage != null)
             {
                 createPage.assignMemberToToDo(user);
