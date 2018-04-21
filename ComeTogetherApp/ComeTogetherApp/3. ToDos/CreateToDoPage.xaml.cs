@@ -13,7 +13,7 @@ using Xamarin.Forms.Xaml;
 namespace ComeTogetherApp
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class ToDoDetailsPage : ContentPage
+    public partial class CreateToDoPage : ContentPage
     {
         private ToDo toDo;
         private Event ev;
@@ -22,8 +22,6 @@ namespace ComeTogetherApp
         private User assignedUser;
         private ObservableCollection<User> eventMemberList;
         public ObservableCollection<User> assignedCostsList;
-
-        private ObservableCollection<User> removedPayingUsers;
 
         private StackLayout assignCostsContentLayout;
         private Frame assignCostsContentFrame;
@@ -37,42 +35,39 @@ namespace ComeTogetherApp
         private DatePicker todoDateEntry;
         private Picker statusPicker;
 
-        public ToDoDetailsPage(ToDo toDo, Event ev, User assignedUser)
+        public CreateToDoPage(Event ev, User assignedUser)
         {
             InitializeComponent();
 
-            this.toDo = toDo;
+            toDo = new ToDo("", "", "", 0, "", "", assignedUser.ID);
             this.ev = ev;
 
             this.assignedUser = assignedUser;
 
             assignedCostsList = new ObservableCollection<User>();
             eventMemberList = new ObservableCollection<User>();
-            removedPayingUsers = new ObservableCollection<User>();
             assignedCostsList.CollectionChanged += costAssigned;
 
             initProperties();
             initLayout();
 
-            retrieveAssignedMembersFromServer(ev);
+            retrieveEventMembersFromServer(ev);
         }
 
         private void costAssigned(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             // add new users
-            if(e.NewItems != null)
+            if (e.NewItems != null)
             {
                 foreach (User item in e.NewItems)
                 {
                     AssignedCostsEntry costEntry = new AssignedCostsEntry(this, assignedCostsList);
                     costEntry.BindingContext = item;
                     assignCostsContentLayout.Children.Insert(0, costEntry);
-                    if (removedPayingUsers.Contains(item))
-                        removedPayingUsers.Remove(item);
                 }
             }
             // remove old users
-            if(e.OldItems != null)
+            if (e.OldItems != null)
             {
                 foreach (User user in e.OldItems)
                 {
@@ -87,7 +82,6 @@ namespace ComeTogetherApp
                     if (entryToRemove != null)
                     {
                         assignCostsContentLayout.Children.Remove(entryToRemove);
-                        removedPayingUsers.Add(user);
                     }
                 }
             }
@@ -252,7 +246,7 @@ namespace ComeTogetherApp
                 Scale = 0.75
             };
             buttonLayout.Children.Add(saveImage);
-            buttonLayout.Children.Add(infoImage);
+            //buttonLayout.Children.Add(infoImage);
             overviewHeaderLayout.Children.Add(buttonLayout);
 
             var saveImageTapGestureRecognizer = new TapGestureRecognizer();
@@ -265,8 +259,6 @@ namespace ComeTogetherApp
             var infoImageTapGestureRecognizer = new TapGestureRecognizer();
             infoImageTapGestureRecognizer.Tapped += (object sender, EventArgs e) =>
             {
-                // handle the tap
-                OnInfoImageClicked(sender, e);
             };
             infoImage.GestureRecognizers.Add(infoImageTapGestureRecognizer);
 
@@ -325,7 +317,7 @@ namespace ComeTogetherApp
 
             Label currentCostsLabel = new Label
             {
-                Text = "Total Cost: " + toDo.Kosten.ToString(),
+                Text = "Total Cost:",
                 FontSize = 20,
                 TextColor = Color.White,
                 Margin = new Thickness(10, 0, 0, 0),
@@ -386,7 +378,6 @@ namespace ComeTogetherApp
             todoNameEntry = new Entry
             {
                 Placeholder = "Name...",
-                Text = toDo.Name,
                 TextColor = Color.White,
                 BackgroundColor = Color.FromHex(App.GetMenueColor()),
                 FontSize = FONT_SIZE
@@ -395,7 +386,6 @@ namespace ComeTogetherApp
             todoDescriptionEntry = new Entry
             {
                 Placeholder = "Description...",
-                Text = toDo.Beschreibung,
                 TextColor = Color.White,
                 BackgroundColor = Color.FromHex(App.GetMenueColor()),
                 FontSize = FONT_SIZE
@@ -404,7 +394,6 @@ namespace ComeTogetherApp
             todoPlaceEntry = new Entry
             {
                 Placeholder = "Place...",
-                Text = toDo.Ort,
                 TextColor = Color.White,
                 BackgroundColor = Color.FromHex(App.GetMenueColor()),
                 FontSize = FONT_SIZE
@@ -420,22 +409,13 @@ namespace ComeTogetherApp
             statusPicker.Items.Add("In Progress");
             statusPicker.Items.Add("Completed");
 
-            statusPicker.SelectedItem = toDo.Status;
+            statusPicker.SelectedItem = "In Progress";
 
-            int year;
-            Int32.TryParse(toDo.Datum.Substring(0, 4), out year);
-            int month;
-            Int32.TryParse(toDo.Datum.Substring(5, 2), out month);
-            int day;
-            Int32.TryParse(toDo.Datum.Substring(8, 2), out day);
-
-            DateTime dt = new DateTime(year, month, day);
             todoDateEntry = new DatePicker()
             {
                 Format = "D",
                 TextColor = Color.White,
                 BackgroundColor = Color.FromHex(App.GetMenueColor()),
-                Date = dt,
             };
 
             infoLayout.Children.Add(todoNameEntry);
@@ -486,7 +466,6 @@ namespace ComeTogetherApp
             costEntry = new Entry
             {
                 Placeholder = "Cost in €",
-                Text = toDo.Kosten.ToString(),
                 TextColor = Color.White,
                 BackgroundColor = Color.FromHex(App.GetMenueColor()),
                 FontSize = 20,
@@ -537,7 +516,6 @@ namespace ComeTogetherApp
         public void assignMemberToToDo(User user)
         {
             assignedUser = user;
-            toDo.OrganisatorID = assignedUser.ID;
             assignedUserCell.BindingContext = assignedUser;
         }
 
@@ -547,44 +525,15 @@ namespace ComeTogetherApp
         }
         async void OnAssignCostClicked(object sender, EventArgs e)
         {
-           await Navigation.PushPopupAsync(new AssignCostToDoPopUp(eventMemberList, assignedCostsList));
+            await Navigation.PushPopupAsync(new AssignCostToDoPopUp(eventMemberList, assignedCostsList));
         }
 
-        async void OnInfoImageClicked(object sender, EventArgs e)
-        {
-            string action = await DisplayActionSheet("ToDo Options", "Cancel", null, "Delete ToDo");
-            switch (action)
-            {
-                case "Delete ToDo":
-                    bool answer = await DisplayAlert("Are you sure?", $"Do you really want to delete this ToDo?", "Yes", "No");
-                    if (answer)
-                        deleteToDo();
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        private async void retrieveAssignedMembersFromServer(Event ev)
+        private async void retrieveEventMembersFromServer(Event ev)
         {
             String eventID = ev.ID;
-            String toDoID = toDo.ID;
 
             try
             {
-                var payingUsersInToDo = await App.firebase.Child("ToDo_Benutzer").Child(toDoID).OnceAsync<string>();
-
-                foreach (FirebaseObject<string> e in payingUsersInToDo)
-                {
-                    string userID = e.Key;
-                    var userQuery = await App.firebase.Child("users").OrderByKey().StartAt(userID).LimitToFirst(1).OnceAsync<User>();
-
-                    User user = userQuery.ElementAt(0).Object;
-                    user.ID = userID;
-
-                    assignedCostsList.Add(user);
-                }
-
                 var usersInEvent = await App.firebase.Child("Veranstaltung_Benutzer").Child(eventID).OnceAsync<string>();
 
                 foreach (FirebaseObject<string> e in usersInEvent)
@@ -605,7 +554,7 @@ namespace ComeTogetherApp
 
         private async void saveChanges()
         {
-            if (todoNameEntry.Text == null)
+            if(todoNameEntry.Text == null)
             {
                 await DisplayAlert("Missing Field", "A ToDo needs to at least have a name!", "OK");
                 return;
@@ -615,23 +564,21 @@ namespace ComeTogetherApp
             await Navigation.PushPopupAsync(loadingPopUp);
             try
             {
-                if (!assignedCostsList.Contains(assignedUser) || !removedPayingUsers.Contains(assignedUser))
-                    await App.firebase.Child("Benutzer_ToDo").Child(assignedUser.ID).Child(ev.ID).Child(toDo.ID).Child("isPaying").PutAsync<string>("false");
+                String toDoID = Guid.NewGuid().ToString("N").Substring(0, 20);
+
+                if(!assignedCostsList.Contains(assignedUser))
+                    await App.firebase.Child("Benutzer_ToDo").Child(assignedUser.ID).Child(ev.ID).Child(toDoID).Child("isPaying").PutAsync<string>("false");
 
                 foreach (User user in assignedCostsList)
                 {
-                    await App.firebase.Child("ToDo_Benutzer").Child(toDo.ID).Child(user.ID).PutAsync<string>(user.userName);
-                    await App.firebase.Child("Benutzer_ToDo").Child(user.ID).Child(ev.ID).Child(toDo.ID).Child("isPaying").PutAsync<string>("true");
+                    await App.firebase.Child("ToDo_Benutzer").Child(toDoID).Child(user.ID).PutAsync<string>(user.userName);
+                    await App.firebase.Child("Benutzer_ToDo").Child(user.ID).Child(ev.ID).Child(toDoID).Child("isPaying").PutAsync<string>("true");
                 }
 
-                foreach (User user in removedPayingUsers)
-                {
-                    await App.firebase.Child("ToDo_Benutzer").Child(toDo.ID).Child(user.ID).DeleteAsync();
-                    await App.firebase.Child("Benutzer_ToDo").Child(user.ID).Child(ev.ID).Child(toDo.ID).Child("isPaying").PutAsync<string>("false");
-                }
+                await App.firebase.Child("Veranstaltung_ToDo").Child(ev.ID).Child(toDoID).PutAsync<string>(todoNameEntry.Text);
 
                 int cost = 0;
-                if (costEntry.Text != null)
+                if(costEntry.Text != null)
                     Int32.TryParse(costEntry.Text, out cost);
 
                 DateTime dt = todoDateEntry.Date;
@@ -643,8 +590,10 @@ namespace ComeTogetherApp
                 toDo.Datum = eventDate;
                 toDo.Ort = todoPlaceEntry.Text;
                 toDo.Status = statusPicker.SelectedItem.ToString();
+                toDo.OrganisatorID = assignedUser.ID;
+                toDo.ID = toDoID;
 
-                await App.firebase.Child("ToDos").Child(toDo.ID).PutAsync(toDo);
+                await App.firebase.Child("ToDos").Child(toDoID).PutAsync(toDo);
 
                 await Navigation.PopPopupAsync();
 
@@ -662,46 +611,5 @@ namespace ComeTogetherApp
             }
         }
 
-        private async void deleteToDo()
-        {
-            LoadingPopUp loadingPopUp = new LoadingPopUp();
-            await Navigation.PushPopupAsync(loadingPopUp);
-            try
-            {
-                if(!assignedCostsList.Contains(assignedUser) || !removedPayingUsers.Contains(assignedUser))
-                {
-                    await App.firebase.Child("Benutzer_ToDo").Child(assignedUser.ID).Child(ev.ID).Child(toDo.ID).DeleteAsync();
-                }
-
-                foreach (User user in assignedCostsList)
-                {
-                    await App.firebase.Child("ToDo_Benutzer").Child(toDo.ID).Child(user.ID).DeleteAsync();
-                    await App.firebase.Child("Benutzer_ToDo").Child(user.ID).Child(ev.ID).Child(toDo.ID).DeleteAsync();
-                }
-
-                foreach (User user in removedPayingUsers)
-                {
-                    await App.firebase.Child("ToDo_Benutzer").Child(toDo.ID).Child(user.ID).DeleteAsync();
-                    await App.firebase.Child("Benutzer_ToDo").Child(user.ID).Child(ev.ID).Child(toDo.ID).DeleteAsync();
-                }
-
-                await App.firebase.Child("ToDos").Child(toDo.ID).DeleteAsync();
-                await App.firebase.Child("Veranstaltung_ToDo").Child(ev.ID).Child(toDo.ID).DeleteAsync();
-
-                await Navigation.PopPopupAsync();
-
-                var navStack = Navigation.NavigationStack;
-
-                Navigation.RemovePage(navStack.ElementAt(navStack.Count - 2));
-                await Navigation.PushAsync(new SingleEventPage(ev));
-
-                Navigation.RemovePage(navStack.ElementAt(navStack.Count - 2));
-            }
-            catch (Exception e)
-            {
-                await DisplayAlert("Server Connection Failure", "Communication problems occurred while deleting the ToDo!", "OK");
-                System.Diagnostics.Debug.WriteLine(e);
-            }
-        }
     }
 }

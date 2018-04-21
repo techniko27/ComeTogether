@@ -25,15 +25,15 @@ namespace ComeTogetherApp
         private ActivityIndicator activityIndicator;
         private Frame memberListFrame;
 
-        private ToDoDetailsPage detailsPage;
+        private Page parentPage;
 
-        public AssignMemberToDoPopUp(Event ev, ToDo toDo, ToDoDetailsPage detailsPage)
+        public AssignMemberToDoPopUp(Event ev, ToDo toDo, Page parentPage)
         {
             InitializeComponent();
 
             this.ev = ev;
             this.toDo = toDo;
-            this.detailsPage = detailsPage;
+            this.parentPage = parentPage;
             eventMemberList = new ObservableCollection<User>();
 
             mainLayout = new StackLayout
@@ -165,7 +165,17 @@ namespace ComeTogetherApp
 
         public void assignMemberToToDo(User user)
         {
-            detailsPage.assignMemberToToDo(user);
+            ToDoDetailsPage detailsPage = (ToDoDetailsPage) parentPage;
+            if(detailsPage != null)
+            {
+                detailsPage.assignMemberToToDo(user);
+                return;
+            }
+            CreateToDoPage createPage = (CreateToDoPage) parentPage;
+            if(createPage != null)
+            {
+                createPage.assignMemberToToDo(user);
+            }
         }
 
         // ### Overrided methods which can prevent closing a popup page ###

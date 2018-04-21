@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
+using System.Collections.ObjectModel;
 using Firebase.Database.Query;
 
 namespace ComeTogetherApp
@@ -11,11 +12,13 @@ namespace ComeTogetherApp
     class AssignedCostsEntry : StackLayout
     {
         public User user;
-        private ToDoDetailsPage detailsPage;
+        private Page parentPage;
+        private ObservableCollection<User> assignedCostsList;
 
-        public AssignedCostsEntry(ToDoDetailsPage detailsPage)
+        public AssignedCostsEntry(Page parentPage, ObservableCollection<User> assignedCostsList)
         {
-            this.detailsPage = detailsPage;
+            this.parentPage = parentPage;
+            this.assignedCostsList = assignedCostsList;
         }
 
         protected override void OnBindingContextChanged()
@@ -79,11 +82,11 @@ namespace ComeTogetherApp
 
         private async void threeDotsTapped(object sender, EventArgs e)
         {
-            string action = await detailsPage.DisplayActionSheet("Member Options", "Cancel", null, "Remove");
+            string action = await parentPage.DisplayActionSheet("Member Options", "Cancel", null, "Remove");
             switch (action)
             {
                 case "Remove":
-                    detailsPage.assignedCostsList.Remove(user);
+                    assignedCostsList.Remove(user);
                     break;
                 default:
                     break;

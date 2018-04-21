@@ -19,18 +19,20 @@ namespace ComeTogetherApp
         private ObservableCollection<ToDo> completedToDosList;
 
         private ActivityIndicator activityIndicator;
-        private SearchBar memberSearchBar;
 
         private StackLayout stackLayout;
         private Frame ownToDosFrame;
         private Frame otherToDosFrame;
         private Frame completedToDosFrame;
 
+        private Button createToDoButton;
+
         private ListView ownToDosListView;
         private ListView otherToDosListView;
         private ListView completedToDosListView;
 
         public Event ev;
+        private User currentUser;
 
         public EventDetailsToDosPage(Event ev)
         {
@@ -50,34 +52,28 @@ namespace ComeTogetherApp
 
             try
             {
+                var userQuery = await App.firebase.Child("users").OrderByKey().StartAt(App.GetUserID()).LimitToFirst(1).OnceAsync<User>();
+                currentUser = userQuery.ElementAt(0).Object;
+                currentUser.ID = App.GetUserID();
+
                 var toDosInEvent = await App.firebase.Child("Veranstaltung_ToDo").Child(eventID).OnceAsync<string>();
-                var ownToDosInEvent = await App.firebase.Child("Benutzer_ToDo").Child(App.GetUserID()).Child(eventID).OnceAsync<object>();
-
-                foreach (FirebaseObject<object> tD in ownToDosInEvent)
-                {
-                    string toDoID = tD.Key;
-                    var toDoQuery = await App.firebase.Child("ToDos").OrderByKey().StartAt(toDoID).LimitToFirst(1).OnceAsync<ToDo>();
-                    ToDo toDo = toDoQuery.ElementAt(0).Object;
-                    toDo.ID = toDoID;
-
-                    if (!toDo.Status.Equals("Completed"))
-                        ownToDosList.Add(toDo);
-                    else
-                        completedToDosList.Add(toDo);
-                }
 
                 foreach (FirebaseObject<string> tD in toDosInEvent)
                 {
                     string toDoID = tD.Key;
-                    if (isInOwnToDoList(toDoID))
-                        continue;
                     var toDoQuery = await App.firebase.Child("ToDos").OrderByKey().StartAt(toDoID).LimitToFirst(1).OnceAsync<ToDo>();
                     ToDo toDo = toDoQuery.ElementAt(0).Object;
 
                     if (!toDo.Status.Equals("Completed"))
-                        otherToDosList.Add(toDo);
-                    else
+                    {
+                        if (toDo.OrganisatorID.Equals(currentUser.ID))
+                            ownToDosList.Add(toDo);
+                        else
+                            otherToDosList.Add(toDo);
+                    } else
+                    {
                         completedToDosList.Add(toDo);
+                    }
                 }
                 activityIndicatorSwitch();
             }
@@ -131,26 +127,22 @@ namespace ComeTogetherApp
                 Padding = new Thickness(10, 10, 10, 5)
             };
 
-            memberSearchBar = new SearchBar
+            createToDoButton = new Button
             {
-                Placeholder = "Search ToDos..."
+                Text = "Create New ToDo",
+                FontSize = 19,
+                BackgroundColor = Color.FromHex(App.GetMenueColor()),
+                TextColor = Color.White,
+                FontAttributes = FontAttributes.Bold,
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+                HeightRequest = 55
             };
-
-           // memberSearchBar.TextChanged += searchBarTextChanged;
-
-            Frame searchbarFrame = new Frame
-            {
-                Content = memberSearchBar,
-                BackgroundColor = Color.LightGray,
-                CornerRadius = 5,
-                Padding = new Thickness(5, 0, 5, 10)
-            };
+            createToDoButton.Clicked += createToDo;
 
             ownToDosFrame = createOwnToDosFrame();
             otherToDosFrame = createOtherToDosFrame();
             completedToDosFrame = createCompletedToDosFrame();
 
-            stackLayout.Children.Add(searchbarFrame);
             stackLayout.Children.Add(activityIndicator);
 
             return stackLayout;
@@ -276,6 +268,11 @@ namespace ComeTogetherApp
             };
         }
 
+        private async void createToDo(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new CreateToDoPage(ev, currentUser));
+        }
+
         private void activityIndicatorSwitch()
         {
             if (activityIndicator.IsRunning)
@@ -284,6 +281,8 @@ namespace ComeTogetherApp
 
                 stackLayout.Children.Remove(activityIndicator);
 
+
+                stackLayout.Children.Add(createToDoButton);
                 stackLayout.Children.Add(ownToDosFrame);
                 stackLayout.Children.Add(otherToDosFrame);
                 stackLayout.Children.Add(completedToDosFrame);
@@ -292,6 +291,7 @@ namespace ComeTogetherApp
             {
                 activityIndicator.IsRunning = true;
 
+                stackLayout.Children.Remove(createToDoButton);
                 stackLayout.Children.Remove(ownToDosFrame);
                 stackLayout.Children.Remove(otherToDosFrame);
                 stackLayout.Children.Remove(completedToDosFrame);

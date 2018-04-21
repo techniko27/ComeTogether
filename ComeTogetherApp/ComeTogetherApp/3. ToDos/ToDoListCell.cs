@@ -70,6 +70,7 @@ namespace ComeTogetherApp
         {
             var assignedUserQuery = await App.firebase.Child("users").OrderByKey().StartAt(toDo.OrganisatorID).LimitToFirst(1).OnceAsync<User>();
             User assignedUser = assignedUserQuery.ElementAt(0).Object;
+            assignedUser.ID = toDo.OrganisatorID;
 
             await toDosPage.Navigation.PushAsync(new ToDoDetailsPage(toDo, ev, assignedUser));
         }
