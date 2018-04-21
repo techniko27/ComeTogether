@@ -87,9 +87,27 @@ namespace ComeTogetherApp
             };
             this.Children.Add(horizontalDateAndStateLayout);
 
+            string eventDateText = "";
+
+            if(!ev.Name.Equals("Add New Event"))
+            {
+                string date = ev.Datum;
+                int year;
+                int month;
+                int day;
+                Int32.TryParse(date.Substring(0, 4), out year);
+                Int32.TryParse(date.Substring(5, 2), out month);
+                Int32.TryParse(date.Substring(8, 2), out day);
+
+                eventDateText = day.ToString();
+                eventDateText += (day % 10 == 1 && day != 11) ? "st" : (day % 10 == 2 && day != 12) ? "nd" : (day % 10 == 3 && day != 13) ? "rd" : "th";
+
+                eventDateText += $" {System.Globalization.DateTimeFormatInfo.CurrentInfo.GetMonthName(month)} {year}";
+            }
+
             Label eventDateLabel = new Label
             {
-                Text = ev.Datum,
+                Text = eventDateText,
                 VerticalOptions = LayoutOptions.Start,
                 FontSize = 15
             };
@@ -121,17 +139,17 @@ namespace ComeTogetherApp
         {
             if (ev.ID == "0")
             {
-                string action = await eventsPage.DisplayActionSheet("", "Cancel", null, "Add new Event", "Enter joincode", "Scan joincode");
+                string action = await eventsPage.DisplayActionSheet("", "Cancel", null, "Add New Event", "Enter Joincode", "Scan Joincode");
                 Debug.WriteLine("Action: " + action);
                 switch (action)
                 {
-                    case "Add new Event":
+                    case "Add New Event":
                         await Navigation.PushAsync(new AddNewEventPage(eventsPage));
                         break;
-                    case "Enter joincode":
+                    case "Enter Joincode":
                         await Navigation.PushPopupAsync(new EnterJoinCodePopupPage(eventsPage));
                         break;
-                    case "Scan joincode":
+                    case "Scan Joincode":
                         useScanPage();
                         break;
                     default:
@@ -166,7 +184,7 @@ namespace ComeTogetherApp
             };
             var scanPage = new ZXingScannerPage(options)
             {
-                DefaultOverlayTopText = "Scan the join code",
+                DefaultOverlayTopText = "Scan the Joincode",
                 DefaultOverlayBottomText = "lala",
                 DefaultOverlayShowFlashButton = true
             };
@@ -195,7 +213,7 @@ namespace ComeTogetherApp
                 //Check if event allready exist for this user
                 if (eventPageEvent.ID == eventID)
                 {
-                    await eventsPage.DisplayAlert("Note", "You are already member of this event named " + eventPageEvent.Name, "OK");
+                    await eventsPage.DisplayAlert("Note", "You are already member of the event named " + eventPageEvent.Name, "OK");
                     return;
                 }
             }
@@ -210,7 +228,7 @@ namespace ComeTogetherApp
             }
             catch (Exception)
             {
-                await eventsPage.DisplayAlert("Incorrect Joincode", "Event could not be found, with ID " + eventID, "OK");
+                await eventsPage.DisplayAlert("Incorrect Joincode", "Event could not be found with ID " + eventID, "OK");
                 return;
             }
             try

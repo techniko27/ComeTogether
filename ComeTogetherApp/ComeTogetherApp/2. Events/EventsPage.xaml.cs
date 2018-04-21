@@ -31,7 +31,7 @@ namespace ComeTogetherApp
             Title = "Events";
 
             eventList = new List<Event>();
-            eventList.Add(new Event("","","Add new Event","", "kreis_plus_schwarz.png", "0", "null",""));
+            eventList.Add(new Event("","","Add New Event","", "kreis_plus_schwarz.png", "0", "null",""));
 
             searchBar = new SearchBar
             {
@@ -134,7 +134,15 @@ namespace ComeTogetherApp
 
                     EventButton eventButton = new EventButton(gridList[c], this);
 
-                    grid.Children.Add(eventButton, j, i);
+                    Frame eventButtonFrame = new Frame
+                    {
+                        Content = eventButton,
+                        BackgroundColor = Color.FromHex(App.GetMenueColor()),
+                        CornerRadius = 15,
+                        Padding = 0
+                    };
+
+                    grid.Children.Add(eventButtonFrame, j, i);
                     c++;
                 }
             }
