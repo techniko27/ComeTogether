@@ -75,7 +75,7 @@ namespace ComeTogetherApp
                         AuthTokenAsyncFactory = () => Task.FromResult(auth.FirebaseToken)
                     });
 
-                    await firebase.Child("users").Child(userID).PutAsync(new User(usernameEntry.Text, emailEntry.Text));
+                    await firebase.Child("users").Child(userID).PutAsync(new User(usernameEntry.Text, emailEntry.Text, ""));
 
                     await DisplayAlert("Sign Up erfolgreich!", "Sie können sich jetzt einloggen", "OK");
                     Navigation.PopToRootAsync();

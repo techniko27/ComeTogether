@@ -152,6 +152,7 @@ namespace ComeTogetherApp
             var users = await App.firebase.Child("users").OrderByKey().StartAt(App.GetUserID()).LimitToFirst(1).OnceAsync<User>();
             User user = users.ElementAt(0).Object;
             usernameEntry.Text = user.userName;
+            paypalMeEntry.Text = user.PayPal_me_link;
 
             activityIndicatorSwitch();
         }
@@ -161,6 +162,7 @@ namespace ComeTogetherApp
             if (usernameEntry.Text == "")
             {
                 messageLabel.Text = "Please enter a name for your username!";
+                return;
             }
             else if (paypalMeEntry.Text != "" && paypalMeEntry.Text != null)
             {
@@ -177,29 +179,30 @@ namespace ComeTogetherApp
                 if(!paypalMeLinkString.Contains("paypal.me/") || paypalMeLinkString.Length < 10 || (test.Length >= 3 && test[2] != ""))
                 {
                     messageLabel.Text = "Your PayPal.Me Link is not correct!";
+                    return;
                 }
-                else
-                {
-                    messageLabel.Text = "";
-
-                }
-
             }
-            else
+
+            string paypalMeLink = paypalMeEntry.Text.Replace(" ", "");
+            if (paypalMeLink.EndsWith("/"))
             {
-                try
-                { 
-                    string userID = App.GetUserID();
-
-                    await App.firebase.Child("users").Child(userID).PutAsync(new User(usernameEntry.Text, App.GetEmail()));
-
-                    DisplayAlert("Success", "All changes saved!", "OK");
-                }
-                catch (Exception)
-                {
-                    DisplayAlert("Server connection failure", "Communication problems occured while adding event", "OK");
-                }
+                paypalMeLink = paypalMeLink.Remove(paypalMeLink.Length - 1);
             }
+
+            activityIndicatorSwitch();
+            try
+            { 
+                string userID = App.GetUserID();
+
+                await App.firebase.Child("users").Child(userID).PutAsync(new User(usernameEntry.Text, App.GetEmail(), paypalMeLink));
+
+                DisplayAlert("Success", "All changes saved!", "OK");
+            }
+            catch (Exception)
+            {
+                DisplayAlert("Server connection failure", "Communication problems occured while adding event", "OK");
+            }
+            activityIndicatorSwitch();
         }
 
         async void OnButtonResetPasswordClicked(object sender, EventArgs e)
