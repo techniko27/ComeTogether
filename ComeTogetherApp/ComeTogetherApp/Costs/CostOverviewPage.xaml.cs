@@ -55,7 +55,6 @@ namespace ComeTogetherApp
 
             initLayout();
 
-            retrieveTransactionsFromServer(true);
             retrieveMemberFromServer();
 
             continuousRetrieveTransactionsFromServer(3000);
@@ -83,6 +82,7 @@ namespace ComeTogetherApp
                 }
 
                 await updateMemberCostFrame();
+                await retrieveTransactionsFromServer(true);
                 Task<bool> updateCostButtonsTask = Task.Run(() => updateCostButtonsDependingOnTransactions());
             }
             catch (Exception e)
@@ -459,7 +459,14 @@ namespace ComeTogetherApp
             switch (action)
             {
                 case "PayPal":
-
+                    if (member.PayPal_me_link == null || member.PayPal_me_link.Length < 9)
+                    {
+                        await DisplayAlert("Sorry", "This member has no PayPal.me link in his account at the moment. You could advice the member to create his own link at paypal.me and add it in the account menu.", "ok");
+                    }
+                    else
+                    {
+                        await Navigation.PushAsync(new PayPalPage(ev, member, sendAmount, personalCostCalculatingTask));
+                    }
                     break;
                 case "Cash":
                     await Navigation.PushAsync(new CashPaymentPage(ev, member, sendAmount, personalCostCalculatingTask));
@@ -550,7 +557,7 @@ namespace ComeTogetherApp
                         }
                         catch (Exception e)
                         {
-                            DisplayAlert("Sorry", "Cost calculation went wrong!", "ok");
+                            await DisplayAlert("Sorry", "Cost calculation went wrong!", "ok");
                             return false;
                         }
 
