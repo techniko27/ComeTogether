@@ -222,7 +222,7 @@ namespace ComeTogetherApp
 
             locationEntry = new Entry
             {
-                Text = ev.Name,
+                Text = ev.Ort,
                 BackgroundColor = Color.White
             };
 

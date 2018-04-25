@@ -59,7 +59,6 @@ namespace ComeTogetherApp
             WebView browser = new WebView();                       //Use own WebView with own custom renderer
             browser.Source = "https://" + member.PayPal_me_link + "/" + sendAmount;
             grid.Children.Add(browser, 0, 0);
-            //stackLayout.Children.Add(browser);
 
             StackLayout innerStackLayout = new StackLayout
             {
