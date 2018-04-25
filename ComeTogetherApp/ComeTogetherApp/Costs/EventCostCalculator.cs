@@ -10,10 +10,10 @@ namespace ComeTogetherApp
 {
     class EventCostCalculator
     {
-        public static async Task<int> getPersonalCost(Event ev, string userID, Label costLabel, Button costButton)
+        public static async Task<double> getPersonalCost(Event ev, string userID, Label costLabel, Button costButton)
         {
             //List<ToDo> todoList = new List<ToDo>();
-            int personalCost = 0;
+            double personalCost = 0;
             int isPayingCount = 0;
 
             //IReadOnlyCollection<Firebase.Database.FirebaseObject<string>> veranstaltung_ToDos = null;
@@ -42,7 +42,7 @@ namespace ComeTogetherApp
                     if (todoID.Object.isPaying.Equals("true"))
                     {
                         var todo_Benutzer = await App.firebase.Child("ToDo_Benutzer").Child(todoID.Key).OnceAsync<string>();
-                        personalCost += todo.Kosten / todo_Benutzer.Count;
+                        personalCost += Math.Round(((double)todo.Kosten / (double)todo_Benutzer.Count), 2);
                     }
                 }
             }

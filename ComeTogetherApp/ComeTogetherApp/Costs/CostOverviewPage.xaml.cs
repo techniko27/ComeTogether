@@ -16,8 +16,8 @@ namespace ComeTogetherApp
     public partial class CostOverviewPage : ContentPage
     {
         public Event ev;
-        public Task<int> personalCostCalculatingTask;
-        private int personalCosts;
+        public Task<double> personalCostCalculatingTask;
+        private double personalCosts;
 
         private ActivityIndicator activityIndicator;
 
@@ -37,7 +37,7 @@ namespace ComeTogetherApp
         private int reloadCount;
         private bool pageIsDisappeared;
 
-        public CostOverviewPage(Event ev, Task<int> personalCostCalculatingTask)
+        public CostOverviewPage(Event ev, Task<double> personalCostCalculatingTask)
         {
             InitializeComponent();
 
@@ -288,7 +288,7 @@ namespace ComeTogetherApp
                 CornerRadius = 40,
                 HorizontalOptions = LayoutOptions.EndAndExpand,
             };
-            Task<int> memberCostCalculatingTask = null;
+            Task<double> memberCostCalculatingTask = null;
             try
             {
                 memberCostCalculatingTask =
@@ -420,9 +420,9 @@ namespace ComeTogetherApp
             }
         }
 
-        async void OnCostButtonClicked(object sender, EventArgs e, User member, Task<int> memberCostCalculatingTask)
+        async void OnCostButtonClicked(object sender, EventArgs e, User member, Task<double> memberCostCalculatingTask)
         {
-            int memberCost = 0;
+            double memberCost = 0;
 
             if (memberCostCalculatingTask == null)
             {
@@ -440,7 +440,7 @@ namespace ComeTogetherApp
                 return;
             }
 
-            int sendAmount;
+            double sendAmount;
             if (memberCost * (-1) >= personalCosts)
             {
                 sendAmount = personalCosts;

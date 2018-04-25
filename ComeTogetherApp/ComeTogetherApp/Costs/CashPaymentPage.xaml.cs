@@ -14,12 +14,12 @@ namespace ComeTogetherApp
     {
         public Event ev;
         public User member;
-        private int sendAmount;
-        private Task<int> personalCostCalculatingTask;
+        private double sendAmount;
+        private Task<double> personalCostCalculatingTask;
 
         private ActivityIndicator activityIndicator;
         private Frame frame;
-        public CashPaymentPage(Event ev, User member, int sendAmount, Task<int> personalCostCalculatingTask)
+        public CashPaymentPage(Event ev, User member, double sendAmount, Task<double> personalCostCalculatingTask)
         {
             InitializeComponent();
             

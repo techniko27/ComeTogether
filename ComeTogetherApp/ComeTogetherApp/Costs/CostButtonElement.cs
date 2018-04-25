@@ -11,9 +11,9 @@ namespace ComeTogetherApp
     {
         public Button costButton { get; set; }
         public User member { get; set; }
-        public Task<int> memberCostCalculatingTask { get; set; }
+        public Task<double> memberCostCalculatingTask { get; set; }
 
-        public CostButtonElement(Button costButton, User member, Task<int> memberCostCalculatingTask)
+        public CostButtonElement(Button costButton, User member, Task<double> memberCostCalculatingTask)
         {
             this.costButton = costButton;
             this.member = member;

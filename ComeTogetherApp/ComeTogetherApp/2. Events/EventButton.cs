@@ -19,7 +19,7 @@ namespace ComeTogetherApp
         private EventsPage eventsPage;
         public Label eventPersonalCostLabel;
 
-        private Task<int> personalCostCalculatingTask;
+        private Task<double> personalCostCalculatingTask;
 
         public EventButton(Event ev, EventsPage eventsPage)
         {
