@@ -43,12 +43,14 @@ namespace ComeTogetherApp
                 IconSource = "contacts_schwarz.png",
                 TargetType = typeof(UserSettingPage)
             });
+            /*
             masterPageItems.Add(new MasterPageItem
             {
                 Title = "Settings",
                 IconSource = "todo_schwarz.png",
                 TargetType = typeof(EventsPage)
             });
+            */
             masterPageItems.Add(new MasterPageItem
             {
                 Title = "LogOff",

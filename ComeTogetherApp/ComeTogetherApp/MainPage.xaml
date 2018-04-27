@@ -3,10 +3,12 @@
                   xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                   xmlns:comeTogetherApp="clr-namespace:ComeTogetherApp;assembly=ComeTogetherApp"
                   xmlns:forms="http://xamarin.com/schemas/2014/forms"
+                  xmlns:comeTogetherApp1="clr-namespace:ComeTogetherApp;assembly=ComeTogether"
                   x:Class="ComeTogetherApp.MainPage">
 
   <forms:MasterDetailPage.Master>
-    <comeTogetherApp:MasterPage x:Name="masterPage" />
+    <comeTogetherApp1:MasterPage x:Name="masterPage" />
+    <!-- No idea why it is comeTogetherApp1 ???-->
   </forms:MasterDetailPage.Master>
   <MasterDetailPage.Detail>
     <NavigationPage>

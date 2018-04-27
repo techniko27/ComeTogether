@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="1.0" package="ComeTogether_Paketname.ComeTogether_Paketname" android:installLocation="auto" android:versionCode="1">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="1.0" package="com.cometogetherapp.cometogether" android:installLocation="auto" android:versionCode="3">
 	<uses-sdk android:minSdkVersion="15" android:targetSdkVersion="19" />
 	<uses-permission android:name="android.permission.CAMERA" />
 	<uses-permission android:name="android.permission.FLASHLIGHT" />
-	<application android:label="ComeTogether" android:icon="@drawable/icon"></application>
+	<uses-permission android:name="android.permission.INTERNET" />
+	<application android:label="ComeTogether"></application>
 </manifest>
